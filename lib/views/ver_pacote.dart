@@ -25,7 +25,7 @@ class _PacoteDetalhe extends StatelessWidget {
   /// Tela principal dos detalhes
   Widget get details {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 64),
+      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 64),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -54,8 +54,8 @@ class _PacoteDetalhe extends StatelessWidget {
 
   Widget get tipo {
     return Text(
-      '${getTipoPacote(pacote.tipo)}',
-      style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+      'Localizar ${getTipoPacote(pacote.tipo)}',
+      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
     );
   }
 
@@ -66,7 +66,7 @@ class _PacoteDetalhe extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(right: 8),
-            child: Text('Local:',
+            child: Text('Prédio:',
                 style: const TextStyle(fontSize: 20, color: Colors.grey)),
           ),
           Text('${pacote.locPredio}',
@@ -138,12 +138,12 @@ class _PacoteDetalhe extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(right: 8),
-            child: Text('Tubo:',
+            child: Text('Identificador:',
                 style: const TextStyle(fontSize: 20, color: Colors.grey)),
           ),
           Text('${reference.id}',
               style: const TextStyle(
-                  fontSize: 24,
+                  fontSize: 32,
                   fontWeight: FontWeight.bold,
                   color: Colors.red)),
         ],
