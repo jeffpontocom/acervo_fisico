@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "727122179040",
+    "project_id": "acervo-fisico",
+    "storage_bucket": "acervo-fisico.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:727122179040:android:1ebc7dfc91b32d49ed3185",
+        "android_client_info": {
+          "package_name": "itaipu.encadt.acervo_fisico"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "727122179040-gbm2nv9vkniiu23i9rhl3u3d2au7antr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAW2boEQ1xWF4eVfMkW6wf1GwMvRgs-Qo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "727122179040-gbm2nv9vkniiu23i9rhl3u3d2au7antr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
