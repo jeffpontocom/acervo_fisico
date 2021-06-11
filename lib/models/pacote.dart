@@ -30,9 +30,9 @@ class Pacote {
           locNivel1: (json['locNivel1'] ?? '') as String,
           locNivel2: (json['locNivel2'] ?? '') as String,
           locNivel3: (json['locNivel2'] ?? '') as String,
-          alterUser: (json['alterUser'] ?? '') as String,
+          alterUser: (json['alterUser'] ?? 'Importação de dados') as String,
           alterData:
-              (json['alterData'] ?? Timestamp.now().toDate()) as DateTime,
+              (json['alterData'] ?? DateTime.parse('2021-06-01')) as DateTime,
           documentos:
               ((json['documentos'] ?? []) as List).cast<DocumentReference>(),
         );

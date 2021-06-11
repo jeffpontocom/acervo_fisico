@@ -3,6 +3,8 @@ import 'package:acervo_fisico/views/ver_pacote.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
+enum contexto { documentos, pacotes }
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -33,7 +35,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   // VARIAVEIS
-  int _contexto = 0; // 0: Documentos; 1: Pacotes
+  int _contextoAtual = contexto.documentos.index;
 
   // Variaveis para Botoes
   late List<bool> _isSelected;
@@ -129,10 +131,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 decoration: InputDecoration(
                   labelText: "Localizar",
                   hintText: "Informe o código",
-                  labelStyle: TextStyle(color: _cores[_contexto]),
+                  labelStyle: TextStyle(color: _cores[_contextoAtual]),
                   prefixIcon: Icon(
                     Icons.search,
-                    color: _cores[_contexto],
+                    color: _cores[_contextoAtual],
                   ),
                   filled: true,
                   fillColor: Colors.white,
@@ -140,7 +142,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ? IconButton(
                           icon: Icon(
                             Icons.clear,
-                            color: _cores[_contexto],
+                            color: _cores[_contextoAtual],
                           ),
                           onPressed: () {
                             setState(() {
@@ -153,7 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       borderRadius: BorderRadius.all(
                         Radius.circular(8.0),
                       ),
-                      borderSide: BorderSide(color: _cores[_contexto])),
+                      borderSide: BorderSide(color: _cores[_contextoAtual])),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(
                       Radius.circular(8.0),
@@ -174,15 +176,12 @@ class _MyHomePageState extends State<MyHomePage> {
                         children: <Widget>[
                           new Icon(
                             Icons.list_alt_rounded,
-                            //size: 16.0,
-                            //color: Colors.red,
                           ),
                           new SizedBox(
                             width: 4.0,
                           ),
                           new Text(
                             "DOCUMENTO",
-                            //style: TextStyle(color: Colors.red),
                           )
                         ],
                       )),
@@ -193,25 +192,22 @@ class _MyHomePageState extends State<MyHomePage> {
                         children: <Widget>[
                           new Icon(
                             Icons.folder_rounded,
-                            //size: 16.0,
-                            //color: Colors.blue,
                           ),
                           new SizedBox(
                             width: 4.0,
                           ),
                           new Text(
                             "PACOTE",
-                            //style: TextStyle(color: Colors.blue),
                           ),
                         ],
                       )),
                 ],
-                fillColor: _cores[_contexto],
+                fillColor: _cores[_contextoAtual],
                 selectedColor: Colors.white,
                 borderRadius: BorderRadius.circular(8.0),
                 onPressed: (int index) {
                   setState(() {
-                    _contexto = index;
+                    _contextoAtual = index;
                     for (int i = 0; i < _isSelected.length; i++) {
                       _isSelected[i] = i == index;
                     }
