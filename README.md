@@ -1,12 +1,22 @@
-# acervo_fisico
+# Acervo Físico
 
-A new Flutter project.
+Ferramenta de localização e controle do acervo físico do Arquivo Técnico da ITAIPU Binacional.
 
-## Getting Started
+## Localização de documento
 
-This project is a starting point for a Flutter application.
+Primeira fase do projeto.
 
-A few resources to get you started if this is your first Flutter project:
+## Localização de pacotes
+
+Primeira fase do projeto.
+
+## Alteração dos metadados
+
+Segunda fase.
+
+## Desenvolvimento em Flutter
+
+Para apoio ao desenvolvimento acessar os seguintes endereços:
 
 - [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
 - [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
