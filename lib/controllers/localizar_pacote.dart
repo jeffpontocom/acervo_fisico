@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class LocalizarPacote {
-  final context;
+  final BuildContext context;
   final String query;
 
   LocalizarPacote(this.context, this.query) {

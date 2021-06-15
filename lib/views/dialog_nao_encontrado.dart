@@ -7,8 +7,8 @@ class ItemNaoEcontrado {
       builder: (BuildContext context) {
         // retorna um objeto do tipo Dialog
         return AlertDialog(
-          title: new Text("Item não econtrado"),
-          content: new Text("Tente novamente"),
+          title: new Text("Item não localizado!"),
+          content: new Text("Verifique o código informado e tente novamente."),
           actions: <Widget>[
             // define os botões na base do dialogo
             new MaterialButton(

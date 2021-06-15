@@ -12,16 +12,11 @@ void main() async {
   runApp(MyApp());
 }
 
-//void main() => runApp(MyApp());
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Acervo físico',
-      // theme: ThemeData(
-      //   primarySwatch: Colors.blue,
-      // ),
       home: MyHomePage(),
     );
   }
@@ -49,11 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // METODOS DA APLICACAO
   void _localizarPacote() {
     if (_contextoAtual == contexto.documentos.index) {
-      LocalizarDocumento(_searchText);
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => VerPacote()),
-      // );
+      LocalizarDocumento(context, _searchText);
     } else {
       LocalizarPacote(context, _searchText);
     }
