@@ -29,7 +29,7 @@ class Pacote {
           locPredio: (json['locPredio'] ?? '') as String,
           locNivel1: (json['locNivel1'] ?? '') as String,
           locNivel2: (json['locNivel2'] ?? '') as String,
-          locNivel3: (json['locNivel2'] ?? '') as String,
+          locNivel3: (json['locNivel3'] ?? '') as String,
           alterUser: (json['alterUser'] ?? 'Importação de dados') as String,
           alterData:
               (json['alterData'] ?? DateTime.parse('2021-06-01')) as DateTime,

@@ -1,5 +1,6 @@
+import 'package:acervo_fisico/controllers/localizar_documento.dart';
+import 'package:acervo_fisico/controllers/localizar_pacote.dart';
 import 'package:acervo_fisico/views/editar_pacote.dart';
-import 'package:acervo_fisico/views/ver_pacote.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -47,10 +48,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // METODOS DA APLICACAO
   void _localizarPacote() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => VerPacote()),
-    );
+    if (_contextoAtual == contexto.documentos.index) {
+      LocalizarDocumento(_searchText);
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(builder: (context) => VerPacote()),
+      // );
+    } else {
+      LocalizarPacote(context, _searchText);
+    }
   }
 
   void _novoPacote() {

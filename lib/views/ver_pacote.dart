@@ -20,7 +20,7 @@ class _PacoteDetalhe extends StatelessWidget {
   _PacoteDetalhe(this.pacote, this.reference);
 
   final Pacote pacote;
-  final DocumentReference<Pacote> reference;
+  final DocumentReference reference;
 
   /// Tela principal dos detalhes
   Widget get details {
@@ -29,7 +29,7 @@ class _PacoteDetalhe extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          foto,
+          //foto,
           tipo,
           locPredio,
           locNivel1,
@@ -54,8 +54,12 @@ class _PacoteDetalhe extends StatelessWidget {
 
   Widget get tipo {
     return Text(
-      'Localizar ${getTipoPacote(pacote.tipo)}',
-      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+      '${getTipoPacote(pacote.tipo)}',
+      style: const TextStyle(
+        fontSize: 40,
+        fontWeight: FontWeight.bold,
+        fontFamily: 'Baumans',
+      ),
     );
   }
 
@@ -189,7 +193,11 @@ class _PacoteDetalhe extends StatelessWidget {
 }
 
 class VerPacote extends StatefulWidget {
-  const VerPacote({Key? key}) : super(key: key);
+  final Pacote pacote;
+  final DocumentReference reference;
+
+  VerPacote({Key? key, required this.pacote, required this.reference})
+      : super(key: key);
 
   @override
   _VerPacoteState createState() => _VerPacoteState();
@@ -200,22 +208,34 @@ class _VerPacoteState extends State<VerPacote> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 196,
+        // Mudar para SliverAppbar
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/tubos_industriais.jpg'),
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        backgroundColor: Colors.transparent,
         title: Text("Físico localizado"),
       ),
-      body: StreamBuilder<DocumentSnapshot<Pacote>>(
-          stream: pacoteRef.snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Center(
-                child: Text(snapshot.error.toString()),
-              );
-            }
-            if (!snapshot.hasData) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            final data = snapshot.requireData;
-            return Center(child: _PacoteDetalhe(data.data()!, data.reference));
-          }),
+      body: Center(child: _PacoteDetalhe(widget.pacote, widget.reference)),
+      // body: StreamBuilder<DocumentSnapshot<Pacote>>(
+      //     stream: pacoteRef.snapshots(),
+      //     builder: (context, snapshot) {
+      //       if (snapshot.hasError) {
+      //         return Center(
+      //           child: Text(snapshot.error.toString()),
+      //         );
+      //       }
+      //       if (!snapshot.hasData) {
+      //         return const Center(child: CircularProgressIndicator());
+      //       }
+      //       final data = snapshot.requireData;
+      //       return Center(child: _PacoteDetalhe(data.data()!, data.reference));
+      //     }),
     );
   }
 }

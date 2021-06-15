@@ -8,6 +8,7 @@ class Documento {
   final String idioma;
   final String folha;
   final String revisao;
+  final String pacote;
 
   Documento({
     required this.assuntoBase,
@@ -16,16 +17,18 @@ class Documento {
     required this.idioma,
     required this.folha,
     required this.revisao,
+    required this.pacote,
   });
 
   Documento.fromJson(Map<String, Object?> json)
       : this(
-          assuntoBase: (json['tipo'] ?? '') as String,
-          tipo: (json['locPredio'] ?? '') as String,
-          sequencial: (json['locNivel1'] ?? '') as String,
-          idioma: (json['locNivel2'] ?? '') as String,
-          folha: (json['locNivel2'] ?? '') as String,
-          revisao: (json['alterUser'] ?? '') as String,
+          assuntoBase: (json['assuntoBase'] ?? '') as String,
+          tipo: (json['tipo'] ?? '') as String,
+          sequencial: (json['sequencial'] ?? '') as String,
+          idioma: (json['idioma'] ?? '') as String,
+          folha: (json['folha'] ?? '') as String,
+          revisao: (json['revisao'] ?? '') as String,
+          pacote: (json['pacote'] ?? '') as String,
         );
 
   Map<String, Object?> toJson() {
@@ -36,6 +39,7 @@ class Documento {
       'idioma': idioma,
       'folha': folha,
       'revisao': revisao,
+      'pacote': pacote,
     };
   }
 }
