@@ -213,6 +213,11 @@ class _PacoteDocumentos extends StatelessWidget {
                 if (!snapshots.hasData) {
                   return const Center(child: CircularProgressIndicator());
                 }
+                if (snapshots.data!.size == 0) {
+                  return Center(
+                    child: Text('Nenhum documento vinculado a este pacote'),
+                  );
+                }
                 final data = snapshots.data;
                 return Center(
                   child: ListView.builder(
