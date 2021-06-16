@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
 @immutable
@@ -10,7 +9,6 @@ class Pacote {
   final String locNivel3;
   final String alterUser;
   final DateTime alterData;
-  final List<DocumentReference> documentos;
 
   Pacote({
     required this.tipo,
@@ -20,7 +18,6 @@ class Pacote {
     required this.locNivel3,
     required this.alterUser,
     required this.alterData,
-    required this.documentos,
   });
 
   Pacote.fromJson(Map<String, Object?> json)
@@ -33,8 +30,6 @@ class Pacote {
           alterUser: (json['alterUser'] ?? 'Importação de dados') as String,
           alterData:
               (json['alterData'] ?? DateTime.parse('2021-06-01')) as DateTime,
-          documentos:
-              ((json['documentos'] ?? []) as List).cast<DocumentReference>(),
         );
 
   Map<String, Object?> toJson() {
@@ -46,7 +41,6 @@ class Pacote {
       'locNivel3': locNivel3,
       'alterUser': alterUser,
       'alterData': alterData,
-      'documentos': documentos,
     };
   }
 }
