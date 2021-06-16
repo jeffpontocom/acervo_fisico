@@ -164,7 +164,7 @@ class LocalizarDocumento {
       if (snapshots.size == 0) {
         ItemNaoLocalizado(context);
       } else if (snapshots.size == 1) {
-        LocalizarPacote(context, snapshots.docs[0].data().pacote.id);
+        LocalizarPacote(context, snapshots.docs[0].data().pacote);
       } else {
         // Show Bottom Dialog
         showModalBottomSheet(
@@ -191,8 +191,8 @@ class LocalizarDocumento {
                         return ListTile(
                             title: Text(snapshots.docs[index].id),
                             onTap: () {
-                              LocalizarPacote(context,
-                                  snapshots.docs[index].data().pacote.id);
+                              LocalizarPacote(
+                                  context, snapshots.docs[index].data().pacote);
                             });
                       }),
 

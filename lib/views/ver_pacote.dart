@@ -1,3 +1,4 @@
+import 'package:acervo_fisico/models/documento.dart';
 import 'package:acervo_fisico/models/pacote.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,6 @@ class _PacoteDetalhe extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          //foto,
           tipo,
           locPredio,
           locNivel1,
@@ -38,16 +38,6 @@ class _PacoteDetalhe extends StatelessWidget {
           identificador,
           alteracoes,
         ],
-      ),
-    );
-  }
-
-  Widget get foto {
-    return Padding(
-      padding: const EdgeInsets.only(top: 0),
-      child: Image(
-        image: AssetImage('assets/images/tubos_industriais.jpg'),
-        height: 128,
       ),
     );
   }
@@ -192,9 +182,71 @@ class _PacoteDetalhe extends StatelessWidget {
   }
 }
 
+class _PacoteDocumentos extends StatelessWidget {
+  _PacoteDocumentos(this.pacoteReferencia);
+  final String pacoteReferencia;
+
+  /// Tela principal dos detalhes
+  Widget get details {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 64),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          StreamBuilder<QuerySnapshot<Documento>>(
+              stream: FirebaseFirestore.instance
+                  .collection('teste_documentos')
+                  .where('pacote', isEqualTo: pacoteReferencia)
+                  .orderBy(FieldPath.documentId, descending: false)
+                  .withConverter<Documento>(
+                    fromFirestore: (snapshots, _) =>
+                        Documento.fromJson(snapshots.data()!),
+                    toFirestore: (documento, _) => documento.toJson(),
+                  )
+                  .snapshots(),
+              builder: (context, snapshots) {
+                if (snapshots.hasError) {
+                  return Center(
+                    child: Text(snapshots.error.toString()),
+                  );
+                }
+                if (!snapshots.hasData) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                final data = snapshots.data;
+                return Center(
+                  child: ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      itemCount: data!.size,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          title: Text(data.docs[index].id),
+                        );
+                      }),
+                );
+              }),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4, top: 4),
+      child: Row(
+        children: [
+          Flexible(child: details),
+        ],
+      ),
+    );
+  }
+}
+
 class VerPacote extends StatefulWidget {
   final Pacote pacote;
-  final DocumentReference reference;
+  final DocumentReference<Pacote> reference;
 
   VerPacote({Key? key, required this.pacote, required this.reference})
       : super(key: key);
@@ -207,39 +259,115 @@ class _VerPacoteState extends State<VerPacote> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 196,
-        // Mudar para SliverAppbar
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/images/tubos_industriais.jpg'),
-              fit: BoxFit.cover,
-            ),
+      body: DefaultTabController(
+        length: 2,
+        child: NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              SliverAppBar(
+                expandedHeight: 200.0,
+                floating: false,
+                pinned: true,
+                flexibleSpace: FlexibleSpaceBar(
+                  titlePadding:
+                      EdgeInsetsDirectional.only(start: 64, bottom: 18),
+                  //centerTitle: true,
+                  title: Text("Físico localizado",
+                      style: TextStyle(
+                          //color: Colors.white,
+                          //fontSize: 16.0,
+                          )),
+                  background: Image(
+                    image: AssetImage('assets/images/tubos_industriais.jpg'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              SliverPersistentHeader(
+                delegate: _SliverAppBarDelegate(
+                  TabBar(
+                    labelColor: Colors.black87,
+                    unselectedLabelColor: Colors.grey,
+                    tabs: [
+                      Tab(icon: Icon(Icons.business_rounded), text: "Local"),
+                      Tab(icon: Icon(Icons.list_rounded), text: "Documentos"),
+                    ],
+                  ),
+                ),
+                pinned: true,
+              ),
+            ];
+          },
+          body: TabBarView(
+            children: [
+              _PacoteDetalhe(widget.pacote, widget.reference),
+              _PacoteDocumentos(widget.reference.id),
+            ],
           ),
         ),
-        backgroundColor: Colors.transparent,
-        title: Text("Físico localizado"),
       ),
-      body: Center(child: _PacoteDetalhe(widget.pacote, widget.reference)),
-      // body: StreamBuilder<DocumentSnapshot<Pacote>>(
-      //     stream: pacoteRef.snapshots(),
-      //     builder: (context, snapshot) {
-      //       if (snapshot.hasError) {
-      //         return Center(
-      //           child: Text(snapshot.error.toString()),
-      //         );
-      //       }
-      //       if (!snapshot.hasData) {
-      //         return const Center(child: CircularProgressIndicator());
-      //       }
-      //       final data = snapshot.requireData;
-      //       return Center(child: _PacoteDetalhe(data.data()!, data.reference));
-      //     }),
     );
   }
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //     appBar: AppBar(
+  //       toolbarHeight: 196,
+  //       // Mudar para SliverAppbar
+  //       flexibleSpace: Container(
+  //         decoration: BoxDecoration(
+  //           image: DecorationImage(
+  //             image: AssetImage('assets/images/tubos_industriais.jpg'),
+  //             fit: BoxFit.cover,
+  //           ),
+  //         ),
+  //       ),
+  //       backgroundColor: Colors.transparent,
+  //       title: Text("Físico localizado"),
+  //     ),
+  //     body: Center(child: _PacoteDetalhe(widget.pacote, widget.reference)),
+
+  // body: StreamBuilder<DocumentSnapshot<Pacote>>(
+  //     stream: pacoteRef.snapshots(),
+  //     builder: (context, snapshot) {
+  //       if (snapshot.hasError) {
+  //         return Center(
+  //           child: Text(snapshot.error.toString()),
+  //         );
+  //       }
+  //       if (!snapshot.hasData) {
+  //         return const Center(child: CircularProgressIndicator());
+  //       }
+  //       final data = snapshot.requireData;
+  //       return Center(child: _PacoteDetalhe(data.data()!, data.reference));
+  //     }),
+
+  //   );
+  // }
 }
 
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  _SliverAppBarDelegate(this._tabBar);
+
+  final TabBar _tabBar;
+
+  @override
+  double get minExtent => _tabBar.preferredSize.height;
+  @override
+  double get maxExtent => _tabBar.preferredSize.height;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return new Container(
+      child: _tabBar,
+    );
+  }
+
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
+    return false;
+  }
+}
 
 // OutlinedButton(
 //           onPressed: () {

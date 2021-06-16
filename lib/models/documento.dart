@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
 @immutable
@@ -9,7 +8,7 @@ class Documento {
   final String idioma;
   final String folha;
   final String revisao;
-  final DocumentReference pacote;
+  final String pacote;
 
   Documento({
     required this.assuntoBase,
@@ -29,10 +28,7 @@ class Documento {
           idioma: (json['idioma'] ?? '') as String,
           folha: (json['folha'] ?? '') as String,
           revisao: (json['revisao'] ?? '') as String,
-          pacote: (json['pacote'] ??
-              FirebaseFirestore.instance
-                  .collection('teste_pacotes')
-                  .doc('erro')) as DocumentReference,
+          pacote: (json['pacote'] ?? 'Nenhum') as String,
         );
 
   Map<String, Object?> toJson() {
