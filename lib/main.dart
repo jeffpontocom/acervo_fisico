@@ -1,6 +1,6 @@
 import 'package:acervo_fisico/controllers/localizar_documento.dart';
 import 'package:acervo_fisico/controllers/localizar_pacote.dart';
-import 'package:acervo_fisico/views/editar_pacote.dart';
+//import 'package:acervo_fisico/views/editar_pacote.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -51,10 +51,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _novoPacote() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => EditarPacote()),
-    );
+    //Navigator.push(
+    //  context,
+    //  MaterialPageRoute(builder: (context) => EditarPacote()),
+    //);
   }
 
   // METODOS DO SISTEMA
