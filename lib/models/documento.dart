@@ -29,7 +29,10 @@ class Documento {
           idioma: (json['idioma'] ?? '') as String,
           folha: (json['folha'] ?? '') as String,
           revisao: (json['revisao'] ?? '') as String,
-          pacote: (json['pacote'] ?? '') as DocumentReference,
+          pacote: (json['pacote'] ??
+              FirebaseFirestore.instance
+                  .collection('teste_pacotes')
+                  .doc('erro')) as DocumentReference,
         );
 
   Map<String, Object?> toJson() {

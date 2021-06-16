@@ -1,5 +1,5 @@
 import 'package:acervo_fisico/models/pacote.dart';
-import 'package:acervo_fisico/views/dialog_nao_encontrado.dart';
+import 'package:acervo_fisico/views/dialog_nao_localizado.dart';
 import 'package:acervo_fisico/views/ver_pacote.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -74,8 +74,10 @@ class LocalizarPacote {
                   )),
         );
       } else {
-        ItemNaoEcontrado(context);
+        ItemNaoLocalizado(context);
       }
+    }).onError((error, stackTrace) {
+      print('Deu erro!');
     });
   }
 

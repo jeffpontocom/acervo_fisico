@@ -1,6 +1,6 @@
 import 'package:acervo_fisico/controllers/localizar_pacote.dart';
 import 'package:acervo_fisico/models/documento.dart';
-import 'package:acervo_fisico/views/dialog_nao_encontrado.dart';
+import 'package:acervo_fisico/views/dialog_nao_localizado.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +24,7 @@ class LocalizarDocumento {
     // Verificar quantidade de caracteres minima (6000DC15200)
     if (query.length < 11) {
       print('Query tem menos de 11 caracteres');
-      ItemNaoEcontrado(context);
+      ItemNaoLocalizado(context);
       return;
     }
 
@@ -119,7 +119,7 @@ class LocalizarDocumento {
           assuntoBase, tipo, sequencial, idioma, folha, revisao));
     } else {
       print('Avaliar query');
-      ItemNaoEcontrado(context);
+      ItemNaoLocalizado(context);
     }
 
     _printValores(assuntoBase, tipo, sequencial, idioma, folha, revisao);
@@ -162,12 +162,50 @@ class LocalizarDocumento {
         .then((QuerySnapshot<Documento> snapshots) {
       Navigator.pop(context); // Finaliza indicador de progresso.
       if (snapshots.size == 0) {
-        ItemNaoEcontrado(context);
+        ItemNaoLocalizado(context);
       } else if (snapshots.size == 1) {
         LocalizarPacote(context, snapshots.docs[0].data().pacote.id);
       } else {
         // Show Bottom Dialog
-        print('Mostrar bottom dialog');
+        showModalBottomSheet(
+            context: context,
+            builder: (context) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Text(
+                      'Selecione o documento',
+                      style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      itemCount: snapshots.size,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                            title: Text(snapshots.docs[index].id),
+                            onTap: () {
+                              LocalizarPacote(context,
+                                  snapshots.docs[index].data().pacote.id);
+                            });
+                      }),
+
+                  //ListTile(
+                  //leading: new Icon(Icons.photo),
+                  //title: new Text('Photo'),
+                  //onTap: () {
+                  //  Navigator.pop(context);
+                  //},
+                  //),
+                ],
+              );
+            });
       }
     });
   }

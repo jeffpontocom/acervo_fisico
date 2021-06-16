@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class ItemNaoEcontrado {
-  ItemNaoEcontrado(context) {
+class ItemNaoLocalizado {
+  ItemNaoLocalizado(context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
