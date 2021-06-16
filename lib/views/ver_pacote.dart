@@ -159,7 +159,7 @@ class _PacoteDetalhe extends StatelessWidget {
                   fontWeight: FontWeight.bold)),
           Text(', em ',
               style: const TextStyle(fontSize: 12, color: Colors.grey)),
-          Text('${_dateFormat.format(pacote.alterData)}.',
+          Text('${_dateFormat.format(pacote.alterData.toDate())}.',
               style: const TextStyle(
                   fontSize: 12,
                   color: Colors.grey,

@@ -54,7 +54,6 @@ class _PacoteItem extends StatelessWidget {
         children: [
           title,
           locPredio,
-          documentos,
         ],
       ),
     );
@@ -82,33 +81,6 @@ class _PacoteItem extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  /// Returns all genres.
-  Widget get documentos {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: Wrap(
-        children: documentosItems,
-      ),
-    );
-  }
-
-  /// Returns a list of genre movie tags.
-  List<Widget> get documentosItems {
-    return [
-      for (final documento in pacote.documentos)
-        Padding(
-          padding: const EdgeInsets.only(right: 2),
-          child: Chip(
-            backgroundColor: Colors.lightBlue,
-            label: Text(
-              documento.id,
-              style: const TextStyle(color: Colors.white),
-            ),
-          ),
-        )
-    ];
   }
 
   @override
