@@ -4,12 +4,13 @@ import 'package:flutter/foundation.dart';
 @immutable
 class Pacote {
   final int tipo;
-  final String locPredio;
-  final String locNivel1;
-  final String locNivel2;
-  final String locNivel3;
+  final String locPredio; //bloco
+  final String locNivel1; //e
+  final String locNivel2; //d
+  final String locNivel3; //a
   final String alterUser;
   final Timestamp alterData;
+  //GeoPoint
 
   Pacote({
     required this.tipo,
