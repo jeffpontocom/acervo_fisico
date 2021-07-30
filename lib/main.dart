@@ -2,15 +2,59 @@ import 'package:acervo_fisico/controllers/localizar_documento.dart';
 import 'package:acervo_fisico/controllers/localizar_pacote.dart';
 //import 'package:acervo_fisico/views/editar_pacote.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
+//import 'package:firebase_core/firebase_core.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 enum contexto { documentos, pacotes }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  // Iniciando Back4App
+  final keyApplicationId = 'UJImpAAk0xdg1gB1OQtMf2bqEpe3aANxT6Sa2Vbp';
+  final keyClientKey = 'ggHpKH2rUw3uwmchR4lj70gP84DWzFYnlrvJaSov';
+  final keyParseServerUrl = 'https://parseapi.back4app.com';
+  await Parse().initialize(keyApplicationId, keyParseServerUrl,
+      clientKey: keyClientKey, debug: true);
+  // Teste do Back4App
+  /*
+  final objectId = await savePerson();
+  final person = await getPerson(objectId!);
+  print('Person: ${person.toString()}');
+  print('Name: ${person['name']}');
+  print('Age: ${person['age']}');
+  */
+  // Iniciando Firebase
+  //await Firebase.initializeApp();
+  // Rodando o aplicativo
   runApp(MyApp());
 }
+
+/*
+Future<String?> savePerson() async {
+  final person = ParseObject('Person')
+    ..set('name', "John Snow")
+    ..set('age', 27);
+  await person.save();
+  return person.objectId;
+}
+*/
+
+/*
+//Reading your First Data Object from Back4App
+Future<Map<String, dynamic>> getPerson(String objectId) async {
+  QueryBuilder<ParseObject> queryPerson =
+      QueryBuilder<ParseObject>(ParseObject('Person'))
+        ..whereEqualTo('objectId', objectId);
+  final ParseResponse apiResponse = await queryPerson.query();
+  if (apiResponse.success && apiResponse.results != null) {
+    final name = apiResponse.results!.first.get<String>('name');
+    final age = apiResponse.results!.first.get<String>('age');
+    return {'name': name, 'age': age};
+  } else {
+    return {};
+  }
+}
+*/
 
 class MyApp extends StatelessWidget {
   @override
