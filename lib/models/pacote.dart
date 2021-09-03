@@ -1,48 +1,61 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
+import 'package:acervo_fisico/main.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
-@immutable
-class Pacote {
-  final int tipo;
-  final String locPredio; //bloco
-  final String locNivel1; //e
-  final String locNivel2; //d
-  final String locNivel3; //a
-  final String alterUser;
-  final Timestamp alterData;
-  //GeoPoint
+class Pacote extends ParseObject implements ParseCloneable {
+  Pacote() : super(_keyTableName);
+  Pacote.clone() : this();
 
-  Pacote({
-    required this.tipo,
-    required this.locPredio,
-    required this.locNivel1,
-    required this.locNivel2,
-    required this.locNivel3,
-    required this.alterUser,
-    required this.alterData,
-  });
+  static const String _keyTableName = TABLE_PACOTE;
+  static const String keyId = 'identificador';
+  static const String keyTipo = 'tipo';
+  static const String keyLocPredio = 'localPredio';
+  static const String keyLocN1 = 'localNivel1'; // Estante
+  static const String keyLocN2 = 'localNivel2'; // Divisao
+  static const String keyLocN3 = 'localNivel3'; // Andar
+  static const String keyUpdatedBy = 'updatedBy';
+  static const String keyGeoPoint = 'geoPoint';
 
-  Pacote.fromJson(Map<String, Object?> json)
-      : this(
-          tipo: (json['tipo'] ?? 99) as int,
-          locPredio: (json['locPredio'] ?? '') as String,
-          locNivel1: (json['locNivel1'] ?? '') as String,
-          locNivel2: (json['locNivel2'] ?? '') as String,
-          locNivel3: (json['locNivel3'] ?? '') as String,
-          alterUser: (json['alterUser'] ?? 'Importação de dados') as String,
-          alterData: (json['alterData'] ??
-              Timestamp.fromDate(DateTime.parse('2021-06-01'))) as Timestamp,
-        );
+  /// Looks strangely hacky but due to Flutter not using reflection, we have to
+  /// mimic a clone
+  @override
+  clone(map) => Pacote.clone()..fromJson(map);
 
-  Map<String, Object?> toJson() {
-    return {
-      'tipo': tipo,
-      'locPredio': locPredio,
-      'locNivel1': locNivel1,
-      'locNivel2': locNivel2,
-      'locNivel3': locNivel3,
-      'alterUser': alterUser,
-      'alterData': alterData,
-    };
+  String get identificador => get<String>(keyId) ?? '';
+  set identificador(String value) => set<String>(keyId, value);
+
+  int get tipo => get<int>(keyTipo) ?? 0;
+  set tipo(int value) => set<int>(keyTipo, value);
+
+  String get localPredio => get<String>(keyLocPredio) ?? '';
+  set localPredio(String value) => set<String>(keyLocPredio, value);
+
+  String get localNivel1 => get<String>(keyLocN1) ?? '';
+  set localNivel1(String value) => set<String>(keyLocN1, value);
+
+  String get localNivel2 => get<String>(keyLocN2) ?? '';
+  set localNivel2(String value) => set<String>(keyLocN2, value);
+
+  String get localNivel3 => get<String>(keyLocN3) ?? '';
+  set localNivel3(String value) => set<String>(keyLocN3, value);
+
+  ParseUser? get updatedBy => get<ParseUser>(keyUpdatedBy);
+  set updatedBy(ParseUser? value) => set<ParseUser>(keyUpdatedBy, value!);
+
+  ParseGeoPoint? get geoPoint => get<ParseGeoPoint>(keyGeoPoint);
+  set geoPoint(ParseGeoPoint? value) => set<ParseGeoPoint>(keyGeoPoint, value!);
+
+  String get tipoToString {
+    switch (tipo) {
+      case 1:
+        return 'Tubo';
+      case 2:
+        return 'Pasta';
+      case 3:
+        return 'Caixa';
+      case 4:
+        return 'Mapoteca';
+      default:
+        return 'Pacote indefinido';
+    }
   }
 }
