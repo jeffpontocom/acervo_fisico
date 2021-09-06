@@ -32,6 +32,7 @@ class LocalizarPacote {
         );
       }
       // Se encontrar mais de uma opção, mostrar dialogo de seleção
+      // TODO => Mostrar o que fazer com pacotes duplicados
       else {
         showModalBottomSheet(
             context: context,

@@ -1,7 +1,4 @@
-import 'dart:math';
-
 import 'package:acervo_fisico/controllers/localizar_pacote.dart';
-import 'package:acervo_fisico/main.dart';
 import 'package:acervo_fisico/models/documento.dart';
 import 'package:acervo_fisico/models/pacote.dart';
 import 'package:acervo_fisico/views/dialog_nao_localizado.dart';
@@ -251,7 +248,6 @@ class LocalizarDocumento {
     // Se apenas um documento localizado, vai direto ao pacote
     else if (documentos.length == 1) {
       LocalizarPacote(context, documentos.first.pacote!.identificador);
-      //irParaPacote(documentos.first.pacote);
     }
     // Se diversos documentos localizados, mostrar dialogo de selecao
     else {
@@ -283,7 +279,6 @@ class LocalizarDocumento {
                           onTap: () {
                             LocalizarPacote(context,
                                 documentos[index].pacote!.identificador);
-                            //irParaPacote(documentos[index].pacote);
                           });
                     }),
               ],
@@ -292,6 +287,7 @@ class LocalizarDocumento {
     }
   }
 
+  //TODO => FALHA: Ir direto para pacote nao traz a informacao do usuario que atualizou o pacote
   void irParaPacote(Pacote? pacote) {
     if (pacote != null) {
       print(pacote);

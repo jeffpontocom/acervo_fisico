@@ -22,11 +22,4 @@ class ItemNaoLocalizado {
       },
     );
   }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return AlertDialog(
-  //     content: Text('Item não encontrado'),
-  //   );
-  // }
 }

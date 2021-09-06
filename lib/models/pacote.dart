@@ -1,11 +1,10 @@
-import 'package:acervo_fisico/main.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 class Pacote extends ParseObject implements ParseCloneable {
-  Pacote() : super(_keyTableName);
+  Pacote() : super(TABLE_NAME);
   Pacote.clone() : this();
 
-  static const String _keyTableName = TABLE_PACOTE;
+  static const String TABLE_NAME = 'TestePacote';
   static const String keyId = 'identificador';
   static const String keyTipo = 'tipo';
   static const String keyLocPredio = 'localPredio';

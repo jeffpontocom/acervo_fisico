@@ -1,12 +1,11 @@
-import 'package:acervo_fisico/main.dart';
 import 'package:acervo_fisico/models/pacote.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 class Documento extends ParseObject implements ParseCloneable {
-  Documento() : super(_keyTableName);
+  Documento() : super(TABLE_NAME);
   Documento.clone() : this();
 
-  static const String _keyTableName = TABLE_DOCUMENTO;
+  static const String TABLE_NAME = 'TesteDocumento';
   static const String keyAssuntoBase = 'assuntoBase';
   static const String keyTipo = 'tipo';
   static const String keySequencial = 'sequencial';

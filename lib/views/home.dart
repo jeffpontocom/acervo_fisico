@@ -1,6 +1,5 @@
 import 'package:acervo_fisico/controllers/localizar_documento.dart';
 import 'package:acervo_fisico/controllers/localizar_pacote.dart';
-//import 'package:acervo_fisico/views/editar_pacote.dart';
 import 'package:flutter/material.dart';
 
 enum contexto { documentos, pacotes }
@@ -35,7 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late TextEditingController _searchController;
 
   // METODOS DA APLICACAO
-  void _localizarPacote() {
+  void _localizar() {
     if (_contextoAtual == contexto.documentos.index) {
       LocalizarDocumento(context, _searchText);
     } else {
@@ -43,12 +42,12 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void _novoPacote() {
-    //Navigator.push(
-    //  context,
-    //  MaterialPageRoute(builder: (context) => EditarPacote()),
-    //);
-  }
+  //void _novoPacote() {
+  //Navigator.push(
+  //  context,
+  //  MaterialPageRoute(builder: (context) => EditarPacote()),
+  //);
+  //}
 
   // METODOS DO SISTEMA
   @override
@@ -72,9 +71,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('ENCA.DT'),
-      // ),
       backgroundColor: Colors.grey.shade100,
       body: Center(
         child: Column(
@@ -85,9 +81,6 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 128,
               width: 128,
             ),
-            // Padding(
-            //   padding: const EdgeInsets.all(8.0),
-            // ),
             Text(
               'Arquivo Técnico',
               style: TextStyle(
@@ -95,9 +88,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 //fontWeight: FontWeight.bold,
               ),
             ),
-            // Padding(
-            //   padding: const EdgeInsets.all(2.0),
-            // ),
             Text(
               'acervo físico',
               style: TextStyle(
@@ -106,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(48.0),
+              padding: const EdgeInsets.all(36.0),
             ),
             Container(
               padding: EdgeInsets.all(24.0),
@@ -114,7 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: TextField(
                 controller: _searchController,
                 onSubmitted: (value) {
-                  _localizarPacote();
+                  _localizar();
                 },
                 textInputAction:
                     TextInputAction.search, // Lupa no teclado virtual
@@ -155,7 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(8.0),
             ),
             ToggleButtons(
                 children: <Widget>[
@@ -210,12 +200,12 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _novoPacote,
-        tooltip: 'Novo pacote',
-        child: Icon(Icons.add),
-        backgroundColor: Colors.red.shade700,
-      ),
+      //floatingActionButton: FloatingActionButton(
+      //  onPressed: _novoPacote,
+      //  tooltip: 'Novo pacote',
+      //  child: Icon(Icons.add),
+      //  backgroundColor: Colors.red.shade700,
+      //),
     );
   }
 }

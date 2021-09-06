@@ -15,7 +15,7 @@ class _PacoteDetalhe extends StatelessWidget {
   /// Tela principal dos detalhes
   Widget get details {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 64),
+      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 48),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -212,7 +212,7 @@ class _PacoteDocumentos extends StatelessWidget {
   /// Tela principal dos detalhes
   Widget get details {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 64),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -230,14 +230,17 @@ class _PacoteDocumentos extends StatelessWidget {
                 } else if (snapshot.hasData) {
                   final List<Documento> data =
                       (snapshot.data as List<ParseObject>).cast();
-                  return Center(
+                  return Container(
                     child: ListView.builder(
                         scrollDirection: Axis.vertical,
                         shrinkWrap: true,
-                        itemCount: data!.length,
+                        itemCount: data.length,
                         itemBuilder: (context, index) {
                           return ListTile(
                             title: Text(data[index].toString()),
+                            dense: true,
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 0, horizontal: 48),
                           );
                         }),
                   );
@@ -248,47 +251,6 @@ class _PacoteDocumentos extends StatelessWidget {
               );
             },
           ),
-          /*
-          TODO: Lista de documentos
-          StreamBuilder<QuerySnapshot<Documento>>(
-              stream: FirebaseFirestore.instance
-                  .collection('teste_documentos')
-                  .where('pacote', isEqualTo: pacoteReferencia)
-                  .orderBy(FieldPath.documentId, descending: false)
-                  .withConverter<Documento>(
-                    fromFirestore: (snapshots, _) =>
-                        Documento.fromJson(snapshots.data()!),
-                    toFirestore: (documento, _) => documento.toJson(),
-                  )
-                  .snapshots(),
-              builder: (context, snapshots) {
-                if (snapshots.hasError) {
-                  return Center(
-                    child: Text(snapshots.error.toString()),
-                  );
-                }
-                if (!snapshots.hasData) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (snapshots.data!.size == 0) {
-                  return Center(
-                    child: Text('Nenhum documento vinculado a este pacote'),
-                  );
-                }
-                final data = snapshots.data;
-                return Center(
-                  child: ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      itemCount: data!.size,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(data.docs[index].id),
-                        );
-                      }),
-                );
-              }),
-              */
         ],
       ),
     );
@@ -351,7 +313,9 @@ class _VerPacoteState extends State<VerPacote> {
                     labelColor: Colors.black87,
                     unselectedLabelColor: Colors.grey,
                     tabs: [
-                      Tab(icon: Icon(Icons.business_rounded), text: "Local"),
+                      Tab(
+                          icon: Icon(Icons.business_rounded),
+                          text: "Localização"),
                       Tab(icon: Icon(Icons.list_rounded), text: "Documentos"),
                     ],
                   ),
@@ -387,6 +351,7 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     return new Container(
       child: _tabBar,
+      color: Colors.white,
     );
   }
 
