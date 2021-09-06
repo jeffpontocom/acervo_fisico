@@ -6,7 +6,7 @@ import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 class LocalizarPacote {
   final BuildContext context;
-  final String value;
+  final String? value;
 
   LocalizarPacote(this.context, this.value) {
     showDialog(
@@ -14,61 +14,127 @@ class LocalizarPacote {
         builder: (BuildContext context) {
           return const Center(child: CircularProgressIndicator());
         });
-
-    _executarBusca(value).then((value) {
+    if (value == null || value!.trim().isEmpty) {
       Navigator.pop(context); // Finaliza indicador de progresso.
-      // Se não encontrar, mostrar dialogo de alerta
-      if (value.length <= 0) {
-        ItemNaoLocalizado(context);
-      }
-      // Se encontrar termo exato, ir para Widget VerPacote()
-      else if (value.length == 1) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => VerPacote(
-                    pacote: value.first,
-                  )),
-        );
-      }
-      // Se encontrar mais de uma opção, mostrar dialogo de seleção
-      // TODO => Mostrar o que fazer com pacotes duplicados
-      else {
-        showModalBottomSheet(
-            context: context,
-            builder: (context) {
-              return Column(
+      ItemSemVinculo(context);
+      return;
+    }
+    _executarBusca(value);
+  }
+
+  void _executarBusca(value) async {
+    List<dynamic> resultados;
+    QueryBuilder<Pacote> query = QueryBuilder<Pacote>(Pacote())
+      ..whereContains(Pacote.keyId, value)
+      ..orderByAscending(Pacote.keyId)
+      // necessario para trazer as informacoes do objeto (nao apenas ID)
+      ..includeObject([Pacote.keyUpdatedBy]);
+
+    final ParseResponse apiResponse = await query.query();
+    if (apiResponse.success && apiResponse.results != null) {
+      resultados = apiResponse.results ?? [];
+    } else {
+      resultados = [];
+    }
+    Navigator.pop(context); // Finaliza indicador de progresso.
+    _apresentarResultados(resultados.cast());
+  }
+
+  void _apresentarResultados(List<Pacote> pacotes) {
+    // Se não encontrar, mostrar dialogo de alerta
+    if (pacotes.length <= 0) {
+      ItemNaoLocalizado(context);
+    }
+    // Se encontrar termo exato, ir para Widget VerPacote()
+    else if (pacotes.length == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => VerPacote(
+                  pacote: pacotes.first,
+                )),
+      );
+    }
+    // Se encontrar mais de uma opção, mostrar dialogo de seleção
+    // TODO => Mostrar o que fazer com pacotes duplicados
+    else {
+      showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
+          ),
+          builder: (context) {
+            return FractionallySizedBox(
+              heightFactor: 0.7,
+              child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Padding(
-                    padding: EdgeInsets.all(64),
+                    padding: EdgeInsets.all(16),
                     child: Text(
-                      'ERRO: Existe mais de um pacote com esse identificador',
+                      'Selecione o pacote',
                       style: TextStyle(
-                          color: Colors.red,
+                          color: Colors.blue,
                           fontSize: 18,
                           fontWeight: FontWeight.bold),
                     ),
                   ),
+                  Expanded(
+                    flex: 1,
+                    child: ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        itemCount: pacotes.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                              title: Text(
+                                pacotes[index].identificador,
+                              ),
+                              onTap: () {
+                                _irParaPacote(pacotes[index]);
+                                //LocalizarPacote(
+                                //    context, pacotes[index].identificador);
+                              });
+                        }),
+                  ),
                 ],
-              );
-            });
-      }
-    }).onError((error, stackTrace) {
-      print('Deu erro!');
-    });
+              ),
+            );
+          });
+    }
   }
-}
 
-Future<List<dynamic>> _executarBusca(value) async {
-  QueryBuilder<Pacote> query = QueryBuilder<Pacote>(Pacote())
-    ..whereEqualTo('identificador', value)
-    // necessario para trazer as informacoes do objeto (nao apenas ID)
-    ..includeObject([Pacote.keyUpdatedBy]);
-  final ParseResponse apiResponse = await query.query();
-  if (apiResponse.success && apiResponse.results != null) {
-    return apiResponse.results ?? [];
-  } else {
-    return [];
+  void _irParaPacote(Pacote? pacote) {
+    if (pacote != null) {
+      print(pacote);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => VerPacote(
+                  pacote: pacote,
+                )),
+      );
+    } else {
+      showModalBottomSheet(
+          context: context,
+          builder: (context) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.all(64),
+                  child: Text(
+                    'ERRO: Nenhum pacote vinculado a esse documento.',
+                    style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            );
+          });
+    }
   }
 }

@@ -179,8 +179,8 @@ class LocalizarDocumento {
   /// Busca na base de dados
   void _executarBusca(assuntoBase, tipo, sequencial, String? idioma,
       String? folha, String? revisao) async {
-    QueryBuilder<Documento> query = QueryBuilder<Documento>(Documento());
     List<dynamic> resultados;
+    QueryBuilder<Documento> query = QueryBuilder<Documento>(Documento());
 
     showDialog(
         context: context,
@@ -247,41 +247,53 @@ class LocalizarDocumento {
     }
     // Se apenas um documento localizado, vai direto ao pacote
     else if (documentos.length == 1) {
-      LocalizarPacote(context, documentos.first.pacote!.identificador);
+      LocalizarPacote(context, documentos.first.pacote?.identificador);
     }
     // Se diversos documentos localizados, mostrar dialogo de selecao
     else {
       showModalBottomSheet(
           context: context,
+          isScrollControlled: true,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
+          ),
           builder: (context) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.all(16),
-                  child: Text(
-                    'Selecione o documento',
-                    style: TextStyle(
-                        color: Colors.blue,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
+            return FractionallySizedBox(
+              heightFactor: 0.7,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Text(
+                      'Selecione o documento',
+                      style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold),
+                    ),
                   ),
-                ),
-                ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    itemCount: documentos.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                          title: Text(
-                            documentos[index].toString(),
-                          ),
-                          onTap: () {
-                            LocalizarPacote(context,
-                                documentos[index].pacote!.identificador);
-                          });
-                    }),
-              ],
+                  Expanded(
+                    flex: 1,
+                    child: ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        itemCount: documentos.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                              title: Text(
+                                documentos[index].toString(),
+                              ),
+                              onTap: () {
+                                LocalizarPacote(
+                                    context,
+                                    documentos[index].pacote?.identificador ??
+                                        null);
+                              });
+                        }),
+                  ),
+                ],
+              ),
             );
           });
     }

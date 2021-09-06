@@ -222,31 +222,41 @@ class _PacoteDocumentos extends StatelessWidget {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasError) {
                   return Center(
+                    heightFactor: 10,
                     child: Text(
                       '${snapshot.error} occured',
                       style: TextStyle(fontSize: 18),
                     ),
                   );
                 } else if (snapshot.hasData) {
-                  final List<Documento> data =
-                      (snapshot.data as List<ParseObject>).cast();
-                  return Container(
-                    child: ListView.builder(
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        itemCount: data.length,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            title: Text(data[index].toString()),
-                            dense: true,
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 0, horizontal: 48),
-                          );
-                        }),
-                  );
+                  if ((snapshot.data as List<dynamic>).isEmpty) {
+                    return Center(
+                      heightFactor: 10,
+                      child: Text('Nenhum documento vinculado a este pacote.',
+                          style: TextStyle(fontSize: 18)),
+                    );
+                  } else {
+                    final List<Documento> data =
+                        (snapshot.data as List<Documento>).cast();
+                    return Container(
+                      child: ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          itemCount: data.length,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              title: Text(data[index].toString()),
+                              dense: true,
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 0, horizontal: 48),
+                            );
+                          }),
+                    );
+                  }
                 }
               }
               return Center(
+                heightFactor: 10,
                 child: CircularProgressIndicator(),
               );
             },
