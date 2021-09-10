@@ -1,5 +1,6 @@
 import 'package:acervo_fisico/models/documento.dart';
 import 'package:acervo_fisico/models/pacote.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -12,21 +13,42 @@ class _PacoteDetalhe extends StatelessWidget {
 
   final Pacote pacote;
 
-  /// Tela principal dos detalhes
   Widget get details {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 48),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          tipo,
-          locPredio,
-          locNivel1,
-          locNivel2,
-          locNivel3,
-          identificador,
-          alteracoes,
-        ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Column(
+          children: [imagem, tipo, identificador],
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            locPredio,
+            locNivel1,
+            locNivel2,
+            locNivel3,
+            observacoes,
+            alteracoes,
+          ],
+        ),
+        Padding(padding: EdgeInsets.all(16.0)),
+        ElevatedButton.icon(
+            onPressed: _editarPacote(),
+            icon: Icon(Icons.edit),
+            label: Text('Editar')),
+      ],
+    );
+  }
+
+  Widget get imagem {
+    return Container(
+      width: 64.0,
+      height: 64.0,
+      decoration: new BoxDecoration(
+        shape: BoxShape.circle,
+        image: new DecorationImage(
+            fit: BoxFit.cover,
+            image: AssetImage('assets/images/tubos_industriais.jpg')),
       ),
     );
   }
@@ -35,9 +57,25 @@ class _PacoteDetalhe extends StatelessWidget {
     return Text(
       '${pacote.tipoToString}',
       style: const TextStyle(
-        fontSize: 40,
+        fontSize: 28,
         fontWeight: FontWeight.bold,
         fontFamily: 'Baumans',
+      ),
+    );
+  }
+
+  Widget get identificador {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Text('${pacote.identificador}',
+              style: const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red)),
+        ],
       ),
     );
   }
@@ -45,7 +83,8 @@ class _PacoteDetalhe extends StatelessWidget {
   Widget get locPredio {
     return Padding(
       padding: const EdgeInsets.only(top: 32),
-      child: Row(
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           Padding(
             padding: const EdgeInsets.only(right: 8),
@@ -63,7 +102,8 @@ class _PacoteDetalhe extends StatelessWidget {
   Widget get locNivel1 {
     return Padding(
       padding: const EdgeInsets.only(top: 16),
-      child: Row(
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           Padding(
             padding: const EdgeInsets.only(right: 8),
@@ -81,7 +121,8 @@ class _PacoteDetalhe extends StatelessWidget {
   Widget get locNivel2 {
     return Padding(
       padding: const EdgeInsets.only(top: 16),
-      child: Row(
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           Padding(
             padding: const EdgeInsets.only(right: 8),
@@ -99,7 +140,8 @@ class _PacoteDetalhe extends StatelessWidget {
   Widget get locNivel3 {
     return Padding(
       padding: const EdgeInsets.only(top: 16),
-      child: Row(
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           Padding(
             padding: const EdgeInsets.only(right: 8),
@@ -114,21 +156,18 @@ class _PacoteDetalhe extends StatelessWidget {
     );
   }
 
-  Widget get identificador {
+  Widget get observacoes {
     return Padding(
-      padding: const EdgeInsets.only(top: 16),
-      child: Row(
+      padding: const EdgeInsets.only(top: 32),
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        runSpacing: 4.0, // gap between lines
+        //direction: Axis.horizontal, // main axis (rows or columns)
         children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: Text('Identificador:',
-                style: const TextStyle(fontSize: 20, color: Colors.grey)),
-          ),
-          Text('${pacote.identificador}',
+          Text('Observações: ', style: const TextStyle(color: Colors.grey)),
+          Text(pacote.observacao,
               style: const TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red)),
+                  color: Colors.grey, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -136,29 +175,24 @@ class _PacoteDetalhe extends StatelessWidget {
 
   Widget get alteracoes {
     return Padding(
-      padding: const EdgeInsets.only(top: 48),
-      child: Row(
+      padding: const EdgeInsets.only(top: 16),
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          Text('Atualizado por: ',
-              style: const TextStyle(fontSize: 12, color: Colors.grey)),
+          Text('Atualizado por: ', style: const TextStyle(color: Colors.grey)),
           Text(pacote.updatedBy?.username ?? 'Importação de dados',
               style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                  fontWeight: FontWeight.bold)),
-          Text(', em ',
-              style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                  color: Colors.grey, fontWeight: FontWeight.bold)),
+          Text(', em ', style: const TextStyle(color: Colors.grey)),
           Text('${_dateFormat.format(pacote.updatedAt!)}.',
               style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                  fontWeight: FontWeight.bold)),
+                  color: Colors.grey, fontWeight: FontWeight.bold)),
         ],
       ),
     );
   }
 
-  Future<String> getUpdateByName() async {
+  /* Future<String> getUpdateByName() async {
     if (pacote.updatedBy?.objectId == null) {
       return 'Importação dos dados';
     }
@@ -170,19 +204,19 @@ class _PacoteDetalhe extends StatelessWidget {
     } else {
       return 'Importação dos dados';
     }
-  }
+  } */
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4, top: 4),
-      child: Row(
-        children: [
-          Flexible(child: details),
-        ],
-      ),
+      padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 48),
+      child: Flexible(child: details),
     );
   }
+}
+
+_editarPacote() {
+  //ItemNaoLocalizado();
 }
 
 class _PacoteDocumentos extends StatelessWidget {
@@ -198,8 +232,8 @@ class _PacoteDocumentos extends StatelessWidget {
       ..orderByAscending('tipo')
       ..orderByAscending('sequencial')
       ..orderByAscending('idioma')
-      ..orderByAscending('folha')
-      ..orderByAscending('revisao');
+      ..orderByAscending('revisao')
+      ..orderByAscending('folha');
     final apiResponse = await query.query();
 
     if (apiResponse.success && apiResponse.results != null) {
@@ -209,72 +243,64 @@ class _PacoteDocumentos extends StatelessWidget {
     }
   }
 
-  /// Tela principal dos detalhes
-  Widget get details {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          FutureBuilder(
-            future: getData(),
-            builder: (ctx, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.hasError) {
-                  return Center(
-                    heightFactor: 10,
-                    child: Text(
-                      '${snapshot.error} occured',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  );
-                } else if (snapshot.hasData) {
-                  if ((snapshot.data as List<dynamic>).isEmpty) {
-                    return Center(
-                      heightFactor: 10,
-                      child: Text('Nenhum documento vinculado a este pacote.',
-                          style: TextStyle(fontSize: 18)),
-                    );
-                  } else {
-                    final List<Documento> data =
-                        (snapshot.data as List<Documento>).cast();
-                    return Container(
-                      child: ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          itemCount: data.length,
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                              title: Text(data[index].toString()),
-                              dense: true,
-                              contentPadding: EdgeInsets.symmetric(
-                                  vertical: 0, horizontal: 48),
-                            );
-                          }),
-                    );
-                  }
-                }
-              }
-              return Center(
-                heightFactor: 10,
-                child: CircularProgressIndicator(),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 4, top: 4),
-      child: Row(
-        children: [
-          Flexible(child: details),
-        ],
-      ),
+    return FutureBuilder(
+      future: getData(),
+      builder: (ctx, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                '${snapshot.error} occured',
+                style: TextStyle(fontSize: 18),
+              ),
+            );
+          } else if (snapshot.hasData) {
+            if ((snapshot.data as List<dynamic>).isEmpty) {
+              return Center(
+                child: Text('Nenhum documento vinculado a este pacote.',
+                    style: TextStyle(fontSize: 18)),
+              );
+            } else {
+              final List<Documento> data =
+                  (snapshot.data as List<ParseObject>).cast();
+              return NestedScrollView(
+                floatHeaderSlivers: true,
+                headerSliverBuilder:
+                    (BuildContext context, bool innerBoxIsScrolled) {
+                  return [
+                    SliverToBoxAdapter(
+                      child: Container(
+                        color: Colors.amber,
+                        padding: EdgeInsets.all(16),
+                        child: Text(
+                          '${data.length} item(s) no pacote',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    )
+                  ];
+                },
+                body: ListView.builder(
+                    padding: EdgeInsets.symmetric(vertical: 0, horizontal: 32),
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    itemCount: data.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(data[index].toString()),
+                        visualDensity: VisualDensity.compact,
+                      );
+                    }),
+              );
+            }
+          }
+        }
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
     );
   }
 }
@@ -292,81 +318,23 @@ class _VerPacoteState extends State<VerPacote> {
   @override
   Widget build(BuildContext context) {
     initializeDateFormatting('pt_BR', null);
-    return Scaffold(
-      body: DefaultTabController(
-        length: 2,
-        child: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              SliverAppBar(
-                expandedHeight: 200.0,
-                floating: false,
-                pinned: true,
-                flexibleSpace: FlexibleSpaceBar(
-                  titlePadding:
-                      EdgeInsetsDirectional.only(start: 64, bottom: 18),
-                  //centerTitle: true,
-                  title: Text("Físico localizado",
-                      style: TextStyle(
-                          //color: Colors.white,
-                          //fontSize: 16.0,
-                          )),
-                  background: Image(
-                    image: AssetImage('assets/images/tubos_industriais.jpg'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              SliverPersistentHeader(
-                delegate: _SliverAppBarDelegate(
-                  TabBar(
-                    labelColor: Colors.black87,
-                    unselectedLabelColor: Colors.grey,
-                    tabs: [
-                      Tab(
-                          icon: Icon(Icons.business_rounded),
-                          text: "Localização"),
-                      Tab(icon: Icon(Icons.list_rounded), text: "Documentos"),
-                    ],
-                  ),
-                ),
-                pinned: true,
-              ),
-            ];
-          },
-          body: TabBarView(
-            children: [
-              _PacoteDetalhe(widget.pacote),
-              _PacoteDocumentos(widget.pacote.objectId!),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Pacote: ${widget.pacote.identificador}'),
+          bottom: TabBar(
+            tabs: [
+              Tab(icon: Icon(Icons.business_rounded), text: "Localização"),
+              Tab(icon: Icon(Icons.list_rounded), text: "Documentos"),
             ],
           ),
         ),
+        body: TabBarView(children: [
+          _PacoteDetalhe(widget.pacote),
+          _PacoteDocumentos(widget.pacote.objectId!),
+        ]),
       ),
     );
-  }
-}
-
-class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
-  _SliverAppBarDelegate(this._tabBar);
-
-  final TabBar _tabBar;
-
-  @override
-  double get minExtent => _tabBar.preferredSize.height;
-  @override
-  double get maxExtent => _tabBar.preferredSize.height;
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return new Container(
-      child: _tabBar,
-      color: Colors.white,
-    );
-  }
-
-  @override
-  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
-    return false;
   }
 }
