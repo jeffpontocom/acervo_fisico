@@ -85,7 +85,6 @@ class _MyHomePageState extends State<MyHomePage> {
               'Arquivo Técnico',
               style: TextStyle(
                 fontSize: 18.0,
-                //fontWeight: FontWeight.bold,
               ),
             ),
             Text(

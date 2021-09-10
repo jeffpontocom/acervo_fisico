@@ -285,6 +285,8 @@ class LocalizarDocumento {
                                 documentos[index].toString(),
                               ),
                               onTap: () {
+                                print(documentos[index].pacote?.identificador ??
+                                    "sem id");
                                 LocalizarPacote(
                                     context,
                                     documentos[index].pacote?.identificador ??

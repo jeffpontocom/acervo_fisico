@@ -24,11 +24,19 @@ class LocalizarPacote {
 
   void _executarBusca(value) async {
     List<dynamic> resultados;
-    QueryBuilder<Pacote> query = QueryBuilder<Pacote>(Pacote())
-      ..whereContains(Pacote.keyId, value)
-      ..orderByAscending(Pacote.keyId)
-      // necessario para trazer as informacoes do objeto (nao apenas ID)
-      ..includeObject([Pacote.keyUpdatedBy]);
+
+    //Busca exata
+    QueryBuilder<Pacote> queryExata = QueryBuilder<Pacote>(Pacote())
+      ..whereEqualTo(Pacote.keyId, value);
+    //Busca contem
+    QueryBuilder<Pacote> queryContem = QueryBuilder<Pacote>(Pacote())
+      ..whereContains(Pacote.keyId, value);
+    // Busca principal
+    QueryBuilder<Pacote> query =
+        QueryBuilder.or(Pacote(), [queryExata, queryContem])
+          ..orderByAscending(Pacote.keyId)
+          // necessario para trazer as informacoes do objeto (nao apenas ID)
+          ..includeObject([Pacote.keyUpdatedBy]);
 
     final ParseResponse apiResponse = await query.query();
     if (apiResponse.success && apiResponse.results != null) {

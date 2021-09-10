@@ -11,6 +11,7 @@ class Pacote extends ParseObject implements ParseCloneable {
   static const String keyLocN1 = 'localNivel1'; // Estante
   static const String keyLocN2 = 'localNivel2'; // Divisao
   static const String keyLocN3 = 'localNivel3'; // Andar
+  static const String keyObs = 'observacao';
   static const String keyUpdatedBy = 'updatedBy';
   static const String keyGeoPoint = 'geoPoint';
 
@@ -37,6 +38,9 @@ class Pacote extends ParseObject implements ParseCloneable {
   String get localNivel3 => get<String>(keyLocN3) ?? '';
   set localNivel3(String value) => set<String>(keyLocN3, value);
 
+  String get observacao => get<String>(keyObs) ?? '';
+  set observacao(String value) => set<String>(keyObs, value);
+
   ParseUser? get updatedBy => get<ParseUser>(keyUpdatedBy);
   set updatedBy(ParseUser? value) => set<ParseUser>(keyUpdatedBy, value!);
 
@@ -48,11 +52,11 @@ class Pacote extends ParseObject implements ParseCloneable {
       case 1:
         return 'Tubo';
       case 2:
-        return 'Pasta';
+        return 'Caixa A4';
       case 3:
-        return 'Caixa';
+        return 'Pasta A3';
       case 4:
-        return 'Mapoteca';
+        return 'Gaveta';
       default:
         return 'Pacote indefinido';
     }
