@@ -4,6 +4,8 @@ import 'package:acervo_fisico/views/home.dart';
 import 'package:flutter/material.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
+ParseUser? currentUser;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Iniciando Back4App/Parse
@@ -21,6 +23,12 @@ void main() async {
       Documento.TABLE_NAME: () => Documento(),
     },
   );
+  currentUser = await ParseUser.currentUser() as ParseUser?;
   // Rodando o aplicativo
   runApp(MyApp());
+}
+
+Future<ParseUser?> getUser() async {
+  currentUser = await ParseUser.currentUser() as ParseUser?;
+  return currentUser;
 }
