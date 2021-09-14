@@ -15,8 +15,19 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Acervo físico',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.lightBlue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            primary: Colors.black,
+            //backgroundColor: Colors.white,
+            //padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
+            visualDensity: VisualDensity.compact,
+            //shape: RoundedRectangleBorder(
+            //  borderRadius: BorderRadius.circular(32.0),
+            //),
+          ),
+        ),
       ),
       debugShowCheckedModeBanner: false,
       home: MyHomePage(),

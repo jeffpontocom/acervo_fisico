@@ -65,7 +65,11 @@ flutter:
   assets:
     - assets/icons/ic_launcher.png
     - assets/icons/ic_launcher2.png
-    - assets/images/tubos_industriais.jpg
+    - assets/images/caixaA4.jpg
+    - assets/images/gaveta.jpg
+    - assets/images/indefinido.jpg
+    - assets/images/pastaA3.jpg
+    - assets/images/tubo.jpg
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

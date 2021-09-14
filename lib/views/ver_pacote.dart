@@ -1,193 +1,255 @@
+import 'package:acervo_fisico/main.dart';
 import 'package:acervo_fisico/models/documento.dart';
+import 'package:acervo_fisico/models/enums.dart';
 import 'package:acervo_fisico/models/pacote.dart';
+import 'package:acervo_fisico/styles/app_styles.dart';
+import 'package:acervo_fisico/views/editar_pacote.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
-final DateFormat _dateFormat = DateFormat('d MMM yyyy', 'pt_BR');
+final DateFormat _dateFormat = DateFormat('d MMMM yyyy', 'pt_BR');
 
-class _PacoteDetalhe extends StatelessWidget {
-  _PacoteDetalhe(this.pacote);
+TextEditingController _controllerId = new TextEditingController();
+TextEditingController _controllerTipo = new TextEditingController();
+TextEditingController _controllerPredio = new TextEditingController();
+TextEditingController _controllerNivel1 = new TextEditingController();
+TextEditingController _controllerNivel2 = new TextEditingController();
+TextEditingController _controllerNivel3 = new TextEditingController();
+TextEditingController _controllerObs = new TextEditingController();
 
+class _PacoteDetalhe extends StatefulWidget {
   final Pacote pacote;
 
-  Widget get details {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Column(
-          children: [imagem, tipo, identificador],
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            locPredio,
-            locNivel1,
-            locNivel2,
-            locNivel3,
-            observacoes,
-            alteracoes,
-          ],
-        ),
-        Padding(padding: EdgeInsets.all(16.0)),
-        ElevatedButton.icon(
-            onPressed: _editarPacote(),
-            icon: Icon(Icons.edit),
-            label: Text('Editar')),
-      ],
-    );
-  }
+  _PacoteDetalhe({Key? key, required this.pacote}) : super(key: key);
+
+  @override
+  _PacoteDetalheState createState() => _PacoteDetalheState();
+}
+
+class _PacoteDetalheState extends State<_PacoteDetalhe> {
+  bool edit = false;
+  //_PacoteDetalhe(this.pacote);
+
+  //final Pacote pacote;
 
   Widget get imagem {
     return Container(
-      width: 64.0,
-      height: 64.0,
+      margin: EdgeInsets.symmetric(vertical: 12),
+      width: 128,
+      height: 128,
       decoration: new BoxDecoration(
-        shape: BoxShape.circle,
+        shape: BoxShape.rectangle,
+        border: Border.all(color: Colors.lightBlue, width: 1),
+        borderRadius: BorderRadius.all(Radius.circular(16.0)),
         image: new DecorationImage(
-            fit: BoxFit.cover,
-            image: AssetImage('assets/images/tubos_industriais.jpg')),
+          fit: BoxFit.cover,
+          image: widget.pacote.tipoImagem,
+        ),
       ),
     );
   }
 
   Widget get tipo {
-    return Text(
-      '${pacote.tipoToString}',
-      style: const TextStyle(
-        fontSize: 28,
-        fontWeight: FontWeight.bold,
-        fontFamily: 'Baumans',
-      ),
-    );
+    _controllerTipo.text = widget.pacote.tipoToString;
+    return DropdownButtonFormField<int>(
+        value: widget.pacote.tipo,
+        iconDisabledColor: Colors.transparent,
+        decoration: mTextField.copyWith(
+          labelText: 'Tipo',
+          enabled: edit,
+        ),
+        isExpanded: true,
+        items: TipoPacote.values
+            .map(
+              (value) => new DropdownMenuItem(
+                value: value.index,
+                enabled: edit,
+                child: new Text(
+                  getTipoPacote(value.index),
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            )
+            .toList(),
+        onChanged: (value) {
+          setState(() {
+            widget.pacote.tipo = value!;
+          });
+        });
   }
 
   Widget get identificador {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: Wrap(
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          Text('${pacote.identificador}',
-              style: const TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red)),
-        ],
+    _controllerId.text = widget.pacote.identificador;
+    return TextField(
+      controller: _controllerId,
+      enabled: edit,
+      decoration: mTextField.copyWith(
+        labelText: 'Identificador',
+        hintText: 'Informe o código do pacote',
       ),
+      style: TextStyle(
+          fontSize: 32, fontWeight: FontWeight.bold, color: Colors.blue),
     );
   }
 
   Widget get locPredio {
-    return Padding(
-      padding: const EdgeInsets.only(top: 32),
-      child: Wrap(
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: Text('Prédio:',
-                style: const TextStyle(fontSize: 20, color: Colors.grey)),
-          ),
-          Text('${pacote.localPredio}',
-              style:
-                  const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-        ],
+    _controllerPredio.text = widget.pacote.localPredio;
+    return TextField(
+      controller: _controllerPredio,
+      enabled: edit,
+      decoration: mTextField.copyWith(
+        labelText: 'Prédio',
+        icon: Icon(Icons.apartment_rounded),
       ),
+      style: TextStyle(fontSize: 24),
     );
   }
 
   Widget get locNivel1 {
-    return Padding(
-      padding: const EdgeInsets.only(top: 16),
-      child: Wrap(
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: Text('Estante:',
-                style: const TextStyle(fontSize: 20, color: Colors.grey)),
-          ),
-          Text('${pacote.localNivel1}',
-              style:
-                  const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-        ],
+    _controllerNivel1.text = widget.pacote.localNivel1;
+    return TextField(
+      controller: _controllerNivel1,
+      enabled: edit,
+      decoration: mTextField.copyWith(
+        labelText: 'Estante',
+        icon: Icon(Icons.apps_rounded),
       ),
+      style: TextStyle(fontSize: 24),
     );
   }
 
   Widget get locNivel2 {
-    return Padding(
-      padding: const EdgeInsets.only(top: 16),
-      child: Wrap(
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: Text('Divisão:',
-                style: const TextStyle(fontSize: 20, color: Colors.grey)),
-          ),
-          Text('${pacote.localNivel2}',
-              style:
-                  const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-        ],
+    _controllerNivel2.text = widget.pacote.localNivel2;
+    return TextField(
+      controller: _controllerNivel2,
+      enabled: edit,
+      decoration: mTextField.copyWith(
+        labelText: 'Divisão',
+        icon: Icon(Icons.align_vertical_bottom_rounded),
       ),
+      style: TextStyle(fontSize: 24),
     );
   }
 
   Widget get locNivel3 {
-    return Padding(
-      padding: const EdgeInsets.only(top: 16),
-      child: Wrap(
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: Text('Andar:',
-                style: const TextStyle(fontSize: 20, color: Colors.grey)),
-          ),
-          Text('${pacote.localNivel3}',
-              style:
-                  const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-        ],
+    _controllerNivel3.text = widget.pacote.localNivel3;
+    return TextField(
+      controller: _controllerNivel3,
+      enabled: edit,
+      decoration: mTextField.copyWith(
+        labelText: 'Andar',
+        icon: Icon(Icons.align_horizontal_left_rounded),
       ),
+      style: TextStyle(fontSize: 24),
     );
   }
 
   Widget get observacoes {
-    return Padding(
-      padding: const EdgeInsets.only(top: 32),
-      child: Wrap(
-        crossAxisAlignment: WrapCrossAlignment.center,
-        runSpacing: 4.0, // gap between lines
-        //direction: Axis.horizontal, // main axis (rows or columns)
-        children: [
-          Text('Observações: ', style: const TextStyle(color: Colors.grey)),
-          Text(pacote.observacao,
-              style: const TextStyle(
-                  color: Colors.grey, fontWeight: FontWeight.bold)),
-        ],
+    _controllerObs.text = widget.pacote.observacao;
+    return TextField(
+      controller: _controllerObs,
+      enabled: edit,
+      textCapitalization: TextCapitalization.sentences,
+      keyboardType: TextInputType.multiline,
+      minLines: 5,
+      maxLines: 8,
+      textAlignVertical: TextAlignVertical.top,
+      decoration: mTextField.copyWith(
+        labelText: 'Observações',
       ),
     );
   }
 
   Widget get alteracoes {
-    return Padding(
-      padding: const EdgeInsets.only(top: 16),
-      child: Wrap(
-        crossAxisAlignment: WrapCrossAlignment.center,
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Atualizado por: ', style: const TextStyle(color: Colors.grey)),
-          Text(pacote.updatedBy?.username ?? 'Importação de dados',
-              style: const TextStyle(
-                  color: Colors.grey, fontWeight: FontWeight.bold)),
-          Text(', em ', style: const TextStyle(color: Colors.grey)),
-          Text('${_dateFormat.format(pacote.updatedAt!)}.',
-              style: const TextStyle(
-                  color: Colors.grey, fontWeight: FontWeight.bold)),
+          Text('AÇÕES', style: const TextStyle(color: Colors.grey)),
+          Wrap(
+            children: [
+              Text('• ${widget.pacote.actionToString}',
+                  style: const TextStyle(
+                      color: Colors.grey, fontWeight: FontWeight.bold)),
+              Text(' em ', style: const TextStyle(color: Colors.grey)),
+              Text('${_dateFormat.format(widget.pacote.updatedAt!)}.',
+                  style: const TextStyle(
+                      color: Colors.grey, fontWeight: FontWeight.bold)),
+            ],
+          ),
+          Wrap(
+            children: [
+              Text(
+                '• Editado por ',
+                style: const TextStyle(color: Colors.grey),
+              ),
+              Text(
+                widget.pacote.updatedBy?.username ?? 'Importação de dados',
+                style: const TextStyle(
+                    color: Colors.grey, fontWeight: FontWeight.bold),
+              ),
+              widget.pacote.selado
+                  ? Wrap(
+                      children: [
+                        Text(
+                          'e selado por ',
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                        Text(
+                          widget.pacote.seladoBy?.username ??
+                              'Sem identificação',
+                          style: const TextStyle(
+                              color: Colors.grey, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    )
+                  : Container(),
+            ],
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget get eliminar {
+    return OutlinedButton.icon(
+      onPressed: () {
+        setState(() {
+          widget.pacote.updatedAct = UpdatedAction.ELIMINAR.index;
+        });
+        //todo: eliminar pacote
+      },
+      icon: Icon(Icons.delete),
+      label: Text('Eliminar Pacote'),
+      //style: ButtonStyle(),
+      style: OutlinedButton.styleFrom(
+        primary: Colors.red,
+        minimumSize: Size(150, 50),
+      ),
+    );
+  }
+
+  Widget get editar {
+    return ElevatedButton.icon(
+      onPressed: () {
+        setState(() {
+          edit ? widget.pacote.updatedAct = UpdatedAction.SALVAR.index : null;
+          //_editarPacote(context);
+          edit = !edit;
+        });
+      },
+      icon: Icon(edit ? Icons.save_rounded : Icons.edit_location_alt_rounded),
+      label: Text(edit ? 'Salvar' : 'Editar'),
+      style: ElevatedButton.styleFrom(
+        minimumSize: Size(150, 50),
       ),
     );
   }
@@ -208,15 +270,62 @@ class _PacoteDetalhe extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 48),
-      child: Flexible(child: details),
+    return InkWell(
+      splashColor: Colors.transparent,
+      onTap: () {
+        FocusScope.of(context).requestFocus(FocusNode());
+      },
+      child: SingleChildScrollView(
+        padding: EdgeInsets.all(32),
+        child: Column(
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Column(
+                    children: [
+                      imagem,
+                      tipo,
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  width: 24,
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    children: [
+                      identificador,
+                      locPredio,
+                      locNivel1,
+                      locNivel2,
+                      locNivel3,
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            observacoes,
+            alteracoes,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                edit ? eliminar : Container(),
+                Expanded(
+                  flex: 1,
+                  child: Container(),
+                ),
+                editar,
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
-}
-
-_editarPacote() {
-  //ItemNaoLocalizado();
 }
 
 class _PacoteDocumentos extends StatelessWidget {
@@ -322,19 +431,51 @@ class _VerPacoteState extends State<VerPacote> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Pacote: ${widget.pacote.identificador}'),
+          title: Text('Pacote'),
+          actions: [
+            widget.pacote.selado
+                ? TextButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        abrirPacote();
+                      });
+                    },
+                    icon: Icon(Icons.open_in_browser_rounded),
+                    label: Text('ABRIR'),
+                  )
+                : TextButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        selarPacote();
+                      });
+                    },
+                    icon: Icon(Icons.verified_rounded),
+                    label: Text('SELAR'),
+                  ),
+          ],
           bottom: TabBar(
             tabs: [
-              Tab(icon: Icon(Icons.business_rounded), text: "Localização"),
+              Tab(icon: Icon(Icons.place), text: "Localização"),
               Tab(icon: Icon(Icons.list_rounded), text: "Documentos"),
             ],
           ),
         ),
         body: TabBarView(children: [
-          _PacoteDetalhe(widget.pacote),
+          _PacoteDetalhe(pacote: widget.pacote),
           _PacoteDocumentos(widget.pacote.objectId!),
         ]),
       ),
     );
+  }
+
+  void abrirPacote() {
+    widget.pacote.selado = false;
+    widget.pacote.updatedAct = UpdatedAction.ABRIR.index;
+  }
+
+  void selarPacote() {
+    widget.pacote.selado = true;
+    widget.pacote.seladoBy = currentUser;
+    widget.pacote.updatedAct = UpdatedAction.SELAR.index;
   }
 }

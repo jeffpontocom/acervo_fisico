@@ -1,3 +1,5 @@
+import 'package:acervo_fisico/models/enums.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 class Pacote extends ParseObject implements ParseCloneable {
@@ -13,6 +15,9 @@ class Pacote extends ParseObject implements ParseCloneable {
   static const String keyLocN3 = 'localNivel3'; // Andar
   static const String keyObs = 'observacao';
   static const String keyUpdatedBy = 'updatedBy';
+  static const String keyUpdatedAct = 'updatedAct';
+  static const String keySelado = 'selado';
+  static const String keySeladoBy = 'seladoBy';
   static const String keyGeoPoint = 'geoPoint';
 
   /// Looks strangely hacky but due to Flutter not using reflection, we have to
@@ -41,24 +46,51 @@ class Pacote extends ParseObject implements ParseCloneable {
   String get observacao => get<String>(keyObs) ?? '';
   set observacao(String value) => set<String>(keyObs, value);
 
+  bool get selado => get<bool>(keySelado) ?? false;
+  set selado(bool value) => set<bool>(keySelado, value);
+
+  ParseUser? get seladoBy => get<ParseUser>(keySeladoBy);
+  set seladoBy(ParseUser? value) => set<ParseUser>(keySeladoBy, value!);
+
   ParseUser? get updatedBy => get<ParseUser>(keyUpdatedBy);
   set updatedBy(ParseUser? value) => set<ParseUser>(keyUpdatedBy, value!);
+
+  int get updatedAct => get<int>(keyUpdatedAct) ?? 0;
+  set updatedAct(int value) => set<int>(keyUpdatedAct, value);
 
   ParseGeoPoint? get geoPoint => get<ParseGeoPoint>(keyGeoPoint);
   set geoPoint(ParseGeoPoint? value) => set<ParseGeoPoint>(keyGeoPoint, value!);
 
+  /// Retorna o tipo de pacote
+  String get actionToString {
+    return getUpdatedAction(updatedAct);
+  }
+
+  /// Retorna o tipo de pacote
   String get tipoToString {
+    return getTipoPacote(tipo);
+  }
+
+  /// Retorna a imagem referente ao tipo de pacote
+  get tipoImagem {
+    String assetName;
     switch (tipo) {
       case 1:
-        return 'Tubo';
+        assetName = 'assets/images/tubo.jpg';
+        break;
       case 2:
-        return 'Caixa A4';
+        assetName = 'assets/images/caixaA4.jpg';
+        break;
       case 3:
-        return 'Pasta A3';
+        assetName = 'assets/images/pastaA3.jpg';
+        break;
       case 4:
-        return 'Gaveta';
+        assetName = 'assets/images/gaveta.jpg';
+        break;
       default:
-        return 'Pacote indefinido';
+        assetName = 'assets/images/indefinido.jpg';
+        break;
     }
+    return AssetImage(assetName);
   }
 }
