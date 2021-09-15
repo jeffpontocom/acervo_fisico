@@ -27,8 +27,3 @@ void main() async {
   // Rodando o aplicativo
   runApp(MyApp());
 }
-
-Future<ParseUser?> getUser() async {
-  currentUser = await ParseUser.currentUser() as ParseUser?;
-  return currentUser;
-}

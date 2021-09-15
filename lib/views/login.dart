@@ -1,12 +1,15 @@
+import 'package:acervo_fisico/views/home.dart';
+import 'package:acervo_fisico/views/sample.dart';
 import 'package:flutter/material.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 import '../main.dart';
+import 'messages.dart';
 
-class LoginLogout {
-  final BuildContext context;
+//class LoginLogout {
+//final BuildContext context;
 
-  LoginLogout(this.context) {
+/* LoginLogout(this.context) {
     if (currentUser != null) {
       Navigator.push(
         context,
@@ -18,28 +21,9 @@ class LoginLogout {
         MaterialPageRoute(builder: (context) => LoginPage()),
       );
     }
-    /* showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const Center(child: CircularProgressIndicator());
-        });
-    hasUserLogged().then((value) {
-      Navigator.pop(context);
-      if (value) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => UserPage()),
-        );
-      } else {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
-        );
-      }
-    }); */
-  }
+  } */
 
-  /* Future<bool> hasUserLogged() async {
+/* Future<bool> hasUserLogged() async {
     ParseUser? currentUser = await ParseUser.currentUser() as ParseUser?;
     if (currentUser == null) {
       return false;
@@ -56,7 +40,7 @@ class LoginLogout {
       return true;
     }
   } */
-}
+//}
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -201,9 +185,14 @@ class UserPage extends StatelessWidget {
             onPressed: () {
               Navigator.pushAndRemoveUntil(
                 context,
+                MaterialPageRoute(builder: (context) => MyApp()),
+                (route) => false,
+              );
+              /* Navigator.pushAndRemoveUntil(
+                context,
                 MaterialPageRoute(builder: (context) => LoginPage()),
                 ModalRoute.withName('/'),
-              );
+              ); */
             });
       } else {
         Message.showError(context: context, message: response.error!.message);
@@ -214,63 +203,40 @@ class UserPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Perfil'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(64),
+      body: Center(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Center(child: Text('Olá, ${currentUser!.username}')),
+            Icon(
+              Icons.person_pin,
+              size: 128,
+            ),
+            Text(
+              '${currentUser!.username}',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              '${currentUser!.emailAddress}',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey),
+            ),
             SizedBox(
-              height: 32,
+              height: 128,
             ),
             Container(
               height: 50,
               width: 200,
-              child: ElevatedButton(
-                child: const Text('Sair'),
+              child: ElevatedButton.icon(
+                icon: Icon(Icons.logout_rounded),
+                label: const Text('SAIR'),
+                style: ElevatedButton.styleFrom(primary: Colors.red),
                 onPressed: () => doUserLogout(),
               ),
             ),
           ],
         ),
       ),
-      /* FutureBuilder<ParseUser?>(
-            future: getUser(),
-            builder: (context, snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.none:
-                case ConnectionState.waiting:
-                  return Center(
-                    child: Container(
-                        width: 100,
-                        height: 100,
-                        child: CircularProgressIndicator()),
-                  );
-                default:
-                  return Padding(
-                    padding: const EdgeInsets.all(64),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Center(child: Text('Olá, ${snapshot.data!.username}')),
-                        SizedBox(
-                          height: 32,
-                        ),
-                        Container(
-                          height: 50,
-                          width: 200,
-                          child: ElevatedButton(
-                            child: const Text('Logout'),
-                            onPressed: () => doUserLogout(),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-              }
-            }), */
     );
   }
 }
@@ -332,59 +298,5 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       Message.showError(
           context: context, message: parseResponse.error!.message);
     }
-  }
-}
-
-class Message {
-  static void showSuccess(
-      {required BuildContext context,
-      required String message,
-      VoidCallback? onPressed}) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Sucesso!"),
-          content: Text(message),
-          actions: <Widget>[
-            new ElevatedButton(
-              child: const Text("OK"),
-              onPressed: () {
-                Navigator.of(context).pop();
-                if (onPressed != null) {
-                  onPressed();
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  static void showError(
-      {required BuildContext context,
-      required String message,
-      VoidCallback? onPressed}) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Erro!"),
-          content: Text(message),
-          actions: <Widget>[
-            new ElevatedButton(
-              child: const Text("OK"),
-              onPressed: () {
-                Navigator.of(context).pop();
-                if (onPressed != null) {
-                  onPressed();
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
   }
 }

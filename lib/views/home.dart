@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:acervo_fisico/controllers/localizar_documento.dart';
 import 'package:acervo_fisico/controllers/localizar_pacote.dart';
+import 'package:acervo_fisico/controllers/novo_pacote.dart';
 import 'package:acervo_fisico/main.dart';
 import 'package:flutter/material.dart';
 
@@ -15,17 +16,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Acervo físico',
       theme: ThemeData(
-        primarySwatch: Colors.lightBlue,
+        primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
-            primary: Colors.black,
-            //backgroundColor: Colors.white,
-            //padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
+            primary: Colors.white,
             visualDensity: VisualDensity.compact,
-            //shape: RoundedRectangleBorder(
-            //  borderRadius: BorderRadius.circular(32.0),
-            //),
           ),
         ),
       ),
@@ -47,14 +43,28 @@ class _MyHomePageState extends State<MyHomePage> {
   int _contextoAtual = contexto.documentos.index;
 
   // Variaveis para Botoes
-  late List<bool> _isSelected;
-  final List<Color> _cores = [Colors.blue, Colors.red];
+  late List<bool> _isSelected = [true, false]; //um boleano para cada botão
+  final List<Color> _cores = [Colors.green, Colors.lightBlue];
 
   // Variaveis para campo de busca
   String _searchText = '';
-  late TextEditingController _searchController;
+  TextEditingController _searchController = TextEditingController();
 
   // METODOS DA APLICACAO
+  void _loginOrLogout() {
+    if (currentUser != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => UserPage()),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    }
+  }
+
   void _localizar() {
     if (_contextoAtual == contexto.documentos.index) {
       LocalizarDocumento(context, _searchText);
@@ -63,18 +73,15 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  //void _novoPacote() {
-  //Navigator.push(
-  //  context,
-  //  MaterialPageRoute(builder: (context) => EditarPacote()),
-  //);
-  //}
+  void _novoPacote() {
+    NovoPacote(context);
+  }
 
   // METODOS DO SISTEMA
   @override
   void initState() {
-    _isSelected = [true, false]; //um boleano para cada botão
-    _searchController = TextEditingController();
+    ///_isSelected = [true, false];
+    //_searchController = TextEditingController();
     _searchController.addListener(() {
       setState(() {
         _searchText = _searchController.text;
@@ -96,30 +103,29 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Colors.transparent,
         shadowColor: Colors.transparent,
         foregroundColor: Colors.black54,
-        title: TextButton(
-          onPressed: null,
-          child: Text(currentUser != null
+        title: ListTile(
+          title: Text(
+              currentUser != null ? currentUser!.username! : 'Apenas consulta'),
+          subtitle: Text(currentUser != null
               ? currentUser!.emailAddress!
-              : 'Apenas consultas'),
+              : 'Clique para realizar login'),
+          dense: true,
+          contentPadding: EdgeInsets.all(0),
+          trailing: Icon(Icons.person_pin),
+          visualDensity: VisualDensity.compact,
+          onTap: () => _loginOrLogout(),
         ),
-        leadingWidth: 0,
         actions: [
-          IconButton(
-            onPressed: () => LoginLogout(context),
+          /* IconButton(
+            onPressed: () => _loginOrLogout(),
             icon: Icon(Icons.person),
-          ),
-          IconButton(
-            onPressed: null,
-            icon: Icon(Icons.more_vert_rounded),
-          ),
+          ), */
         ],
       ),
       backgroundColor: Colors.grey.shade100,
       body: Center(
         child: Wrap(
           direction: Axis.vertical,
-          //alignment: WrapAlignment.spaceAround,
-          //runAlignment: WrapAlignment.spaceAround,
           crossAxisAlignment: WrapCrossAlignment.center,
           runSpacing: 32.0,
           children: <Widget>[
@@ -246,12 +252,22 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      //floatingActionButton: FloatingActionButton(
-      //  onPressed: _novoPacote,
-      //  tooltip: 'Novo pacote',
-      //  child: Icon(Icons.add),
-      //  backgroundColor: Colors.red.shade700,
-      //),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: (currentUser != null && !tecladoVisivel)
+          ? FloatingActionButton(
+              onPressed: () {
+                _novoPacote();
+              },
+              tooltip: 'Novo pacote',
+              child: Icon(Icons.add),
+              backgroundColor: Colors.deepOrange.shade800,
+              foregroundColor: Colors.white,
+            )
+          : null,
     );
+  }
+
+  bool get tecladoVisivel {
+    return MediaQuery.of(context).viewInsets.bottom != 0;
   }
 }

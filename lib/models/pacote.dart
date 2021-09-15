@@ -14,6 +14,7 @@ class Pacote extends ParseObject implements ParseCloneable {
   static const String keyLocN2 = 'localNivel2'; // Divisao
   static const String keyLocN3 = 'localNivel3'; // Andar
   static const String keyObs = 'observacao';
+  static const String keyUpdatedAt = 'updatedAt';
   static const String keyUpdatedBy = 'updatedBy';
   static const String keyUpdatedAct = 'updatedAct';
   static const String keySelado = 'selado';
@@ -52,6 +53,9 @@ class Pacote extends ParseObject implements ParseCloneable {
   ParseUser? get seladoBy => get<ParseUser>(keySeladoBy);
   set seladoBy(ParseUser? value) => set<ParseUser>(keySeladoBy, value!);
 
+  DateTime get updatedAt => get<DateTime>(keyUpdatedAt) ?? DateTime.now();
+  set updatedAt(DateTime? value) => set<DateTime>(keyUpdatedAt, value!);
+
   ParseUser? get updatedBy => get<ParseUser>(keyUpdatedBy);
   set updatedBy(ParseUser? value) => set<ParseUser>(keyUpdatedBy, value!);
 
@@ -68,29 +72,11 @@ class Pacote extends ParseObject implements ParseCloneable {
 
   /// Retorna o tipo de pacote
   String get tipoToString {
-    return getTipoPacote(tipo);
+    return getTipoPacoteString(tipo);
   }
 
   /// Retorna a imagem referente ao tipo de pacote
   get tipoImagem {
-    String assetName;
-    switch (tipo) {
-      case 1:
-        assetName = 'assets/images/tubo.jpg';
-        break;
-      case 2:
-        assetName = 'assets/images/caixaA4.jpg';
-        break;
-      case 3:
-        assetName = 'assets/images/pastaA3.jpg';
-        break;
-      case 4:
-        assetName = 'assets/images/gaveta.jpg';
-        break;
-      default:
-        assetName = 'assets/images/indefinido.jpg';
-        break;
-    }
-    return AssetImage(assetName);
+    return getTipoPacoteImagem(tipo);
   }
 }

@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 enum TipoPacote {
   INDEFINIDO,
   TUBO,
@@ -6,7 +8,7 @@ enum TipoPacote {
   GAVETA,
 }
 
-String getTipoPacote(int index) {
+String getTipoPacoteString(int index) {
   switch (index) {
     case 1:
       return 'Tubo';
@@ -19,6 +21,28 @@ String getTipoPacote(int index) {
     default:
       return 'Pacote indefinido';
   }
+}
+
+AssetImage getTipoPacoteImagem(int index) {
+  String assetName;
+  switch (index) {
+    case 1:
+      assetName = 'assets/images/tubo.jpg';
+      break;
+    case 2:
+      assetName = 'assets/images/caixaA4.jpg';
+      break;
+    case 3:
+      assetName = 'assets/images/pastaA3.jpg';
+      break;
+    case 4:
+      assetName = 'assets/images/gaveta.jpg';
+      break;
+    default:
+      assetName = 'assets/images/indefinido.jpg';
+      break;
+  }
+  return AssetImage(assetName);
 }
 
 enum UpdatedAction {

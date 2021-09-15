@@ -1,8 +1,8 @@
 import 'package:acervo_fisico/controllers/localizar_pacote.dart';
 import 'package:acervo_fisico/models/documento.dart';
 import 'package:acervo_fisico/models/pacote.dart';
-import 'package:acervo_fisico/views/dialog_nao_localizado.dart';
-import 'package:acervo_fisico/views/ver_pacote.dart';
+import 'package:acervo_fisico/views/messages.dart';
+import 'package:acervo_fisico/views/pacote_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
@@ -308,7 +308,7 @@ class LocalizarDocumento {
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => VerPacote(
+            builder: (context) => PacotePage(
                   pacote: pacote,
                 )),
       );

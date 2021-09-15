@@ -1,6 +1,6 @@
 import 'package:acervo_fisico/models/pacote.dart';
-import 'package:acervo_fisico/views/dialog_nao_localizado.dart';
-import 'package:acervo_fisico/views/ver_pacote.dart';
+import 'package:acervo_fisico/views/messages.dart';
+import 'package:acervo_fisico/views/pacote_page.dart';
 import 'package:flutter/material.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
@@ -19,31 +19,11 @@ class LocalizarPacote {
       ItemSemVinculo(context);
       return;
     }
-    _executarBusca(value);
+    _aguardarBusca();
   }
 
-  void _executarBusca(value) async {
-    List<dynamic> resultados;
-
-    //Busca exata
-    QueryBuilder<Pacote> queryExata = QueryBuilder<Pacote>(Pacote())
-      ..whereEqualTo(Pacote.keyId, value);
-    //Busca contem
-    QueryBuilder<Pacote> queryContem = QueryBuilder<Pacote>(Pacote())
-      ..whereContains(Pacote.keyId, value);
-    // Busca principal
-    QueryBuilder<Pacote> query =
-        QueryBuilder.or(Pacote(), [queryExata, queryContem])
-          ..orderByAscending(Pacote.keyId)
-          // necessario para trazer as informacoes do objeto (nao apenas ID)
-          ..includeObject([Pacote.keyUpdatedBy]);
-
-    final ParseResponse apiResponse = await query.query();
-    if (apiResponse.success && apiResponse.results != null) {
-      resultados = apiResponse.results ?? [];
-    } else {
-      resultados = [];
-    }
+  void _aguardarBusca() async {
+    List<dynamic> resultados = await executarBusca(value!.trim().toUpperCase());
     Navigator.pop(context); // Finaliza indicador de progresso.
     _apresentarResultados(resultados.cast());
   }
@@ -58,7 +38,7 @@ class LocalizarPacote {
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => VerPacote(
+            builder: (context) => PacotePage(
                   pacote: pacotes.first,
                 )),
       );
@@ -119,7 +99,7 @@ class LocalizarPacote {
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => VerPacote(
+            builder: (context) => PacotePage(
                   pacote: pacote,
                 )),
       );
@@ -144,5 +124,29 @@ class LocalizarPacote {
             );
           });
     }
+  }
+}
+
+Future<List<dynamic>> executarBusca(value) async {
+  //List<dynamic> resultados;
+
+  //Busca exata
+  QueryBuilder<Pacote> queryExata = QueryBuilder<Pacote>(Pacote())
+    ..whereEqualTo(Pacote.keyId, value);
+  //Busca contem
+  QueryBuilder<Pacote> queryContem = QueryBuilder<Pacote>(Pacote())
+    ..whereContains(Pacote.keyId, value);
+  // Busca principal
+  QueryBuilder<Pacote> query =
+      QueryBuilder.or(Pacote(), [queryExata, queryContem])
+        ..orderByAscending(Pacote.keyId)
+        // necessario para trazer as informacoes do objeto (nao apenas ID)
+        ..includeObject([Pacote.keyUpdatedBy]);
+
+  final ParseResponse apiResponse = await query.query();
+  if (apiResponse.success && apiResponse.results != null) {
+    return apiResponse.results ?? [];
+  } else {
+    return [];
   }
 }
