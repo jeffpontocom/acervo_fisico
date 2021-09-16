@@ -1,46 +1,9 @@
 import 'package:acervo_fisico/views/home.dart';
-import 'package:acervo_fisico/views/sample.dart';
 import 'package:flutter/material.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 import '../main.dart';
 import 'messages.dart';
-
-//class LoginLogout {
-//final BuildContext context;
-
-/* LoginLogout(this.context) {
-    if (currentUser != null) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => UserPage()),
-      );
-    } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
-      );
-    }
-  } */
-
-/* Future<bool> hasUserLogged() async {
-    ParseUser? currentUser = await ParseUser.currentUser() as ParseUser?;
-    if (currentUser == null) {
-      return false;
-    }
-    //Checks whether the user's session token is valid
-    final ParseResponse? parseResponse =
-        await ParseUser.getCurrentUserFromServer(currentUser.sessionToken!);
-
-    if (parseResponse?.success == null || !parseResponse!.success) {
-      //Invalid session. Logout
-      await currentUser.logout();
-      return false;
-    } else {
-      return true;
-    }
-  } */
-//}
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -143,18 +106,14 @@ class _LoginPageState extends State<LoginPage> {
 
     if (response.success) {
       currentUser = response.result as ParseUser;
-      navigateToUser();
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => MyApp()),
+        (route) => false,
+      );
     } else {
       Message.showError(context: context, message: response.error!.message);
     }
-  }
-
-  void navigateToUser() {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => UserPage()),
-      ModalRoute.withName('/'),
-    );
   }
 
   void navigateToResetPassword() {
@@ -166,13 +125,6 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 class UserPage extends StatelessWidget {
-  /* ParseUser? currentUser;
-
-  Future<ParseUser?> getUser() async {
-    currentUser = await ParseUser.currentUser() as ParseUser?;
-    return currentUser;
-  } */
-
   @override
   Widget build(BuildContext context) {
     void doUserLogout() async {
@@ -188,11 +140,6 @@ class UserPage extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => MyApp()),
                 (route) => false,
               );
-              /* Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => LoginPage()),
-                ModalRoute.withName('/'),
-              ); */
             });
       } else {
         Message.showError(context: context, message: response.error!.message);

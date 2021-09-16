@@ -181,6 +181,7 @@ class NovoPacote {
       ..set(Pacote.keyId, codigo)
       ..set(Pacote.keyTipo, tipo)
       ..set(Pacote.keyUpdatedBy, currentUser)
+      ..set(Pacote.keySelado, false)
       ..set(Pacote.keySeladoBy, currentUser)
       ..set('updatedAt', DateTime.now());
     final ParseResponse apiResponse = await registration.save();

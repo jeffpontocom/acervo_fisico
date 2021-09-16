@@ -47,7 +47,7 @@ class Pacote extends ParseObject implements ParseCloneable {
   String get observacao => get<String>(keyObs) ?? '';
   set observacao(String value) => set<String>(keyObs, value);
 
-  bool get selado => get<bool>(keySelado) ?? false;
+  bool get selado => get<bool>(keySelado) ?? true;
   set selado(bool value) => set<bool>(keySelado, value);
 
   ParseUser? get seladoBy => get<ParseUser>(keySeladoBy);

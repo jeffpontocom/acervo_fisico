@@ -44,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Variaveis para Botoes
   late List<bool> _isSelected = [true, false]; //um boleano para cada botão
-  final List<Color> _cores = [Colors.green, Colors.lightBlue];
+  final List<Color> _cores = [Colors.red, Colors.blue];
 
   // Variaveis para campo de busca
   String _searchText = '';
@@ -252,16 +252,16 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      //floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: (currentUser != null && !tecladoVisivel)
-          ? FloatingActionButton(
+          ? FloatingActionButton.extended(
               onPressed: () {
                 _novoPacote();
               },
-              tooltip: 'Novo pacote',
-              child: Icon(Icons.add),
-              backgroundColor: Colors.deepOrange.shade800,
-              foregroundColor: Colors.white,
+              label: Text('Novo pacote'),
+              icon: Icon(Icons.add),
+              //backgroundColor: Colors.deepOrange.shade800,
+              //foregroundColor: Colors.white,
             )
           : null,
     );
