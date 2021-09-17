@@ -8,7 +8,8 @@ import 'pacote_documentos.dart';
 import 'pacote_localizacao.dart';
 
 late Pacote mPacote;
-ValueNotifier<bool> editMode = ValueNotifier(false);
+ValueNotifier<bool> editMode = new ValueNotifier(false);
+var refresh;
 
 class PacotePage extends StatefulWidget {
   final Pacote pacote;
@@ -23,10 +24,18 @@ class _PacotePageState extends State<PacotePage> {
   @override
   void initState() {
     mPacote = widget.pacote;
-    editMode.addListener(() {
+    editMode.value = false;
+    refresh = () {
       setState(() {});
-    });
+    };
+    editMode.addListener(refresh);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    editMode.removeListener(refresh);
+    super.dispose();
   }
 
   @override

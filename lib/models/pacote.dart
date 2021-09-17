@@ -29,7 +29,7 @@ class Pacote extends ParseObject implements ParseCloneable {
   String get identificador => get<String>(keyId) ?? '';
   set identificador(String value) => set<String>(keyId, value);
 
-  int get tipo => get<int>(keyTipo) ?? 0;
+  int get tipo => get<int>(keyTipo) ?? TipoPacote.INDEFINIDO.index;
   set tipo(int value) => set<int>(keyTipo, value);
 
   String get localPredio => get<String>(keyLocPredio) ?? '';
@@ -59,7 +59,7 @@ class Pacote extends ParseObject implements ParseCloneable {
   ParseUser? get updatedBy => get<ParseUser>(keyUpdatedBy);
   set updatedBy(ParseUser? value) => set<ParseUser>(keyUpdatedBy, value!);
 
-  int get updatedAct => get<int>(keyUpdatedAct) ?? 0;
+  int get updatedAct => get<int>(keyUpdatedAct) ?? UpdatedAction.SELAR.index;
   set updatedAct(int value) => set<int>(keyUpdatedAct, value);
 
   ParseGeoPoint? get geoPoint => get<ParseGeoPoint>(keyGeoPoint);

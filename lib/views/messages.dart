@@ -55,7 +55,10 @@ class Message {
 }
 
 class ItemNaoLocalizado {
-  ItemNaoLocalizado(context) {
+  ItemNaoLocalizado(
+      {required BuildContext context,
+      String? message,
+      VoidCallback? onPressed}) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -64,11 +67,13 @@ class ItemNaoLocalizado {
           title: new Text("Item não localizado!"),
           content: new Text("Verifique o código informado e tente novamente."),
           actions: <Widget>[
-            // define os botões na base do dialogo
-            new MaterialButton(
-              child: new Text("Fechar"),
+            new ElevatedButton(
+              child: const Text("OK"),
               onPressed: () {
                 Navigator.of(context).pop();
+                if (onPressed != null) {
+                  onPressed();
+                }
               },
             ),
           ],
@@ -79,7 +84,10 @@ class ItemNaoLocalizado {
 }
 
 class ItemSemVinculo {
-  ItemSemVinculo(context) {
+  ItemSemVinculo(
+      {required BuildContext context,
+      String? message,
+      VoidCallback? onPressed}) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -89,11 +97,13 @@ class ItemSemVinculo {
           content: new Text(
               "O item atual não está vinculado a nenhum pacote.\nVerificar cadastro e realizar buscas no físico."),
           actions: <Widget>[
-            // define os botões na base do dialogo
-            new MaterialButton(
-              child: new Text("Fechar"),
+            new ElevatedButton(
+              child: const Text("OK"),
               onPressed: () {
                 Navigator.of(context).pop();
+                if (onPressed != null) {
+                  onPressed();
+                }
               },
             ),
           ],

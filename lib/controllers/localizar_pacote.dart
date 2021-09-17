@@ -16,7 +16,7 @@ class LocalizarPacote {
         });
     if (value == null || value!.trim().isEmpty) {
       Navigator.pop(context); // Finaliza indicador de progresso.
-      ItemSemVinculo(context);
+      ItemSemVinculo(context: context);
       return;
     }
     _aguardarBusca();
@@ -31,7 +31,7 @@ class LocalizarPacote {
   void _apresentarResultados(List<Pacote> pacotes) {
     // Se não encontrar, mostrar dialogo de alerta
     if (pacotes.length <= 0) {
-      ItemNaoLocalizado(context);
+      ItemNaoLocalizado(context: context);
     }
     // Se encontrar termo exato, ir para Widget VerPacote()
     else if (pacotes.length == 1) {

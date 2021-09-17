@@ -1,10 +1,7 @@
 import 'package:acervo_fisico/main.dart';
 import 'package:acervo_fisico/models/enums.dart';
-import 'package:acervo_fisico/models/pacote.dart';
 import 'package:acervo_fisico/styles/app_styles.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:intl/intl.dart';
 
 import 'pacote_page.dart';
@@ -166,14 +163,18 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Situação atual:',
-            style: const TextStyle(color: Colors.grey, fontSize: 15)),
         Wrap(
           children: [
-            Text('• ${mPacote.actionToString}',
-                style: const TextStyle(
-                    color: Colors.black, fontWeight: FontWeight.bold)),
-            Text(' em ', style: const TextStyle(color: Colors.grey)),
+            Text('Situação atual: ',
+                style: const TextStyle(color: Colors.grey, fontSize: 15)),
+          ],
+        ),
+        Text('${mPacote.actionToString}',
+            style: const TextStyle(
+                color: Colors.black, fontWeight: FontWeight.bold)),
+        Wrap(
+          children: [
+            Text('• em ', style: const TextStyle(color: Colors.grey)),
             Text('${_dateFormat.format(mPacote.updatedAt)}.',
                 style: const TextStyle(
                     color: Colors.grey, fontWeight: FontWeight.bold)),
@@ -295,7 +296,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
                 child: Column(
                   children: [
                     Padding(
-                      padding: EdgeInsets.all(32),
+                      padding: EdgeInsets.all(24),
                       child: Column(
                         children: [
                           Row(
@@ -339,14 +340,17 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
                 ),
               ),
             ),
-            Container(
-              width: double.infinity,
-              color: Colors.grey.shade300,
-              child: Padding(
-                padding: EdgeInsets.all(32),
-                child: alteracoes,
-              ),
-            ),
+            editMode.value
+                ? Container()
+                : Container(
+                    width: double.infinity,
+                    color: Colors.grey.shade300,
+                    child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      child: alteracoes,
+                    ),
+                  ),
           ],
         ));
   }

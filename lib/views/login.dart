@@ -15,7 +15,13 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController controllerUsername = TextEditingController();
   TextEditingController controllerPassword = TextEditingController();
-  bool isLoggedIn = false;
+
+  @override
+  void dispose() {
+    controllerUsername.dispose();
+    controllerPassword.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,29 +37,37 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 TextField(
                   controller: controllerUsername,
-                  enabled: !isLoggedIn,
-                  keyboardType: TextInputType.text,
-                  textCapitalization: TextCapitalization.none,
-                  autocorrect: false,
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
                     labelText: 'Usuário',
                     border: OutlineInputBorder(),
                   ),
+                  onChanged: (value) {
+                    setState(() {});
+                  },
                 ),
                 SizedBox(
                   height: 8,
                 ),
                 TextField(
                   controller: controllerPassword,
-                  enabled: !isLoggedIn,
                   obscureText: true,
-                  keyboardType: TextInputType.text,
-                  textCapitalization: TextCapitalization.none,
-                  autocorrect: false,
+                  keyboardType: TextInputType.visiblePassword,
+                  textInputAction: TextInputAction.done,
                   decoration: InputDecoration(
                     labelText: 'Senha',
                     border: OutlineInputBorder(),
                   ),
+                  onChanged: (value) {
+                    setState(() {});
+                  },
+                  onSubmitted: (value) {
+                    controllerUsername.text.isEmpty ||
+                            controllerPassword.text.isEmpty
+                        ? null
+                        : doUserLogin();
+                  },
                 ),
                 SizedBox(
                   height: 16,
@@ -63,7 +77,10 @@ class _LoginPageState extends State<LoginPage> {
                   width: 200,
                   child: ElevatedButton(
                     child: const Text('Login'),
-                    onPressed: isLoggedIn ? null : () => doUserLogin(),
+                    onPressed: controllerUsername.text.isEmpty ||
+                            controllerPassword.text.isEmpty
+                        ? null
+                        : () => doUserLogin(),
                   ),
                 ),
                 SizedBox(
@@ -72,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
                 Container(
                   height: 50,
                   width: 200,
-                  child: TextButton(
+                  child: OutlinedButton(
                     child: const Text('Esqueci minha senha'),
                     onPressed: () => navigateToResetPassword(),
                   ),
@@ -106,11 +123,17 @@ class _LoginPageState extends State<LoginPage> {
 
     if (response.success) {
       currentUser = response.result as ParseUser;
-      Navigator.pushAndRemoveUntil(
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute<void>(
+          builder: (BuildContext context) => MyApp(),
+        ),
+      );
+      /* Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => MyApp()),
         (route) => false,
-      );
+      ); */
     } else {
       Message.showError(context: context, message: response.error!.message);
     }
@@ -131,16 +154,24 @@ class UserPage extends StatelessWidget {
       var response = await currentUser!.logout();
       if (response.success) {
         currentUser = null;
-        Message.showSuccess(
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute<void>(
+            builder: (BuildContext context) => MyApp(),
+          ),
+        );
+        /*Message.showSuccess(
             context: context,
             message: 'Logout realizado com sucesso!',
             onPressed: () {
-              Navigator.pushAndRemoveUntil(
+              
+      
+               Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (context) => MyApp()),
                 (route) => false,
-              );
-            });
+              ); 
+            });*/
       } else {
         Message.showError(context: context, message: response.error!.message);
       }

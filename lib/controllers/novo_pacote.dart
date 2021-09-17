@@ -10,61 +10,70 @@ import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 class NovoPacote {
   final BuildContext context;
 
-  var _controllerId = TextEditingController();
-  var _controllerTipo = 2;
-
-  Widget get imagem {
-    return Container(
-      margin: EdgeInsets.only(bottom: 24),
-      width: 64,
-      height: 64,
-      decoration: new BoxDecoration(
-        shape: BoxShape.rectangle,
-        border: Border.all(color: Colors.lightBlue, width: 1),
-        borderRadius: BorderRadius.all(Radius.circular(16.0)),
-        image: new DecorationImage(
-          fit: BoxFit.cover,
-          image: getTipoPacoteImagem(_controllerTipo),
-        ),
-      ),
-    );
-  }
+  int _pacoteTipo = 2;
+  String _pacoteId = '';
 
   Widget get tipo {
-    return DropdownButtonFormField<int>(
-        value: _controllerTipo,
-        iconDisabledColor: Colors.transparent,
-        decoration: mTextField.copyWith(
-          labelText: 'Tipo',
-        ),
-        autofocus: false,
-        isExpanded: true,
-        items: TipoPacote.values
-            .map(
-              (value) => new DropdownMenuItem(
-                value: value.index,
-                child: new Text(
-                  getTipoPacoteString(value.index),
-                  style: TextStyle(
-                    fontSize: 20,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
+    return StatefulBuilder(
+        builder: (BuildContext context, StateSetter innerState) {
+      return Wrap(
+        alignment: WrapAlignment.center,
+        children: [
+          Container(
+            margin: EdgeInsets.only(bottom: 24),
+            width: 64,
+            height: 64,
+            decoration: new BoxDecoration(
+              shape: BoxShape.rectangle,
+              border: Border.all(color: Colors.lightBlue, width: 1),
+              borderRadius: BorderRadius.all(Radius.circular(16.0)),
+              image: new DecorationImage(
+                fit: BoxFit.cover,
+                image: getTipoPacoteImagem(_pacoteTipo),
               ),
-            )
-            .toList(),
-        onChanged: (value) {
-          _controllerTipo = value!;
-        });
+            ),
+          ),
+          DropdownButtonFormField<int>(
+              value: _pacoteTipo,
+              iconDisabledColor: Colors.transparent,
+              decoration: mTextField.copyWith(
+                labelText: 'Tipo',
+              ),
+              autofocus: false,
+              isExpanded: true,
+              items: TipoPacote.values
+                  .map(
+                    (value) => new DropdownMenuItem(
+                      value: value.index,
+                      child: new Text(
+                        getTipoPacoteString(value.index),
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (value) {
+                innerState(() {
+                  _pacoteTipo = value!;
+                });
+              }),
+        ],
+      );
+    });
   }
 
   Widget get identificador {
     return TextField(
-      controller: _controllerId,
       decoration: mTextField.copyWith(
         labelText: 'Identificador',
         hintText: 'Ex.: 20211231.1',
       ),
+      onChanged: (value) {
+        _pacoteId = value;
+      },
       autofocus: false,
       style: TextStyle(
           fontSize: 32, fontWeight: FontWeight.bold, color: Colors.blue),
@@ -98,7 +107,6 @@ class NovoPacote {
                   padding: EdgeInsets.symmetric(horizontal: 48, vertical: 24),
                   child: Column(
                     children: [
-                      imagem,
                       tipo,
                       identificador,
                       SizedBox(
@@ -107,12 +115,11 @@ class NovoPacote {
                       ElevatedButton.icon(
                         onPressed: () {
                           _criarPacote(
-                            _controllerId.text.trim().toUpperCase(),
-                            _controllerTipo,
+                            _pacoteId.trim().toUpperCase(),
+                            _pacoteTipo,
                           );
-                          _controllerId.dispose();
                         },
-                        icon: Icon(Icons.save_rounded),
+                        icon: Icon(Icons.new_label_rounded),
                         label: Text('Criar'),
                         style: ElevatedButton.styleFrom(
                           minimumSize: Size(150, 50),
@@ -131,7 +138,7 @@ class NovoPacote {
     // Verifica a string
     if (codigo.isEmpty) {
       Message.showError(
-          context: context, message: 'Informar um codigo para o pacote!');
+          context: context, message: 'Informe um código para o pacote.');
       return;
     }
     // Progresso
@@ -181,6 +188,7 @@ class NovoPacote {
       ..set(Pacote.keyId, codigo)
       ..set(Pacote.keyTipo, tipo)
       ..set(Pacote.keyUpdatedBy, currentUser)
+      ..set(Pacote.keyUpdatedAct, UpdatedAction.ABRIR)
       ..set(Pacote.keySelado, false)
       ..set(Pacote.keySeladoBy, currentUser)
       ..set('updatedAt', DateTime.now());

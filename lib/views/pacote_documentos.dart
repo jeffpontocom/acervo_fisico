@@ -16,6 +16,7 @@ class PacoteDocumentos extends StatefulWidget {
 class _PacoteDocumentosState extends State<PacoteDocumentos> {
   late List<Documento> lista;
   List<Documento> docsSelected = [];
+  List<bool> itemTapped = [];
   bool? allSelected = false;
 
   IconData get checkbox {
@@ -27,6 +28,7 @@ class _PacoteDocumentosState extends State<PacoteDocumentos> {
   }
 
   Widget get listaDocumentos {
+    itemTapped = List.filled(lista.length, false);
     return StatefulBuilder(
         builder: (BuildContext context, StateSetter alertState) {
       return NestedScrollView(
@@ -71,7 +73,7 @@ class _PacoteDocumentosState extends State<PacoteDocumentos> {
                                   icon: Icon(Icons.add_circle_rounded),
                                   label: Text('ADICIONAR'),
                                   onPressed: () {
-                                    //todo adicionar documentos
+                                    adicionarDocs();
                                   },
                                 )
                               : TextButton.icon(
@@ -93,8 +95,8 @@ class _PacoteDocumentosState extends State<PacoteDocumentos> {
                   padding: EdgeInsets.all(8),
                   child: Text(
                     docsSelected.isEmpty
-                        ? '${lista.length} item(s) no pacote'
-                        : '${docsSelected.length} item(s) selecionados',
+                        ? '${lista.length} documento(s) no pacote'
+                        : '${docsSelected.length} selecionado(s)',
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -137,7 +139,15 @@ class _PacoteDocumentosState extends State<PacoteDocumentos> {
                             ),
                       title: Text('${lista[index].toString()}'),
                       trailing: Text('${index + 1}',
-                          style: TextStyle(color: Colors.grey)),
+                          style: TextStyle(
+                              color: itemTapped[index]
+                                  ? Colors.red
+                                  : Colors.grey)),
+                      onTap: () {
+                        alertState(() {
+                          itemTapped[index] = !itemTapped[index];
+                        });
+                      },
                       //dense: true,
                     );
                   }));
@@ -191,4 +201,6 @@ class _PacoteDocumentosState extends State<PacoteDocumentos> {
       },
     );
   }
+
+  void adicionarDocs() {}
 }
