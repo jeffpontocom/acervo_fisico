@@ -52,6 +52,41 @@ class Message {
       },
     );
   }
+
+  static void showAlert(
+      {required BuildContext context,
+      required String message,
+      Function(bool)? onPressed}) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Alerta!"),
+          content: Text(message),
+          actions: <Widget>[
+            new ElevatedButton(
+              child: const Text("CANCELAR"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                if (onPressed != null) {
+                  onPressed(false);
+                }
+              },
+            ),
+            new ElevatedButton(
+              child: const Text("OK"),
+              onPressed: () {
+                //Navigator.of(context).pop();
+                if (onPressed != null) {
+                  onPressed(true);
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
 
 class ItemNaoLocalizado {

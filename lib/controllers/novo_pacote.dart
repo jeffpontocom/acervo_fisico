@@ -137,7 +137,7 @@ class NovoPacote {
   void _criarPacote(String codigo, int tipo) async {
     // Verifica a string
     if (codigo.isEmpty) {
-      Message.showError(
+      Message.showAlert(
           context: context, message: 'Informe um código para o pacote.');
       return;
     }
@@ -162,7 +162,7 @@ class NovoPacote {
       var pacote = await salvarRegistro(codigo, tipo);
       Navigator.pop(context); // Fecha progresso
       if (pacote == null) {
-        Message.showError(
+        Message.showAlert(
             context: context,
             message:
                 "Não foi possível criar o pacote. Verifique sua conexão e/ou login e tente mais tarde novamente.");
@@ -178,7 +178,7 @@ class NovoPacote {
       }
     } else {
       Navigator.pop(context); // Fecha progresso
-      Message.showError(
+      Message.showAlert(
           context: context, message: 'Já existe um pacote com esse nome.');
     }
   }

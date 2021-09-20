@@ -62,12 +62,12 @@ class _LoginPageState extends State<LoginPage> {
                   onChanged: (value) {
                     setState(() {});
                   },
-                  onSubmitted: (value) {
-                    controllerUsername.text.isEmpty ||
-                            controllerPassword.text.isEmpty
-                        ? null
-                        : doUserLogin();
-                  },
+                  onSubmitted: controllerUsername.text.isEmpty ||
+                          controllerPassword.text.isEmpty
+                      ? null
+                      : (value) {
+                          doUserLogin();
+                        },
                 ),
                 SizedBox(
                   height: 16,
@@ -113,7 +113,7 @@ class _LoginPageState extends State<LoginPage> {
     final password = controllerPassword.text.trim();
 
     if (username.isEmpty || password.isEmpty) {
-      Message.showError(context: context, message: 'Informe usuário e senha');
+      Message.showAlert(context: context, message: 'Informe usuário e senha');
       return;
     }
 
@@ -135,7 +135,7 @@ class _LoginPageState extends State<LoginPage> {
         (route) => false,
       ); */
     } else {
-      Message.showError(context: context, message: response.error!.message);
+      Message.showAlert(context: context, message: response.error!.message);
     }
   }
 
@@ -173,7 +173,7 @@ class UserPage extends StatelessWidget {
               ); 
             });*/
       } else {
-        Message.showError(context: context, message: response.error!.message);
+        Message.showAlert(context: context, message: response.error!.message);
       }
     }
 
@@ -273,7 +273,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             Navigator.of(context).pop();
           });
     } else {
-      Message.showError(
+      Message.showAlert(
           context: context, message: parseResponse.error!.message);
     }
   }

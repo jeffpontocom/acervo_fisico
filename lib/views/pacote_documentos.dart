@@ -1,3 +1,5 @@
+import 'package:acervo_fisico/controllers/add_documentos.dart';
+import 'package:acervo_fisico/controllers/del_documentos.dart';
 import 'package:acervo_fisico/models/documento.dart';
 import 'package:acervo_fisico/models/pacote.dart';
 import 'package:acervo_fisico/styles/customs.dart';
@@ -80,6 +82,7 @@ class _PacoteDocumentosState extends State<PacoteDocumentos> {
                                   icon: Icon(Icons.delete_forever_rounded),
                                   label: Text('EXCLUIR'),
                                   onPressed: () {
+                                    eliminarDocs();
                                     //todo excluir documentos (avisar sobre)
                                   },
                                 ),
@@ -202,5 +205,22 @@ class _PacoteDocumentosState extends State<PacoteDocumentos> {
     );
   }
 
-  void adicionarDocs() {}
+  void adicionarDocs() {
+    if (mPacote.objectId == null) return;
+    AddDocumentos(
+        context: context,
+        pacoteId: mPacote.objectId!,
+        callback: () {
+          setState(() {});
+        });
+  }
+
+  void eliminarDocs() {
+    DelDocumentos(
+        context: context,
+        documentosEliminar: docsSelected,
+        callback: () {
+          setState(() {});
+        });
+  }
 }

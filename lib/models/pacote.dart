@@ -1,5 +1,4 @@
 import 'package:acervo_fisico/models/enums.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 class Pacote extends ParseObject implements ParseCloneable {
