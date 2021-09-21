@@ -113,7 +113,7 @@ class _LoginPageState extends State<LoginPage> {
     final password = controllerPassword.text.trim();
 
     if (username.isEmpty || password.isEmpty) {
-      Message.showAlert(context: context, message: 'Informe usuário e senha');
+      Message.showErro(context: context, message: 'Informe usuário e senha');
       return;
     }
 
@@ -135,7 +135,7 @@ class _LoginPageState extends State<LoginPage> {
         (route) => false,
       ); */
     } else {
-      Message.showAlert(context: context, message: response.error!.message);
+      Message.showErro(context: context, message: response.error!.message);
     }
   }
 
@@ -173,7 +173,7 @@ class UserPage extends StatelessWidget {
               ); 
             });*/
       } else {
-        Message.showAlert(context: context, message: response.error!.message);
+        Message.showErro(context: context, message: response.error!.message);
       }
     }
 
@@ -266,15 +266,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     final ParseUser user = ParseUser(null, null, controllerEmail.text.trim());
     final ParseResponse parseResponse = await user.requestPasswordReset();
     if (parseResponse.success) {
-      Message.showSuccess(
+      Message.showSucesso(
           context: context,
           message: 'As instruções para nova senha foram enviadas por e-mail!',
           onPressed: () {
             Navigator.of(context).pop();
           });
     } else {
-      Message.showAlert(
-          context: context, message: parseResponse.error!.message);
+      Message.showErro(context: context, message: parseResponse.error!.message);
     }
   }
 }

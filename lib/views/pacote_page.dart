@@ -51,11 +51,11 @@ class _PacotePageState extends State<PacotePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Pacote',
+                mPacote.selado ? 'Pacote selado' : 'Pacote aberto',
                 style: TextStyle(color: Colors.white, fontSize: 20.0),
               ),
               Text(
-                '${mPacote.identificador}',
+                '${mPacote.tipoToString}: ${mPacote.identificador}',
                 style: TextStyle(color: Colors.white, fontSize: 12.0),
               )
             ],
@@ -68,10 +68,12 @@ class _PacotePageState extends State<PacotePage> {
             ],
           ),
         ),
-        body: TabBarView(children: [
-          PacoteLocalizacao(),
-          PacoteDocumentos(),
-        ]),
+        body: TabBarView(
+          children: [
+            PacoteLocalizacao(),
+            PacoteDocumentos(),
+          ],
+        ),
       ),
     );
   }

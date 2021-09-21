@@ -16,7 +16,7 @@ class PacoteDocumentos extends StatefulWidget {
 }
 
 class _PacoteDocumentosState extends State<PacoteDocumentos> {
-  late List<Documento> lista;
+  List<Documento> lista = [];
   List<Documento> docsSelected = [];
   List<bool> itemTapped = [];
   bool? allSelected = false;
@@ -30,7 +30,6 @@ class _PacoteDocumentosState extends State<PacoteDocumentos> {
   }
 
   Widget get listaDocumentos {
-    itemTapped = List.filled(lista.length, false);
     return StatefulBuilder(
         builder: (BuildContext context, StateSetter alertState) {
       return NestedScrollView(
@@ -46,27 +45,29 @@ class _PacoteDocumentosState extends State<PacoteDocumentos> {
                     maxHeight: 56,
                     child: Container(
                       color: Colors.blueGrey,
-                      padding: EdgeInsets.symmetric(horizontal: 12),
+                      padding: EdgeInsets.symmetric(horizontal: 24),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           TextButton.icon(
-                            onPressed: () {
-                              alertState(() {
-                                if (allSelected == null) {
-                                  allSelected = true;
-                                } else {
-                                  allSelected = !allSelected!;
-                                }
-                                if (allSelected == true) {
-                                  docsSelected.clear();
-                                  docsSelected.addAll(lista);
-                                } else if (allSelected == false) {
-                                  docsSelected.clear();
-                                }
-                              });
-                            },
+                            onPressed: lista.isEmpty
+                                ? null
+                                : () {
+                                    alertState(() {
+                                      if (allSelected == null) {
+                                        allSelected = true;
+                                      } else {
+                                        allSelected = !allSelected!;
+                                      }
+                                      if (allSelected == true) {
+                                        docsSelected.clear();
+                                        docsSelected.addAll(lista);
+                                      } else if (allSelected == false) {
+                                        docsSelected.clear();
+                                      }
+                                    });
+                                  },
                             icon: Icon(checkbox),
                             label: Text('Selecionar tudo'),
                           ),
@@ -176,33 +177,10 @@ class _PacoteDocumentosState extends State<PacoteDocumentos> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getDocumentos(),
-      builder: (ctx, AsyncSnapshot<List<dynamic>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                '${snapshot.error} occured',
-                style: TextStyle(fontSize: 18),
-              ),
-            );
-          } else if (snapshot.hasData) {
-            if (snapshot.data!.isEmpty) {
-              lista = [];
-            } else {
-              lista = snapshot.data!.cast();
-            }
-            return listaDocumentos;
-          }
-        }
-        return Center(
-          child: CircularProgressIndicator(),
-        );
-      },
-    );
+  void resetSelection() {
+    docsSelected.clear();
+    itemTapped = [];
+    allSelected = false;
   }
 
   void adicionarDocs() {
@@ -222,5 +200,36 @@ class _PacoteDocumentosState extends State<PacoteDocumentos> {
         callback: () {
           setState(() {});
         });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    resetSelection();
+    return FutureBuilder(
+      future: getDocumentos(),
+      builder: (ctx, AsyncSnapshot<List<dynamic>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                '${snapshot.error} occured',
+                style: TextStyle(fontSize: 18),
+              ),
+            );
+          } else if (snapshot.hasData) {
+            if (snapshot.data!.isEmpty) {
+              lista = [];
+            } else {
+              lista = snapshot.data!.cast();
+            }
+            itemTapped = List.filled(lista.length, false);
+            return listaDocumentos;
+          }
+        }
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
   }
 }

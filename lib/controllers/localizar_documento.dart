@@ -26,7 +26,7 @@ class LocalizarDocumento {
     // Verificar quantidade de caracteres minima (6000DC15200)
     if (query.length < 11) {
       print('Query tem menos de 11 caracteres');
-      ItemNaoLocalizado(context: context);
+      Message.showNotFound(context: context);
       return;
     }
 
@@ -151,7 +151,7 @@ class LocalizarDocumento {
     // Sem folha e sem revisão: ANALISAR POSSIBILIDADE DE ERROS
     else {
       print('Avaliar query');
-      ItemNaoLocalizado(context: context);
+      Message.showNotFound(context: context);
     }
     _printValores(assuntoBase, tipo, sequencial, idioma, folha, revisao);
   }
@@ -243,7 +243,7 @@ class LocalizarDocumento {
   void _apresentarResultados(List<Documento> documentos) {
     // Se nenhum documento localizado
     if (documentos.length == 0) {
-      ItemNaoLocalizado(context: context);
+      Message.showNotFound(context: context);
     }
     // Se apenas um documento localizado, vai direto ao pacote
     else if (documentos.length == 1) {

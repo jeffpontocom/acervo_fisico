@@ -1,8 +1,11 @@
 import 'package:acervo_fisico/main.dart';
 import 'package:acervo_fisico/models/enums.dart';
+import 'package:acervo_fisico/models/pacote.dart';
 import 'package:acervo_fisico/styles/app_styles.dart';
+import 'package:acervo_fisico/views/messages.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 import 'pacote_page.dart';
 
@@ -16,6 +19,26 @@ class PacoteLocalizacao extends StatefulWidget {
 }
 
 class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
+  Widget get cabecalho {
+    return Container(
+      height: 56.0,
+      color: Colors.blueGrey,
+      padding: EdgeInsets.symmetric(horizontal: 24),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Text(
+            'Dados básicos',
+            style: Theme.of(context).primaryTextTheme.subtitle1,
+          ),
+          currentUser != null ? editarOuSalvar : Container(),
+        ],
+      ),
+    );
+  }
+
   Widget get imagem {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 12),
@@ -23,8 +46,8 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
       height: 128,
       decoration: new BoxDecoration(
         shape: BoxShape.rectangle,
-        border: Border.all(color: Colors.lightBlue, width: 1),
-        borderRadius: BorderRadius.all(Radius.circular(16.0)),
+        //border: Border.all(color: Colors.lightBlue, width: 1),
+        //borderRadius: BorderRadius.all(Radius.circular(16.0)),
         image: new DecorationImage(
           fit: BoxFit.cover,
           image: mPacote.tipoImagem,
@@ -34,34 +57,36 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
   }
 
   Widget get tipo {
-    return DropdownButtonFormField<int>(
-        value: mPacote.tipo,
-        iconDisabledColor: Colors.transparent,
-        decoration: mTextField.copyWith(
-          labelText: 'Tipo',
-          enabled: editMode.value,
-        ),
-        isExpanded: true,
-        items: TipoPacote.values
-            .map(
-              (value) => new DropdownMenuItem(
-                value: value.index,
-                enabled: editMode.value,
-                child: new Text(
-                  getTipoPacoteString(value.index),
-                  style: TextStyle(
-                    fontSize: 20,
+    return editMode.value
+        ? DropdownButtonFormField<int>(
+            value: mPacote.tipo,
+            iconDisabledColor: Colors.transparent,
+            decoration: mTextField.copyWith(
+              labelText: 'Tipo',
+              enabled: editMode.value,
+            ),
+            isExpanded: true,
+            items: TipoPacote.values
+                .map(
+                  (value) => new DropdownMenuItem(
+                    value: value.index,
+                    //enabled: editMode.value,
+                    child: new Text(
+                      getTipoPacoteString(value.index),
+                      style: TextStyle(
+                        fontSize: 20,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            )
-            .toList(),
-        onChanged: (value) {
-          setState(() {
-            mPacote.tipo = value!;
-          });
-        });
+                )
+                .toList(),
+            onChanged: (value) {
+              setState(() {
+                mPacote.tipo = value!;
+              });
+            })
+        : Container();
   }
 
   Widget get identificador {
@@ -169,12 +194,13 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
                 style: const TextStyle(color: Colors.grey, fontSize: 15)),
           ],
         ),
-        Text('${mPacote.actionToString}',
-            style: const TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold)),
         Wrap(
           children: [
-            Text('• em ', style: const TextStyle(color: Colors.grey)),
+            Text('• ', style: const TextStyle(color: Colors.grey)),
+            Text('${mPacote.actionToString}',
+                style: const TextStyle(
+                    color: Colors.black, fontWeight: FontWeight.bold)),
+            Text(' em ', style: const TextStyle(color: Colors.grey)),
             Text('${_dateFormat.format(mPacote.updatedAt)}.',
                 style: const TextStyle(
                     color: Colors.grey, fontWeight: FontWeight.bold)),
@@ -211,7 +237,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
   }
 
   Widget get eliminar {
-    return OutlinedButton.icon(
+    return TextButton.icon(
       onPressed: () {
         setState(() {
           mPacote.updatedAct = UpdatedAction.ELIMINAR.index;
@@ -221,8 +247,8 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
         //todo: eliminar pacote
       },
       icon: Icon(Icons.delete),
-      label: Text('Eliminar Pacote'),
-      style: OutlinedButton.styleFrom(
+      label: Text('Eliminar pacote'),
+      style: ElevatedButton.styleFrom(
         primary: Colors.red,
         minimumSize: Size(150, 50),
       ),
@@ -230,41 +256,40 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
   }
 
   Widget get editarOuSalvar {
-    return ElevatedButton.icon(
+    return TextButton.icon(
+      label: Text(editMode.value ? 'SALVAR' : 'EDITAR'),
+      icon: Icon(editMode.value
+          ? Icons.save_rounded
+          : Icons.edit_location_alt_rounded),
       onPressed: () {
         setState(() {
           if (editMode.value) {
-            mPacote.updatedAct = UpdatedAction.SALVAR.index;
-            mPacote.updatedBy = currentUser;
-            mPacote.updatedAt = DateTime.now();
+            Message.showAlerta(
+                context: context,
+                message:
+                    'Tem certeza que deseja salvar as alterações nos dados básicos deste pacote?',
+                onPressed: (value) {
+                  if (value) {
+                    mPacote.updatedAct = UpdatedAction.SALVAR.index;
+                    mPacote.updatedBy = currentUser;
+                    mPacote.updatedAt = DateTime.now();
+                  } else {
+                    /* Future<Pacote> query = (QueryBuilder<Pacote>(Pacote())
+                      ..whereEqualTo('objectId', mPacote.objectId)
+                      ..find()
+                      ..first()) as Future<Pacote>;
+                    query.then((value) => mPacote = value); */
+                  }
+                  Navigator.pop(context);
+                });
           }
           editMode.value = !editMode.value;
         });
       },
-      icon: Icon(editMode.value
-          ? Icons.save_rounded
-          : Icons.edit_location_alt_rounded),
-      label: Text(editMode.value ? 'Salvar' : 'Editar'),
-      style: ElevatedButton.styleFrom(
-        minimumSize: Size(150, 50),
+      style: TextButton.styleFrom(
+        minimumSize: Size(double.minPositive, double.infinity),
       ),
     );
-  }
-
-  Widget get acoes {
-    return currentUser != null
-        ? Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              editMode.value ? eliminar : Container(),
-              Expanded(
-                flex: 1,
-                child: Container(),
-              ),
-              editarOuSalvar,
-            ],
-          )
-        : Container();
   }
 
   /* Future<String> getUpdateByName() async {
@@ -290,8 +315,8 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
         },
         child: Column(
           children: [
-            Expanded(
-              flex: 1,
+            cabecalho,
+            Flexible(
               child: SingleChildScrollView(
                 child: Column(
                   children: [
@@ -329,9 +354,10 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
                             ],
                           ),
                           observacoes,
-                          Padding(
-                            padding: EdgeInsets.symmetric(vertical: 24),
-                            child: acoes,
+                          Container(
+                            alignment: Alignment.bottomLeft,
+                            padding: EdgeInsets.symmetric(vertical: 32),
+                            child: editMode.value ? eliminar : Container(),
                           ),
                         ],
                       ),

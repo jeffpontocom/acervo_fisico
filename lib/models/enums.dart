@@ -55,13 +55,13 @@ enum UpdatedAction {
 String getUpdatedAction(int index) {
   switch (index) {
     case 0:
-      return 'Pacote aberto';
+      return 'Aberto';
     case 1:
-      return 'Pacote selado';
+      return 'Selado';
     case 2:
-      return 'Pacote editado';
+      return 'Editado';
     case 3:
-      return 'Pacote eliminado';
+      return 'Eliminado';
     default:
       return '[Ação indefinida]';
   }

@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:acervo_fisico/models/documento.dart';
 import 'package:acervo_fisico/models/pacote.dart';
 import 'package:acervo_fisico/views/messages.dart';
+import 'package:acervo_fisico/views/pacote_page.dart';
 import 'package:flutter/material.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import 'package:share/share.dart';
 
 class AddDocumentos {
   final BuildContext context;
@@ -128,17 +130,27 @@ class AddDocumentos {
           }
         }
       }
-      // Abrir relatorio para compartilhamento
     }
-    String relatorio = '''Relatório:
-    Mal-formados: ${_naoDocumentos.length}
-    Validados: ${_validos.length}
-    Duplicatas: ${_duplicatas.length}
-    Falhas: ${_falhas.length}
-    ''';
+    Navigator.pop(context); // fecha indicador de progresso
     Navigator.pop(context);
-    Navigator.pop(context);
-    Message.showSuccess(
+    // Abrir relatorio para compartilhamento
+    String relatorio = '''
+Do total de ${_itensParaAnalise.length} item(s) identificado(s) para inclusão no pacote ${mPacote.identificador}:
+
+• ${_validos.length} adicionados com SUCESSO;
+
+
+• ${_naoDocumentos.length} identificado(s) com MÁ FORMAÇÃO DE CÓDIGO:
+${_naoDocumentos.toString()};
+
+• ${_duplicatas.length} locado(s) em OUTRO PACOTE e deve(m) ser verificado(s):
+${_duplicatas.toList().toString()};
+
+• ${_falhas.length} FALHA ao tentar registrar no banco de dados (tentar novamente):
+${_falhas.toString()};
+
+''';
+    Message.showRelatorio(
         context: context,
         message: relatorio,
         onPressed: () {

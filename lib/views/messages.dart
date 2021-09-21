@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:share/share.dart';
 
 class Message {
-  static void showSuccess(
+  static void showSucesso(
       {required BuildContext context,
       required String message,
       VoidCallback? onPressed}) {
@@ -27,7 +28,7 @@ class Message {
     );
   }
 
-  static void showError(
+  static void showErro(
       {required BuildContext context,
       required String message,
       VoidCallback? onPressed}) {
@@ -53,7 +54,7 @@ class Message {
     );
   }
 
-  static void showAlert(
+  static void showAlerta(
       {required BuildContext context,
       required String message,
       Function(bool)? onPressed}) {
@@ -63,20 +64,19 @@ class Message {
         return AlertDialog(
           title: const Text("Alerta!"),
           content: Text(message),
+          actionsAlignment: MainAxisAlignment.spaceBetween,
           actions: <Widget>[
-            new ElevatedButton(
+            OutlinedButton(
               child: const Text("CANCELAR"),
               onPressed: () {
-                Navigator.of(context).pop();
                 if (onPressed != null) {
                   onPressed(false);
                 }
               },
             ),
-            new ElevatedButton(
+            ElevatedButton(
               child: const Text("OK"),
               onPressed: () {
-                //Navigator.of(context).pop();
                 if (onPressed != null) {
                   onPressed(true);
                 }
@@ -87,20 +87,15 @@ class Message {
       },
     );
   }
-}
 
-class ItemNaoLocalizado {
-  ItemNaoLocalizado(
-      {required BuildContext context,
-      String? message,
-      VoidCallback? onPressed}) {
+  static void showNotFound(
+      {required BuildContext context, VoidCallback? onPressed}) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        // retorna um objeto do tipo Dialog
         return AlertDialog(
-          title: new Text("Item não localizado!"),
-          content: new Text("Verifique o código informado e tente novamente."),
+          title: const Text("Item não localizado!"),
+          content: Text('Verifique o código informado e tente novamente.'),
           actions: <Widget>[
             new ElevatedButton(
               child: const Text("OK"),
@@ -116,32 +111,50 @@ class ItemNaoLocalizado {
       },
     );
   }
-}
 
-class ItemSemVinculo {
-  ItemSemVinculo(
+  static void showRelatorio(
       {required BuildContext context,
-      String? message,
+      required String message,
       VoidCallback? onPressed}) {
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (BuildContext context) {
-        // retorna um objeto do tipo Dialog
-        return AlertDialog(
-          title: new Text("Item sem vínculos!"),
-          content: new Text(
-              "O item atual não está vinculado a nenhum pacote.\nVerificar cadastro e realizar buscas no físico."),
-          actions: <Widget>[
-            new ElevatedButton(
-              child: const Text("OK"),
-              onPressed: () {
-                Navigator.of(context).pop();
-                if (onPressed != null) {
-                  onPressed();
-                }
-              },
+      isDismissible: false,
+      isScrollControlled: true,
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Relatório',
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                    CloseButton(),
+                  ],
+                ),
+                Flexible(
+                  fit: FlexFit.tight,
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: Text(message),
+                  ),
+                ),
+                ElevatedButton.icon(
+                  label: Text("Compartilhar"),
+                  icon: Icon(Icons.share_rounded),
+                  onPressed: () {
+                    Share.share(message);
+                  },
+                ),
+              ],
             ),
-          ],
+          ),
         );
       },
     );

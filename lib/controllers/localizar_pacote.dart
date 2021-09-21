@@ -16,7 +16,10 @@ class LocalizarPacote {
         });
     if (value == null || value!.trim().isEmpty) {
       Navigator.pop(context); // Finaliza indicador de progresso.
-      ItemSemVinculo(context: context);
+      Message.showErro(
+          context: context,
+          message:
+              'O item atual não está vinculado a nenhum pacote.\nVerificar cadastro e realizar buscas no físico.');
       return;
     }
     _aguardarBusca();
@@ -31,7 +34,7 @@ class LocalizarPacote {
   void _apresentarResultados(List<Pacote> pacotes) {
     // Se não encontrar, mostrar dialogo de alerta
     if (pacotes.length <= 0) {
-      ItemNaoLocalizado(context: context);
+      Message.showNotFound(context: context);
     }
     // Se encontrar termo exato, ir para Widget VerPacote()
     else if (pacotes.length == 1) {
