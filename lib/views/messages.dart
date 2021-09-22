@@ -159,4 +159,29 @@ class Message {
       },
     );
   }
+
+  static void showProgressoComMessagem(
+      {required BuildContext context, required String message}) {
+    showDialog(
+        barrierLabel: 'Teste',
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            contentPadding: EdgeInsets.all(24),
+            children: [
+              Center(
+                child: Wrap(
+                  spacing: 32,
+                  runSpacing: 32,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    Text(message),
+                  ],
+                ),
+              ),
+            ],
+          );
+        });
+  }
 }

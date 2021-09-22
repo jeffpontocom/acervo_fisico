@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'login.dart';
 
 enum contexto { documentos, pacotes }
-final _formKey = GlobalKey<FormState>();
+GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
 class MyApp extends StatelessWidget {
   @override
@@ -51,7 +51,9 @@ class _MyHomePageState extends State<MyHomePage> {
   // Variaveis para campo de busca
   TextEditingController _searchController = TextEditingController();
 
-  // METODOS DA APLICACAO
+  // METODOS
+
+  /// Ir para a pagina de login ou logout dependendo do status da aplicacao
   void _loginOrLogout() {
     if (currentUser != null) {
       Navigator.push(
@@ -66,6 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  /// Localizar documentos ou pacotes dependendo do contexto selecionado
   void _localizar(String query) {
     if (_contextoAtual == contexto.documentos.index) {
       LocalizarDocumento(context, query);
@@ -74,31 +77,36 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  /// Abrir dialogo para criacao de pacote
   void _novoPacote() {
     NovoPacote(context);
   }
 
+  // WIDGETS
+
   Widget get logotipo {
-    return Column(children: <Widget>[
-      Image(
-        image: AssetImage('assets/icons/ic_launcher2.png'),
-        height: 128,
-        width: 128,
-      ),
-      Text(
-        'Arquivo Técnico',
-        style: TextStyle(
-          fontSize: 18.0,
+    return Column(
+      children: <Widget>[
+        Image(
+          image: AssetImage('assets/icons/ic_launcher2.png'),
+          height: 128,
+          width: 128,
         ),
-      ),
-      Text(
-        'acervo físico',
-        style: TextStyle(
-          fontSize: 40.0,
-          fontFamily: 'Baumans',
+        Text(
+          'Arquivo Técnico',
+          style: TextStyle(
+            fontSize: 18.0,
+          ),
         ),
-      ),
-    ]);
+        Text(
+          'acervo físico',
+          style: TextStyle(
+            fontSize: 40.0,
+            fontFamily: 'Baumans',
+          ),
+        ),
+      ],
+    );
   }
 
   Widget get boxPesquisa {
@@ -235,9 +243,23 @@ class _MyHomePageState extends State<MyHomePage> {
           runSpacing: 32,
           spacing: 32,
           children: [
+            /* SizedBox(
+              width: 200,
+              child: logotipo,
+            ), */
             logotipo,
-            boxPesquisa,
-            boxSelectContexto,
+            ConstrainedBox(
+              constraints: BoxConstraints(minWidth: 300, maxWidth: 600),
+              child: Column(
+                children: [
+                  boxPesquisa,
+                  SizedBox.square(dimension: 32),
+                  boxSelectContexto
+                ],
+              ),
+            ),
+            //boxPesquisa,
+            //boxSelectContexto,
           ],
         ),
       ),

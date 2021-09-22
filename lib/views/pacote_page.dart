@@ -70,12 +70,16 @@ class _PacotePageState extends State<PacotePage> {
         ),
         body: TabBarView(
           children: [
-            PacoteLocalizacao(),
+            PacoteLocalizacao(parentCall: myCall),
             PacoteDocumentos(),
           ],
         ),
       ),
     );
+  }
+
+  VoidCallback? myCall() {
+    setState(() {});
   }
 
   List<Widget> get pacoteActions {

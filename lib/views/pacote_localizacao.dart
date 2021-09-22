@@ -1,24 +1,45 @@
 import 'package:acervo_fisico/main.dart';
+import 'package:acervo_fisico/models/documento.dart';
 import 'package:acervo_fisico/models/enums.dart';
 import 'package:acervo_fisico/models/pacote.dart';
+import 'package:acervo_fisico/src/common.dart';
 import 'package:acervo_fisico/styles/app_styles.dart';
 import 'package:acervo_fisico/views/messages.dart';
+import 'package:acervo_fisico/views/pacote_documentos.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
+import 'home.dart';
 import 'pacote_page.dart';
 
 final DateFormat _dateFormat = DateFormat.yMMMMd('pt_BR').add_Hms();
 
 class PacoteLocalizacao extends StatefulWidget {
-  PacoteLocalizacao({Key? key}) : super(key: key);
+  PacoteLocalizacao({Key? key, this.parentCall}) : super(key: key);
+  final VoidCallback? parentCall;
 
   @override
   _PacoteLocalizacaoState createState() => _PacoteLocalizacaoState();
 }
 
 class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
+  // Controladores para campos do formulario
+  int _controleTipo = mPacote.tipo;
+  TextEditingController _controleId =
+      TextEditingController(text: mPacote.identificador);
+  TextEditingController _controlePredio =
+      TextEditingController(text: mPacote.localPredio);
+  TextEditingController _controleNivel1 =
+      TextEditingController(text: mPacote.localNivel1);
+  TextEditingController _controleNivel2 =
+      TextEditingController(text: mPacote.localNivel2);
+  TextEditingController _controleNivel3 =
+      TextEditingController(text: mPacote.localNivel3);
+  TextEditingController _controleObs =
+      TextEditingController(text: mPacote.observacao);
+
+  // Widgets
   Widget get cabecalho {
     return Container(
       height: 56.0,
@@ -50,7 +71,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
         //borderRadius: BorderRadius.all(Radius.circular(16.0)),
         image: new DecorationImage(
           fit: BoxFit.cover,
-          image: mPacote.tipoImagem,
+          image: getTipoPacoteImagem(_controleTipo),
         ),
       ),
     );
@@ -59,7 +80,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
   Widget get tipo {
     return editMode.value
         ? DropdownButtonFormField<int>(
-            value: mPacote.tipo,
+            value: _controleTipo,
             iconDisabledColor: Colors.transparent,
             decoration: mTextField.copyWith(
               labelText: 'Tipo',
@@ -83,7 +104,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
                 .toList(),
             onChanged: (value) {
               setState(() {
-                mPacote.tipo = value!;
+                _controleTipo = value!;
               });
             })
         : Container();
@@ -91,7 +112,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
 
   Widget get identificador {
     return TextFormField(
-      initialValue: mPacote.identificador,
+      controller: _controleId,
       enabled: editMode.value,
       decoration: mTextField.copyWith(
         labelText: 'Identificador',
@@ -99,75 +120,75 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
       ),
       style: TextStyle(
           fontSize: 32, fontWeight: FontWeight.bold, color: Colors.blue),
-      onChanged: (value) {
+      /* onChanged: (value) {        
         mPacote.identificador = value.toLowerCase().trim();
-      },
+      }, */
     );
   }
 
   Widget get locPredio {
     return TextFormField(
-      initialValue: mPacote.localPredio,
+      controller: _controlePredio,
       enabled: editMode.value,
       decoration: mTextField.copyWith(
         labelText: 'Prédio',
         icon: Icon(Icons.apartment_rounded),
       ),
       style: TextStyle(fontSize: 24),
-      onChanged: (value) {
+      /* onChanged: (value) {
         mPacote.localPredio = value.toLowerCase().trim();
-      },
+      }, */
     );
   }
 
   Widget get locNivel1 {
     return TextFormField(
-      initialValue: mPacote.localNivel1,
+      controller: _controleNivel1,
       enabled: editMode.value,
       decoration: mTextField.copyWith(
         labelText: 'Estante',
         icon: Icon(Icons.apps_rounded),
       ),
       style: TextStyle(fontSize: 24),
-      onChanged: (value) {
+      /* onChanged: (value) {
         mPacote.localNivel1 = value.toLowerCase().trim();
-      },
+      }, */
     );
   }
 
   Widget get locNivel2 {
     return TextFormField(
-      initialValue: mPacote.localNivel2,
+      controller: _controleNivel2,
       enabled: editMode.value,
       decoration: mTextField.copyWith(
         labelText: 'Divisão',
         icon: Icon(Icons.align_vertical_bottom_rounded),
       ),
       style: TextStyle(fontSize: 24),
-      onChanged: (value) {
+      /* onChanged: (value) {
         mPacote.localNivel2 = value.toLowerCase().trim();
-      },
+      }, */
     );
   }
 
   Widget get locNivel3 {
     return TextFormField(
-      initialValue: mPacote.localNivel3,
+      controller: _controleNivel3,
       enabled: editMode.value,
       decoration: mTextField.copyWith(
         labelText: 'Andar',
         icon: Icon(Icons.align_horizontal_left_rounded),
       ),
       style: TextStyle(fontSize: 24),
-      onChanged: (value) {
+      /* onChanged: (value) {
         mPacote.localNivel3 = value.toLowerCase().trim();
-      },
+      }, */
     );
   }
 
   Widget get observacoes {
     return TextFormField(
-      initialValue: mPacote.observacao,
+      controller: _controleObs,
       enabled: editMode.value,
       textCapitalization: TextCapitalization.sentences,
       keyboardType: TextInputType.multiline,
@@ -178,9 +199,9 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
         labelText: 'Observações:',
         floatingLabelBehavior: FloatingLabelBehavior.always,
       ),
-      onChanged: (value) {
+      /* onChanged: (value) {
         mPacote.observacao = value;
-      },
+      }, */
     );
   }
 
@@ -238,20 +259,15 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
 
   Widget get eliminar {
     return TextButton.icon(
-      onPressed: () {
-        setState(() {
-          mPacote.updatedAct = UpdatedAction.ELIMINAR.index;
-          mPacote.updatedBy = currentUser;
-          mPacote.updatedAt = DateTime.now();
-        });
-        //todo: eliminar pacote
-      },
-      icon: Icon(Icons.delete),
       label: Text('Eliminar pacote'),
+      icon: Icon(Icons.delete),
       style: ElevatedButton.styleFrom(
         primary: Colors.red,
         minimumSize: Size(150, 50),
       ),
+      onPressed: () {
+        eliminarPacote();
+      },
     );
   }
 
@@ -261,28 +277,11 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
       icon: Icon(editMode.value
           ? Icons.save_rounded
           : Icons.edit_location_alt_rounded),
-      onPressed: () {
+      onPressed: () async {
+        if (editMode.value) {
+          await salvarAlteracoes();
+        }
         setState(() {
-          if (editMode.value) {
-            Message.showAlerta(
-                context: context,
-                message:
-                    'Tem certeza que deseja salvar as alterações nos dados básicos deste pacote?',
-                onPressed: (value) {
-                  if (value) {
-                    mPacote.updatedAct = UpdatedAction.SALVAR.index;
-                    mPacote.updatedBy = currentUser;
-                    mPacote.updatedAt = DateTime.now();
-                  } else {
-                    /* Future<Pacote> query = (QueryBuilder<Pacote>(Pacote())
-                      ..whereEqualTo('objectId', mPacote.objectId)
-                      ..find()
-                      ..first()) as Future<Pacote>;
-                    query.then((value) => mPacote = value); */
-                  }
-                  Navigator.pop(context);
-                });
-          }
           editMode.value = !editMode.value;
         });
       },
@@ -290,6 +289,129 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
         minimumSize: Size(double.minPositive, double.infinity),
       ),
     );
+  }
+
+  // METODOS
+
+  /// Carrega os dados originais no controladores de texto
+  /// (desfaz alteracoes no pacote)
+  void dadosOriginais() {
+    _controleTipo = mPacote.tipo;
+    _controleId.text = mPacote.identificador;
+    _controlePredio.text = mPacote.localPredio;
+    _controleNivel1.text = mPacote.localNivel1;
+    _controleNivel2.text = mPacote.localNivel2;
+    _controleNivel3.text = mPacote.localNivel3;
+    _controleObs.text = mPacote.observacao;
+  }
+
+  /// Salva as alteracoes no pacote
+  Future<void> salvarAlteracoes() async {
+    // abre mensagem alerta
+    Message.showAlerta(
+        context: context,
+        message:
+            'Tem certeza que deseja salvar as alterações nos dados básicos deste pacote?',
+        onPressed: (value) async {
+          // fecha mensagem alerta
+          Navigator.pop(context);
+          if (value) {
+            // abre progresso
+            Message.showProgressoComMessagem(
+                context: context, message: 'Salvando alterações');
+            // executa alteracoes
+            mPacote.tipo = _controleTipo;
+            mPacote.identificador = _controleId.text;
+            mPacote.localPredio = _controlePredio.text;
+            mPacote.localNivel1 = _controleNivel1.text;
+            mPacote.localNivel2 = _controleNivel2.text;
+            mPacote.localNivel3 = _controleNivel3.text;
+            mPacote.observacao = _controleObs.text;
+            mPacote.updatedAct = UpdatedAction.SALVAR.index;
+            mPacote.updatedBy = currentUser;
+            mPacote.updatedAt = DateTime.now();
+            await mPacote.update();
+            //fecha progresso
+            Navigator.pop(context);
+          } else {
+            dadosOriginais();
+          }
+          // atualiza interface pai
+          widget.parentCall!();
+        });
+  }
+
+  /// Elimina o pacote
+  Future<void> eliminarPacote() async {
+    // verifica se existem documentos vinculados
+    Message.showProgressoComMessagem(
+        context: context, message: 'Verificando vinculos...');
+    QueryBuilder<Documento> query = QueryBuilder<Documento>(Documento())
+      ..whereEqualTo(Documento.keyPacote,
+          (Pacote()..objectId = mPacote.objectId).toPointer());
+    final ParseResponse apiResponse = await query.query();
+    Navigator.pop(context);
+    if (apiResponse.success && apiResponse.results != null) {
+      Message.showErro(
+          context: context,
+          message:
+              'Não é possível eliminar pacotes que possuem documentos vinculados');
+    } else {
+      // abre mensagem alerta
+      Message.showAlerta(
+          context: context,
+          message:
+              'Tem certeza que deseja ELIMINAR o pacote "${mPacote.identificador}"?\n\nEssa ação não pode ser desfeita.',
+          onPressed: (value) async {
+            // fecha mensagem alerta
+            Navigator.pop(context);
+            if (value) {
+              // abre progresso
+              Message.showProgressoComMessagem(
+                  context: context, message: 'Eliminando pacote...');
+              // executa alteracoes
+              mPacote.tipo = _controleTipo;
+              mPacote.identificador = _controleId.text;
+              mPacote.localPredio = _controlePredio.text;
+              mPacote.localNivel1 = _controleNivel1.text;
+              mPacote.localNivel2 = _controleNivel2.text;
+              mPacote.localNivel3 = _controleNivel3.text;
+              mPacote.observacao = _controleObs.text;
+              mPacote.updatedAct = UpdatedAction.ELIMINAR.index;
+              mPacote.updatedBy = currentUser;
+              mPacote.updatedAt = DateTime.now();
+              await salvarEliminado();
+              await mPacote.delete();
+              //fecha progresso
+              Navigator.pop(context);
+              // Voltar a home page
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (BuildContext context) => MyApp(),
+                ),
+              );
+            }
+          });
+    }
+  }
+
+  Future<void> salvarEliminado() async {
+    final eliminado = ParseObject('PacoteEliminado')
+      ..set(Pacote.keyId, mPacote.identificador)
+      ..set(Pacote.keyTipo, mPacote.tipo)
+      ..set(Pacote.keyLocPredio, mPacote.localPredio)
+      ..set(Pacote.keyLocN1, mPacote.localNivel1)
+      ..set(Pacote.keyLocN2, mPacote.localNivel2)
+      ..set(Pacote.keyLocN2, mPacote.localNivel2)
+      ..set(Pacote.keyObs, mPacote.observacao)
+      ..set(Pacote.keyGeoPoint, mPacote.geoPoint)
+      ..set(Pacote.keySelado, mPacote.selado)
+      ..set(Pacote.keySeladoBy, mPacote.seladoBy)
+      ..set(Pacote.keyUpdatedAct, mPacote.updatedAct)
+      ..set(Pacote.keyUpdatedBy, mPacote.updatedBy)
+      ..set(Pacote.keyUpdatedAt, mPacote.updatedAt);
+    await eliminado.save();
   }
 
   /* Future<String> getUpdateByName() async {
@@ -307,6 +429,17 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
   } */
 
   @override
+  void dispose() {
+    _controleId.dispose();
+    _controlePredio.dispose();
+    _controleNivel1.dispose();
+    _controleNivel2.dispose();
+    _controleNivel3.dispose();
+    _controleObs.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return InkWell(
         splashColor: Colors.transparent,
@@ -314,6 +447,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
           FocusScope.of(context).requestFocus(FocusNode());
         },
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             cabecalho,
             Flexible(
@@ -357,7 +491,11 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
                           Container(
                             alignment: Alignment.bottomLeft,
                             padding: EdgeInsets.symmetric(vertical: 32),
-                            child: editMode.value ? eliminar : Container(),
+                            child: editMode.value
+                                ? (tecladoVisivel(context)
+                                    ? Container()
+                                    : eliminar)
+                                : Container(),
                           ),
                         ],
                       ),

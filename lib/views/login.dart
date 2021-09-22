@@ -5,6 +5,9 @@ import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 import '../main.dart';
 import 'messages.dart';
 
+GlobalKey<FormState> _formUser = GlobalKey<FormState>();
+GlobalKey<FormState> _formPass = GlobalKey<FormState>();
+
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
 
@@ -36,6 +39,7 @@ class _LoginPageState extends State<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 TextField(
+                  key: _formUser,
                   controller: controllerUsername,
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
@@ -51,6 +55,7 @@ class _LoginPageState extends State<LoginPage> {
                   height: 8,
                 ),
                 TextField(
+                  key: _formPass,
                   controller: controllerPassword,
                   obscureText: true,
                   keyboardType: TextInputType.visiblePassword,
@@ -123,17 +128,13 @@ class _LoginPageState extends State<LoginPage> {
 
     if (response.success) {
       currentUser = response.result as ParseUser;
-      Navigator.pushReplacement(
+      /* Navigator.pushReplacement(
         context,
         MaterialPageRoute<void>(
           builder: (BuildContext context) => MyApp(),
         ),
-      );
-      /* Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => MyApp()),
-        (route) => false,
       ); */
+      Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
     } else {
       Message.showErro(context: context, message: response.error!.message);
     }
@@ -154,24 +155,13 @@ class UserPage extends StatelessWidget {
       var response = await currentUser!.logout();
       if (response.success) {
         currentUser = null;
-        Navigator.pushReplacement(
+        /* Navigator.pushReplacement(
           context,
           MaterialPageRoute<void>(
             builder: (BuildContext context) => MyApp(),
           ),
-        );
-        /*Message.showSuccess(
-            context: context,
-            message: 'Logout realizado com sucesso!',
-            onPressed: () {
-              
-      
-               Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => MyApp()),
-                (route) => false,
-              ); 
-            });*/
+        ); */
+        Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
       } else {
         Message.showErro(context: context, message: response.error!.message);
       }

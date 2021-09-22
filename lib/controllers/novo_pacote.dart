@@ -188,7 +188,7 @@ class NovoPacote {
       ..set(Pacote.keyId, codigo)
       ..set(Pacote.keyTipo, tipo)
       ..set(Pacote.keyUpdatedBy, currentUser)
-      ..set(Pacote.keyUpdatedAct, UpdatedAction.ABRIR)
+      ..set(Pacote.keyUpdatedAct, UpdatedAction.ABRIR.index)
       ..set(Pacote.keySelado, false)
       ..set(Pacote.keySeladoBy, currentUser)
       ..set('updatedAt', DateTime.now());
