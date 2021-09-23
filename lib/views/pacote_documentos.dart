@@ -16,7 +16,8 @@ class PacoteDocumentos extends StatefulWidget {
   _PacoteDocumentosState createState() => _PacoteDocumentosState();
 }
 
-class _PacoteDocumentosState extends State<PacoteDocumentos> {
+class _PacoteDocumentosState extends State<PacoteDocumentos>
+    with TickerProviderStateMixin {
   List<Documento> lista = [];
   List<Documento> docsSelected = [];
   List<bool> itemTapped = [];
@@ -189,6 +190,7 @@ class _PacoteDocumentosState extends State<PacoteDocumentos> {
     AddDocumentos(
         context: context,
         pacoteId: mPacote.objectId!,
+        provider: this,
         callback: () {
           setState(() {});
         });
@@ -198,6 +200,7 @@ class _PacoteDocumentosState extends State<PacoteDocumentos> {
     DelDocumentos(
         context: context,
         documentosEliminar: docsSelected,
+        provider: this,
         callback: () {
           setState(() {});
         });

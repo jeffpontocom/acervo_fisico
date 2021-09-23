@@ -65,11 +65,11 @@ flutter:
   assets:
     - assets/icons/ic_launcher.png
     - assets/icons/ic_launcher2.png
-    - assets/images/caixaA4.jpg
+    - assets/images/caixaA4.png
     - assets/images/gaveta.jpg
-    - assets/images/indefinido.jpg
-    - assets/images/pastaA3.jpg
-    - assets/images/tubo.jpg
+    - assets/images/indefinido.png
+    - assets/images/pastaA3.png
+    - assets/images/tubo.png
     - assets/images/ufo.png
 
   # An image asset can refer to one or more resolution-specific "variants", see

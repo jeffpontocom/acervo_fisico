@@ -212,31 +212,30 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
         Wrap(
           children: [
             Text('Situação atual: ',
-                style: const TextStyle(color: Colors.grey, fontSize: 15)),
+                style: TextStyle(color: Colors.grey, fontSize: 15)),
           ],
         ),
         Wrap(
           children: [
             Text('• ', style: const TextStyle(color: Colors.grey)),
             Text('${mPacote.actionToString}',
-                style: const TextStyle(
-                    color: Colors.black, fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                    color: Colors.blueGrey, fontWeight: FontWeight.bold)),
             Text(' em ', style: const TextStyle(color: Colors.grey)),
-            Text('${_dateFormat.format(mPacote.updatedAt)}.',
-                style: const TextStyle(
-                    color: Colors.grey, fontWeight: FontWeight.bold)),
+            Text('${_dateFormat.format(mPacote.updatedAt.toLocal())}.',
+                style:
+                    TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
           ],
         ),
         Wrap(
           children: [
             Text(
               '• Editado por ',
-              style: const TextStyle(color: Colors.grey),
+              style: TextStyle(color: Colors.grey),
             ),
             Text(
               mPacote.updatedBy?.username ?? 'Importação de dados',
-              style: const TextStyle(
-                  color: Colors.grey, fontWeight: FontWeight.bold),
+              style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -508,7 +507,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
                 ? Container()
                 : Container(
                     width: double.infinity,
-                    color: Colors.grey.shade300,
+                    color: Colors.grey.shade200,
                     child: Padding(
                       padding:
                           EdgeInsets.symmetric(horizontal: 24, vertical: 12),

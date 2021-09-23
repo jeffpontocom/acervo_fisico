@@ -182,11 +182,8 @@ class LocalizarDocumento {
     List<dynamic> resultados;
     QueryBuilder<Documento> query = QueryBuilder<Documento>(Documento());
 
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const Center(child: CircularProgressIndicator());
-        });
+    Message.showProgressoComMessagem(
+        context: context, message: 'Localizando documento...');
 
     if (idioma == null && folha == null && revisao == null) {
       query = query

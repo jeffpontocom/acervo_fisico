@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:share/share.dart';
 
@@ -10,11 +11,11 @@ class Message {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Sucesso!"),
+          title: Text("Sucesso!"),
           content: Text(message),
           actions: <Widget>[
-            new ElevatedButton(
-              child: const Text("OK"),
+            MaterialButton(
+              child: Text("OK"),
               onPressed: () {
                 Navigator.of(context).pop();
                 if (onPressed != null) {
@@ -36,10 +37,10 @@ class Message {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Erro!"),
+          title: Text("Erro!"),
           content: Text(message),
           actions: <Widget>[
-            new ElevatedButton(
+            MaterialButton(
               child: const Text("OK"),
               onPressed: () {
                 Navigator.of(context).pop();
@@ -59,22 +60,24 @@ class Message {
       required String message,
       Function(bool)? onPressed}) {
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Alerta!"),
+          title: Text("Alerta!"),
           content: Text(message),
           actionsAlignment: MainAxisAlignment.spaceBetween,
           actions: <Widget>[
-            OutlinedButton(
+            MaterialButton(
               child: const Text("CANCELAR"),
+              textColor: Colors.red,
               onPressed: () {
                 if (onPressed != null) {
                   onPressed(false);
                 }
               },
             ),
-            ElevatedButton(
+            MaterialButton(
               child: const Text("OK"),
               onPressed: () {
                 if (onPressed != null) {
@@ -97,8 +100,8 @@ class Message {
           title: const Text("Item não localizado!"),
           content: Text('Verifique o código informado e tente novamente.'),
           actions: <Widget>[
-            new ElevatedButton(
-              child: const Text("OK"),
+            MaterialButton(
+              child: Text("OK"),
               onPressed: () {
                 Navigator.of(context).pop();
                 if (onPressed != null) {
@@ -123,10 +126,10 @@ class Message {
       builder: (context) {
         return SafeArea(
           child: Padding(
-            padding: EdgeInsets.all(24),
+            padding: EdgeInsets.symmetric(vertical: 48, horizontal: 24),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisSize: MainAxisSize.max,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -139,15 +142,28 @@ class Message {
                   ],
                 ),
                 Flexible(
+                  flex: 1,
                   fit: FlexFit.tight,
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Text(message),
+                  child: Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      color: Colors.white,
+                    ),
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.all(16),
+                      child: SelectableText(message),
+                    ),
                   ),
                 ),
                 ElevatedButton.icon(
                   label: Text("Compartilhar"),
                   icon: Icon(Icons.share_rounded),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: Size(150, 50),
+                    maximumSize: Size(500, 50),
+                  ),
                   onPressed: () {
                     Share.share(message);
                   },
@@ -157,13 +173,44 @@ class Message {
           ),
         );
       },
-    );
+    ).then((value) {
+      if (onPressed != null) onPressed();
+    });
   }
 
   static void showProgressoComMessagem(
       {required BuildContext context, required String message}) {
     showDialog(
         barrierLabel: 'Teste',
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            contentPadding: EdgeInsets.all(24),
+            children: [
+              Center(
+                child: Wrap(
+                  spacing: 32,
+                  runSpacing: 32,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    Text(message),
+                  ],
+                ),
+              ),
+            ],
+          );
+        });
+  }
+
+  static void showProgressoComMedidor(
+      {required BuildContext context,
+      required String message,
+      required LinearProgressIndicator progress}) {
+    showDialog(
+        barrierLabel: 'Teste',
+        barrierDismissible: false,
         context: context,
         builder: (BuildContext context) {
           return SimpleDialog(

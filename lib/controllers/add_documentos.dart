@@ -1,15 +1,18 @@
 import 'dart:convert';
 
+import 'package:acervo_fisico/main.dart';
 import 'package:acervo_fisico/models/documento.dart';
 import 'package:acervo_fisico/models/pacote.dart';
 import 'package:acervo_fisico/views/messages.dart';
 import 'package:acervo_fisico/views/pacote_page.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 class AddDocumentos {
   final BuildContext context;
   final String pacoteId;
+  final TickerProviderStateMixin provider;
 
   String _memoValores = '';
 
@@ -36,7 +39,11 @@ class AddDocumentos {
     );
   }
 
-  AddDocumentos({required this.context, required this.pacoteId, callback}) {
+  AddDocumentos(
+      {required this.context,
+      required this.pacoteId,
+      required this.provider,
+      callback}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -68,16 +75,16 @@ class AddDocumentos {
                       height: 24,
                     ),
                     ElevatedButton.icon(
-                      onPressed: () {
-                        _analistarLista(callbackLista: () {
-                          callback();
-                        });
-                      },
                       icon: Icon(Icons.send_and_archive_rounded),
                       label: Text('Analisar e adicionar'),
                       style: ElevatedButton.styleFrom(
                         minimumSize: Size(150, 50),
                       ),
+                      onPressed: () {
+                        _analistarLista(callbackLista: () {
+                          callback();
+                        });
+                      },
                     ),
                     SizedBox(
                       height: 24,
@@ -94,10 +101,49 @@ class AddDocumentos {
 
   void _analistarLista({callbackLista}) async {
     // Progresso
+    int analisados = 0;
+    var controller = AnimationController(
+      vsync: provider,
+      value: 0,
+    );
     showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (BuildContext context) {
-          return const Center(child: CircularProgressIndicator());
+          return StatefulBuilder(
+            builder: (BuildContext context, StateSetter innerState) {
+              controller
+                ..addListener(() {
+                  innerState(() {});
+                });
+              return SimpleDialog(
+                contentPadding: EdgeInsets.all(24),
+                children: [
+                  Column(
+                    children: <Widget>[
+                      Text(
+                        'Progresso',
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      Container(
+                        height: 12,
+                      ),
+                      LinearProgressIndicator(
+                        value: controller.value,
+                        semanticsLabel: 'Linear progress indicator',
+                      ),
+                      Container(
+                        height: 12,
+                      ),
+                      Text(
+                        'Processado ${analisados} de ${_itensParaAnalise.length}',
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
+          );
         });
     // Separar itens e adicionar a lista para analise
     _itensParaAnalise = separarItens(_memoValores);
@@ -129,25 +175,37 @@ class AddDocumentos {
           }
         }
       }
+      analisados++;
+      controller.value = (analisados / _itensParaAnalise.length);
     }
     Navigator.pop(context); // fecha indicador de progresso
     Navigator.pop(context);
     // Abrir relatorio para compartilhamento
+    String s = _itensParaAnalise.length <= 1 ? '' : 's';
+    String item = _itensParaAnalise.length <= 1 ? 'item' : 'itens';
     String relatorio = '''
-Do total de ${_itensParaAnalise.length} item(s) identificado(s) para inclusão no pacote ${mPacote.identificador}:
+*APP Acervo Físico*
+Relatório de inclusões no pacote: "${mPacote.identificador}"
+${_itensParaAnalise.length} $item identificado$s
 
-• ${_validos.length} adicionados com SUCESSO;
+
+ADICIONADOS COM SUCESSO: ${_validos.length}
 
 
-• ${_naoDocumentos.length} identificado(s) com MÁ FORMAÇÃO DE CÓDIGO:
-${_naoDocumentos.toString()};
+ERROS:
 
-• ${_duplicatas.length} locado(s) em OUTRO PACOTE e deve(m) ser verificado(s):
-${_duplicatas.toList().toString()};
+• Formatação do código (verificar): ${_naoDocumentos.length}
+${_naoDocumentos.toSet().toString().replaceAll('{}', 'sem registro').replaceAll('{', '').replaceAll('}', '').replaceAll(', ', ';\n')}.
 
-• ${_falhas.length} FALHA ao tentar registrar no banco de dados (tentar novamente):
-${_falhas.toString()};
+• Em OUTRO PACOTE (conferir in loco): ${_duplicatas.length}
+${_duplicatas.toSet().toString().replaceAll('{}', 'sem registro').replaceAll('{', '').replaceAll('}', '').replaceAll(', ', ';\n')}.
 
+• Falha de conexão (tentar novamente): ${_falhas.length}
+${_falhas.toSet().toString().replaceAll('{}', 'sem registro').replaceAll('{', '').replaceAll('}', '').replaceAll(', ', ';\n')}.
+
+
+Gerado em ${DateFormat("dd/MM/yyyy - HH:mm", "pt_BR").format(DateTime.now())}
+Por ${currentUser!.username}
 ''';
     Message.showRelatorio(
         context: context,

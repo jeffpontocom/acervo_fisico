@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import '../main.dart';
+import 'messages.dart';
 import 'pacote_documentos.dart';
 import 'pacote_localizacao.dart';
 
@@ -89,38 +90,78 @@ class _PacotePageState extends State<PacotePage> {
       return [
         mPacote.selado
             ? TextButton.icon(
+                label: Text('ABRIR'),
+                icon: Icon(Icons.open_in_browser_rounded),
                 onPressed: () {
                   setState(() {
                     abrirPacote();
                   });
                 },
-                icon: Icon(Icons.open_in_browser_rounded),
-                label: Text('ABRIR'),
               )
             : TextButton.icon(
+                label: Text('SELAR'),
+                icon: Icon(Icons.verified_rounded),
                 onPressed: () {
                   setState(() {
                     selarPacote();
                   });
                 },
-                icon: Icon(Icons.verified_rounded),
-                label: Text('SELAR'),
               ),
       ];
     }
   }
 
   void abrirPacote() {
-    mPacote.updatedAct = UpdatedAction.ABRIR.index;
-    mPacote.selado = false;
-    mPacote.seladoBy = currentUser;
-    mPacote.updatedAt = DateTime.now();
+    // abre mensagem alerta
+    Message.showAlerta(
+        context: context,
+        message:
+            'Tem certeza que deseja ABRIR esse pacote?\n\nEssa ação implica em responsabilidade sobre os itens adicionados e/ou excluidos. Execute essa ação apenas se estiver com o pacote em mãos.',
+        onPressed: (value) async {
+          // fecha mensagem alerta
+          Navigator.pop(context);
+          if (value) {
+            // abre progresso
+            Message.showProgressoComMessagem(
+                context: context, message: 'Abrindo pacote...');
+            // executa alteracoes
+            mPacote.updatedAct = UpdatedAction.ABRIR.index;
+            mPacote.selado = false;
+            mPacote.seladoBy = currentUser;
+            //mPacote.updatedAt = DateTime.now().toUtc();
+            await mPacote.update();
+            //fecha progresso
+            Navigator.pop(context);
+          } else {}
+          // atualiza interface pai
+          myCall();
+        });
   }
 
   void selarPacote() {
-    mPacote.updatedAct = UpdatedAction.SELAR.index;
-    mPacote.selado = true;
-    mPacote.seladoBy = currentUser;
-    mPacote.updatedAt = DateTime.now();
+    // abre mensagem alerta
+    Message.showAlerta(
+        context: context,
+        message:
+            'Tem certeza que deseja SELAR esse pacote?\n\nEssa ação implica em responsabilidade sobre os itens adicionados e/ou excluidos. Execute essa ação apenas se estiver com o pacote em mãos.\n\nNão esqueça de assinar o selo!',
+        onPressed: (value) async {
+          // fecha mensagem alerta
+          Navigator.pop(context);
+          if (value) {
+            // abre progresso
+            Message.showProgressoComMessagem(
+                context: context, message: 'Selando pacote...');
+            // executa alteracoes
+            mPacote.updatedAct = UpdatedAction.SELAR.index;
+            mPacote.selado = true;
+            mPacote.seladoBy = currentUser;
+            //mPacote.updatedAt = DateTime.now().toUtc();
+            await mPacote.update();
+            //fecha progresso
+            Navigator.pop(context);
+          } else {}
+          // atualiza interface pai
+          myCall();
+        });
   }
 }

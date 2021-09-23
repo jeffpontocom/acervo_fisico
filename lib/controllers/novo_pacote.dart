@@ -21,12 +21,12 @@ class NovoPacote {
         children: [
           Container(
             margin: EdgeInsets.only(bottom: 24),
-            width: 64,
-            height: 64,
+            width: 128,
+            height: 128,
             decoration: new BoxDecoration(
               shape: BoxShape.rectangle,
-              border: Border.all(color: Colors.lightBlue, width: 1),
-              borderRadius: BorderRadius.all(Radius.circular(16.0)),
+              //border: Border.all(color: Colors.lightBlue, width: 1),
+              //borderRadius: BorderRadius.all(Radius.circular(16.0)),
               image: new DecorationImage(
                 fit: BoxFit.cover,
                 image: getTipoPacoteImagem(_pacoteTipo),

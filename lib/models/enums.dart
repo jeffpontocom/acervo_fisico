@@ -27,19 +27,19 @@ AssetImage getTipoPacoteImagem(int index) {
   String assetName;
   switch (index) {
     case 1:
-      assetName = 'assets/images/tubo.jpg';
+      assetName = 'assets/images/tubo.png';
       break;
     case 2:
-      assetName = 'assets/images/caixaA4.jpg';
+      assetName = 'assets/images/caixaA4.png';
       break;
     case 3:
-      assetName = 'assets/images/pastaA3.jpg';
+      assetName = 'assets/images/pastaA3.png';
       break;
     case 4:
       assetName = 'assets/images/gaveta.jpg';
       break;
     default:
-      assetName = 'assets/images/indefinido.jpg';
+      assetName = 'assets/images/indefinido.png';
       break;
   }
   return AssetImage(assetName);

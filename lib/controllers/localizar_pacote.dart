@@ -9,11 +9,9 @@ class LocalizarPacote {
   final String? value;
 
   LocalizarPacote(this.context, this.value) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const Center(child: CircularProgressIndicator());
-        });
+    Message.showProgressoComMessagem(
+        context: context, message: 'Localizando pacote...');
+
     if (value == null || value!.trim().isEmpty) {
       Navigator.pop(context); // Finaliza indicador de progresso.
       Message.showErro(
@@ -84,8 +82,6 @@ class LocalizarPacote {
                               ),
                               onTap: () {
                                 _irParaPacote(pacotes[index]);
-                                //LocalizarPacote(
-                                //    context, pacotes[index].identificador);
                               });
                         }),
                   ),
@@ -144,7 +140,8 @@ Future<List<dynamic>> executarBusca(value) async {
       QueryBuilder.or(Pacote(), [queryExata, queryContem])
         ..orderByAscending(Pacote.keyId)
         // necessario para trazer as informacoes do objeto (nao apenas ID)
-        ..includeObject([Pacote.keyUpdatedBy]);
+        ..includeObject([Pacote.keyUpdatedBy])
+        ..includeObject([Pacote.keySeladoBy]);
 
   final ParseResponse apiResponse = await query.query();
   if (apiResponse.success && apiResponse.results != null) {
