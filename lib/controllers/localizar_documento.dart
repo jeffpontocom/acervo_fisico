@@ -23,6 +23,14 @@ class LocalizarDocumento {
     // Normalizar o termo digitado
     query = query.trim().toUpperCase();
 
+    if (query.isEmpty) {
+      // Apresenta erro
+      Message.showErro(
+          context: context,
+          message: 'Nenhum valor para documento foi informado.');
+      return;
+    }
+
     // Verificar quantidade de caracteres minima (6000DC15200)
     if (query.length < 11) {
       print('Query tem menos de 11 caracteres');
@@ -227,12 +235,16 @@ class LocalizarDocumento {
       ..orderByAscending('revisao');
 
     final ParseResponse apiResponse = await query.query();
+    Navigator.pop(context); // Finaliza indicador de progresso.
+    if (apiResponse.statusCode == -1) {
+      Message.showSemConexao(context: context);
+      return;
+    }
     if (apiResponse.success && apiResponse.results != null) {
       resultados = apiResponse.results ?? [];
     } else {
       resultados = [];
     }
-    Navigator.pop(context); // Finaliza indicador de progresso.
     _apresentarResultados(resultados.cast());
   }
 
@@ -244,6 +256,7 @@ class LocalizarDocumento {
     }
     // Se apenas um documento localizado, vai direto ao pacote
     else if (documentos.length == 1) {
+      //irParaPacote(documentos.first.pacote);
       LocalizarPacote(context, documentos.first.pacote?.identificador);
     }
     // Se diversos documentos localizados, mostrar dialogo de selecao
@@ -282,8 +295,6 @@ class LocalizarDocumento {
                                 documentos[index].toString(),
                               ),
                               onTap: () {
-                                print(documentos[index].pacote?.identificador ??
-                                    "sem id");
                                 LocalizarPacote(
                                     context,
                                     documentos[index].pacote?.identificador ??

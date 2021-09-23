@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'login.dart';
 
 enum contexto { documentos, pacotes }
-GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
 class MyApp extends StatelessWidget {
   @override
@@ -48,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Variaveis para Botoes
   late List<bool> _isSelected = [true, false]; //um boleano para cada botão
-  final List<Color> _cores = [Colors.red, Colors.blue];
+  final List<Color> _cores = [Colors.teal, Colors.blue];
 
   // Variaveis para campo de busca
   TextEditingController _searchController = TextEditingController();
@@ -90,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Column(
       children: <Widget>[
         Image(
-          image: AssetImage('assets/icons/ic_launcher2.png'),
+          image: AssetImage('assets/icons/ic_launcher.png'),
           height: 128,
           width: 128,
         ),
@@ -113,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget get boxPesquisa {
     return TextFormField(
-      key: _formKey,
+      key: null,
       controller: _searchController,
       onFieldSubmitted: (value) {
         _localizar(value);
@@ -267,11 +266,12 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: (currentUser != null && !tecladoVisivel(context))
           ? FloatingActionButton.extended(
+              label: Text('Novo pacote'),
+              icon: Icon(Icons.add),
               onPressed: () {
                 _novoPacote();
               },
-              label: Text('Novo pacote'),
-              icon: Icon(Icons.add),
+              heroTag: null,
             )
           : null,
     );

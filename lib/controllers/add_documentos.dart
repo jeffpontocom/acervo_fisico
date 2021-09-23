@@ -190,18 +190,19 @@ ${_itensParaAnalise.length} $item identificado$s
 
 
 ADICIONADOS COM SUCESSO: ${_validos.length}
+${_validos.toSet().toString().replaceAll('{}', '- nenhum!').replaceAll('{', '- ').replaceAll('}', '.').replaceAll(', ', ';\n- ')}
 
 
 ERROS:
 
-• Formatação do código (verificar): ${_naoDocumentos.length}
-${_naoDocumentos.toSet().toString().replaceAll('{}', 'sem registro').replaceAll('{', '').replaceAll('}', '').replaceAll(', ', ';\n')}.
+Formatação do código (verificar): ${_naoDocumentos.length}
+${_naoDocumentos.toSet().toString().replaceAll('{}', '- nenhum!').replaceAll('{', '- ').replaceAll('}', '.').replaceAll(', ', ';\n- ')}
 
-• Em OUTRO PACOTE (conferir in loco): ${_duplicatas.length}
-${_duplicatas.toSet().toString().replaceAll('{}', 'sem registro').replaceAll('{', '').replaceAll('}', '').replaceAll(', ', ';\n')}.
+Em OUTRO PACOTE (conferir in loco): ${_duplicatas.length}
+${_duplicatas.toSet().toString().replaceAll('{}', '- nenhum!').replaceAll('{', '- ').replaceAll('}', '.').replaceAll(', ', ';\n- ')}
 
-• Falha de conexão (tentar novamente): ${_falhas.length}
-${_falhas.toSet().toString().replaceAll('{}', 'sem registro').replaceAll('{', '').replaceAll('}', '').replaceAll(', ', ';\n')}.
+Falha de conexão (tentar novamente): ${_falhas.length}
+${_falhas.toSet().toString().replaceAll('{}', '- sem registro de falhas!').replaceAll('{', '- ').replaceAll('}', '.').replaceAll(', ', ';\n- ')}
 
 
 Gerado em ${DateFormat("dd/MM/yyyy - HH:mm", "pt_BR").format(DateTime.now())}

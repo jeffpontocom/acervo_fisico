@@ -13,11 +13,11 @@ class LocalizarPacote {
         context: context, message: 'Localizando pacote...');
 
     if (value == null || value!.trim().isEmpty) {
-      Navigator.pop(context); // Finaliza indicador de progresso.
+      // Finaliza indicador de progresso.
+      Navigator.pop(context);
+      // Apresenta erro
       Message.showErro(
-          context: context,
-          message:
-              'O item atual não está vinculado a nenhum pacote.\nVerificar cadastro e realizar buscas no físico.');
+          context: context, message: 'Nenhum valor para pacote foi informado.');
       return;
     }
     _aguardarBusca();
@@ -26,6 +26,10 @@ class LocalizarPacote {
   void _aguardarBusca() async {
     List<dynamic> resultados = await executarBusca(value!.trim().toUpperCase());
     Navigator.pop(context); // Finaliza indicador de progresso.
+    if (resultados.first == -1) {
+      Message.showSemConexao(context: context);
+      return;
+    }
     _apresentarResultados(resultados.cast());
   }
 
@@ -140,10 +144,12 @@ Future<List<dynamic>> executarBusca(value) async {
       QueryBuilder.or(Pacote(), [queryExata, queryContem])
         ..orderByAscending(Pacote.keyId)
         // necessario para trazer as informacoes do objeto (nao apenas ID)
-        ..includeObject([Pacote.keyUpdatedBy])
-        ..includeObject([Pacote.keySeladoBy]);
+        ..includeObject([Pacote.keyUpdatedBy, Pacote.keySeladoBy]);
 
   final ParseResponse apiResponse = await query.query();
+  if (apiResponse.statusCode == -1) {
+    return [-1];
+  }
   if (apiResponse.success && apiResponse.results != null) {
     return apiResponse.results ?? [];
   } else {

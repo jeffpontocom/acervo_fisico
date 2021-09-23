@@ -172,6 +172,9 @@ class _PacoteDocumentosState extends State<PacoteDocumentos>
       ..orderByAscending('folha');
     final apiResponse = await query.query();
 
+    if (apiResponse.statusCode == -1) {
+      return [-1];
+    }
     if (apiResponse.success && apiResponse.results != null) {
       return apiResponse.results ?? [];
     } else {
@@ -223,6 +226,24 @@ class _PacoteDocumentosState extends State<PacoteDocumentos>
           } else if (snapshot.hasData) {
             if (snapshot.data!.isEmpty) {
               lista = [];
+            } else if (snapshot.data!.first == -1) {
+              return Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image(
+                      image: AssetImage('assets/images/band-aid.png'),
+                      height: 128,
+                      width: 128,
+                    ),
+                    Container(height: 24),
+                    Text(
+                      'Sem conexão com a internet.',
+                      style: Theme.of(context).textTheme.subtitle1,
+                    )
+                  ],
+                ),
+              );
             } else {
               lista = snapshot.data!.cast();
             }

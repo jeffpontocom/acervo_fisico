@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:share/share.dart';
 
 class Message {
@@ -47,6 +49,27 @@ class Message {
                 if (onPressed != null) {
                   onPressed();
                 }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  static void showSemConexao({required BuildContext context}) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Sem conexão"),
+          content: Text(
+              'Impossível conectar ao banco de dados.\nVerifique sua internet!'),
+          actions: <Widget>[
+            MaterialButton(
+              child: const Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -158,14 +181,22 @@ class Message {
                   ),
                 ),
                 ElevatedButton.icon(
-                  label: Text("Compartilhar"),
-                  icon: Icon(Icons.share_rounded),
+                  label: Text(kIsWeb ? 'Copiar' : 'Compartilhar'),
+                  icon: Icon(kIsWeb ? Icons.copy_rounded : Icons.share_rounded),
                   style: ElevatedButton.styleFrom(
                     minimumSize: Size(150, 50),
                     maximumSize: Size(500, 50),
                   ),
                   onPressed: () {
-                    Share.share(message);
+                    kIsWeb
+                        ? Clipboard.setData(new ClipboardData(text: message))
+                            .then((_) {
+                            Message.showSucesso(
+                                context: context,
+                                message:
+                                    'Relatório copiado para área de transferência');
+                          })
+                        : Share.share(message);
                   },
                 ),
               ],
