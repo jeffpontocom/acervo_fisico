@@ -47,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Variaveis para Botoes
   late List<bool> _isSelected = [true, false]; //um boleano para cada botão
-  final List<Color> _cores = [Colors.teal, Colors.blue];
+  final List<Color> _cores = [Colors.grey.shade800, Colors.blue];
 
   // Variaveis para campo de busca
   TextEditingController _searchController = TextEditingController();
@@ -244,10 +244,6 @@ class _MyHomePageState extends State<MyHomePage> {
           runSpacing: 32,
           spacing: 32,
           children: [
-            /* SizedBox(
-              width: 200,
-              child: logotipo,
-            ), */
             logotipo,
             ConstrainedBox(
               constraints: BoxConstraints(minWidth: 300, maxWidth: 600),
@@ -259,8 +255,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             ),
-            //boxPesquisa,
-            //boxSelectContexto,
           ],
         ),
       ),

@@ -45,23 +45,58 @@ AssetImage getTipoPacoteImagem(int index) {
   return AssetImage(assetName);
 }
 
-enum UpdatedAction {
+enum PacoteAction {
+  CRIAR,
   ABRIR,
   SELAR,
+  EDITAR, // não utilizar
   SALVAR,
+  ADD_DOC,
+  DEL_DOC,
   ELIMINAR,
 }
 
-String getUpdatedAction(int index) {
+String getPacoteActionString(int index) {
   switch (index) {
     case 0:
-      return 'Aberto';
+      return 'Criado';
     case 1:
-      return 'Selado';
+      return 'Aberto';
     case 2:
-      return 'Editado';
+      return 'Selado';
     case 3:
+      return 'Em edição';
+    case 4:
+      return 'Editado';
+    case 5:
+      return 'Documentos adicionados';
+    case 6:
+      return 'Documentos excluidos';
+    case 7:
       return 'Eliminado';
+    default:
+      return '[Ação indefinida]';
+  }
+}
+
+String getTipoRelatorioString(int index) {
+  switch (index) {
+    case 0:
+      return 'Criação do pacote';
+    case 1:
+      return 'Abertura do pacote';
+    case 2:
+      return 'Selamento do pacote';
+    case 3:
+      return 'Cadastro posto em edição';
+    case 4:
+      return 'Alteração de dados cadastrais';
+    case 5:
+      return 'Inclusão de documentos';
+    case 6:
+      return 'Exclusão de documentos';
+    case 7:
+      return 'Eliminação do pacote';
     default:
       return '[Ação indefinida]';
   }

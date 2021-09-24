@@ -26,7 +26,7 @@ class LocalizarPacote {
   void _aguardarBusca() async {
     List<dynamic> resultados = await executarBusca(value!.trim().toUpperCase());
     Navigator.pop(context); // Finaliza indicador de progresso.
-    if (resultados.first == -1) {
+    if (resultados.isNotEmpty && resultados.first == -1) {
       Message.showSemConexao(context: context);
       return;
     }
@@ -81,10 +81,14 @@ class LocalizarPacote {
                         itemCount: pacotes.length,
                         itemBuilder: (context, index) {
                           return ListTile(
+                              leading: Icon(pacotes[index].selado
+                                  ? Icons.verified_rounded
+                                  : Icons.open_in_browser_rounded),
                               title: Text(
                                 pacotes[index].identificador,
                               ),
                               onTap: () {
+                                Navigator.pop(context); // fecha o bottom dialog
                                 _irParaPacote(pacotes[index]);
                               });
                         }),

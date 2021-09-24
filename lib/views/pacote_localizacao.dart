@@ -1,3 +1,4 @@
+import 'package:acervo_fisico/controllers/salvar_relatorio.dart';
 import 'package:acervo_fisico/main.dart';
 import 'package:acervo_fisico/models/documento.dart';
 import 'package:acervo_fisico/models/enums.dart';
@@ -5,7 +6,6 @@ import 'package:acervo_fisico/models/pacote.dart';
 import 'package:acervo_fisico/src/common.dart';
 import 'package:acervo_fisico/styles/app_styles.dart';
 import 'package:acervo_fisico/views/messages.dart';
-import 'package:acervo_fisico/views/pacote_documentos.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
@@ -114,15 +114,13 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
     return TextFormField(
       controller: _controleId,
       enabled: editMode.value,
+      textInputAction: TextInputAction.next,
       decoration: mTextField.copyWith(
         labelText: 'Identificador',
         hintText: 'Informe o código do pacote',
       ),
       style: TextStyle(
           fontSize: 32, fontWeight: FontWeight.bold, color: Colors.blue),
-      /* onChanged: (value) {        
-        mPacote.identificador = value.toLowerCase().trim();
-      }, */
     );
   }
 
@@ -130,14 +128,12 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
     return TextFormField(
       controller: _controlePredio,
       enabled: editMode.value,
+      textInputAction: TextInputAction.next,
       decoration: mTextField.copyWith(
         labelText: 'Prédio',
         icon: Icon(Icons.apartment_rounded),
       ),
       style: TextStyle(fontSize: 24),
-      /* onChanged: (value) {
-        mPacote.localPredio = value.toLowerCase().trim();
-      }, */
     );
   }
 
@@ -145,14 +141,12 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
     return TextFormField(
       controller: _controleNivel1,
       enabled: editMode.value,
+      textInputAction: TextInputAction.next,
       decoration: mTextField.copyWith(
         labelText: 'Estante',
         icon: Icon(Icons.apps_rounded),
       ),
       style: TextStyle(fontSize: 24),
-      /* onChanged: (value) {
-        mPacote.localNivel1 = value.toLowerCase().trim();
-      }, */
     );
   }
 
@@ -160,14 +154,12 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
     return TextFormField(
       controller: _controleNivel2,
       enabled: editMode.value,
+      textInputAction: TextInputAction.next,
       decoration: mTextField.copyWith(
         labelText: 'Divisão',
         icon: Icon(Icons.align_vertical_bottom_rounded),
       ),
       style: TextStyle(fontSize: 24),
-      /* onChanged: (value) {
-        mPacote.localNivel2 = value.toLowerCase().trim();
-      }, */
     );
   }
 
@@ -175,14 +167,12 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
     return TextFormField(
       controller: _controleNivel3,
       enabled: editMode.value,
+      textInputAction: TextInputAction.next,
       decoration: mTextField.copyWith(
         labelText: 'Andar',
         icon: Icon(Icons.align_horizontal_left_rounded),
       ),
       style: TextStyle(fontSize: 24),
-      /* onChanged: (value) {
-        mPacote.localNivel3 = value.toLowerCase().trim();
-      }, */
     );
   }
 
@@ -199,9 +189,6 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
         labelText: 'Observações:',
         floatingLabelBehavior: FloatingLabelBehavior.always,
       ),
-      /* onChanged: (value) {
-        mPacote.observacao = value;
-      }, */
     );
   }
 
@@ -318,6 +305,23 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
             // abre progresso
             Message.showProgressoComMessagem(
                 context: context, message: 'Salvando alterações');
+            // Relatorio
+            String relatorio = '''
+*APP Acervo Físico*
+Relatório de EDIÇÃO do pacote: "${_controleId.text}"
+
+Dados anteriores a modificação:
+IDENTIFICADOR: ${mPacote.identificador != _controleId.text ? mPacote.identificador : "[sem alteração]"}
+TIPO: ${mPacote.tipo != _controleTipo ? mPacote.tipoToString : "[sem alteração]"}
+PRÉDIO: ${mPacote.localPredio != _controlePredio.text ? mPacote.localPredio : "[sem alteração]"}
+ESTANTE: ${mPacote.localNivel1 != _controleNivel1.text ? mPacote.localNivel1 : "[sem alteração]"}
+DIVISÃO: ${mPacote.localNivel2 != _controleNivel2.text ? mPacote.localNivel2 : "[sem alteração]"}
+ANDAR: ${mPacote.localNivel3 != _controleNivel3.text ? mPacote.localNivel3 : "[sem alteração]"}
+Observações: ${mPacote.observacao != _controleObs.text ? mPacote.observacao : "[sem alteração]"}
+
+Executado em ${DateFormat("dd/MM/yyyy - HH:mm", "pt_BR").format(DateTime.now())}
+Por ${currentUser!.username}
+''';
             // executa alteracoes
             mPacote.tipo = _controleTipo;
             mPacote.identificador = _controleId.text;
@@ -326,10 +330,15 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
             mPacote.localNivel2 = _controleNivel2.text;
             mPacote.localNivel3 = _controleNivel3.text;
             mPacote.observacao = _controleObs.text;
-            mPacote.updatedAct = UpdatedAction.SALVAR.index;
+            mPacote.updatedAct = PacoteAction.SALVAR.index;
             mPacote.updatedBy = currentUser;
             mPacote.updatedAt = DateTime.now();
             await mPacote.update();
+            await salvarRelatorio(
+              PacoteAction.SALVAR.index,
+              relatorio,
+              mPacote,
+            );
             //fecha progresso
             Navigator.pop(context);
           } else {
@@ -368,18 +377,36 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
               // abre progresso
               Message.showProgressoComMessagem(
                   context: context, message: 'Eliminando pacote...');
-              // executa alteracoes
-              mPacote.tipo = _controleTipo;
-              mPacote.identificador = _controleId.text;
-              mPacote.localPredio = _controlePredio.text;
-              mPacote.localNivel1 = _controleNivel1.text;
-              mPacote.localNivel2 = _controleNivel2.text;
-              mPacote.localNivel3 = _controleNivel3.text;
-              mPacote.observacao = _controleObs.text;
-              mPacote.updatedAct = UpdatedAction.ELIMINAR.index;
+              // Relatorio
+              String relatorio = '''
+*APP Acervo Físico*
+Relatório de ELIMINAÇÃO do pacote: "${mPacote.identificador}"
+
+Dados do pacote:
+IDENTIFICADOR: ${mPacote.identificador}
+TIPO: ${mPacote.tipoToString}
+PRÉDIO: ${mPacote.localPredio}
+ESTANTE: ${mPacote.localNivel1}
+DIVISÃO: ${mPacote.localNivel2}
+ANDAR: ${mPacote.localNivel3}
+
+Observações (anteriores): ${mPacote.observacao}
+Observações (novas): ${_controleObs.text}
+
+Executado em ${DateFormat("dd/MM/yyyy - HH:mm", "pt_BR").format(DateTime.now())}
+Por ${currentUser!.username}
+''';
+              // NAO executar alteracoes
+              // Apenas campos de updated
+              mPacote.updatedAct = PacoteAction.ELIMINAR.index;
               mPacote.updatedBy = currentUser;
               mPacote.updatedAt = DateTime.now();
               await salvarEliminado();
+              await salvarRelatorio(
+                PacoteAction.ELIMINAR.index,
+                relatorio,
+                mPacote,
+              );
               await mPacote.delete();
               //fecha progresso
               Navigator.pop(context);
@@ -412,20 +439,6 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
       ..set(Pacote.keyUpdatedAt, mPacote.updatedAt);
     await eliminado.save();
   }
-
-  /* Future<String> getUpdateByName() async {
-    if (pacote.updatedBy?.objectId == null) {
-      return 'Importação dos dados';
-    }
-    final resp =
-        await ParseUser.forQuery().getObject(pacote.updatedBy!.objectId!);
-    if (resp.success && resp.results != null) {
-      return (resp.results!.first as ParseUser).username ??
-          'Usuário não identificado';
-    } else {
-      return 'Importação dos dados';
-    }
-  } */
 
   @override
   void dispose() {

@@ -291,6 +291,7 @@ class LocalizarDocumento {
                         itemCount: documentos.length,
                         itemBuilder: (context, index) {
                           return ListTile(
+                              leading: Icon(Icons.document_scanner_rounded),
                               title: Text(
                                 documentos[index].toString(),
                               ),

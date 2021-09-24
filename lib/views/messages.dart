@@ -64,7 +64,7 @@ class Message {
         return AlertDialog(
           title: Text("Sem conexão"),
           content: Text(
-              'Impossível conectar ao banco de dados.\nVerifique sua internet!'),
+              'Impossível conectar ao banco de dados. Verifique sua internet!'),
           actions: <Widget>[
             MaterialButton(
               child: const Text("OK"),

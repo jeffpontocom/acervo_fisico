@@ -6,6 +6,7 @@ class Documento extends ParseObject implements ParseCloneable {
   Documento.clone() : this();
 
   static const String TABLE_NAME = 'TesteDocumento';
+
   static const String keyAssuntoBase = 'assuntoBase';
   static const String keyTipo = 'tipo';
   static const String keySequencial = 'sequencial';
@@ -14,8 +15,7 @@ class Documento extends ParseObject implements ParseCloneable {
   static const String keyRevisao = 'revisao';
   static const String keyPacote = 'pacote';
 
-  /// Looks strangely hacky but due to Flutter not using reflection, we have to
-  /// mimic a clone
+  /// Simula a funcao clone devido ao Flutter nao utilizar reflexao
   @override
   clone(map) => Documento.clone()..fromJson(map);
 

@@ -1,3 +1,4 @@
+import 'package:acervo_fisico/controllers/salvar_relatorio.dart';
 import 'package:acervo_fisico/main.dart';
 import 'package:acervo_fisico/models/enums.dart';
 import 'package:acervo_fisico/models/pacote.dart';
@@ -5,6 +6,7 @@ import 'package:acervo_fisico/styles/app_styles.dart';
 import 'package:acervo_fisico/views/messages.dart';
 import 'package:acervo_fisico/views/pacote_page.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 class NovoPacote {
@@ -160,14 +162,31 @@ class NovoPacote {
     // Criacao
     if (consultaPrevia.isEmpty) {
       var pacote = await salvarRegistro(codigo, tipo);
-      Navigator.pop(context); // Fecha progresso
       if (pacote == null) {
+        Navigator.pop(context); // Fecha progresso
         Message.showErro(
             context: context,
             message:
                 "Não foi possível criar o pacote. Verifique sua conexão e/ou login e tente mais tarde novamente.");
       } else {
-        Navigator.pop(context); // Fecha bottom sheet
+        // Relatorio
+        String relatorio = '''
+*APP Acervo Físico*
+Relatório de CRIAÇÃO do pacote: "${pacote.identificador}"
+
+Executado em ${DateFormat("dd/MM/yyyy - HH:mm", "pt_BR").format(DateTime.now())}
+Por ${currentUser!.username}
+''';
+        await salvarRelatorio(
+          PacoteAction.CRIAR.index,
+          relatorio,
+          pacote,
+        );
+        // Fecha progresso
+        Navigator.pop(context);
+        // Fecha bottom dialog
+        Navigator.pop(context);
+        // Abre ficha do pacote
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -188,10 +207,10 @@ class NovoPacote {
       ..set(Pacote.keyId, codigo)
       ..set(Pacote.keyTipo, tipo)
       ..set(Pacote.keyUpdatedBy, currentUser)
-      ..set(Pacote.keyUpdatedAct, UpdatedAction.ABRIR.index)
+      ..set(Pacote.keyUpdatedAct, PacoteAction.ABRIR.index)
       ..set(Pacote.keySelado, false)
-      ..set(Pacote.keySeladoBy, currentUser)
-      ..set('updatedAt', DateTime.now());
+      ..set(Pacote.keySeladoBy, currentUser);
+    //..set('updatedAt', DateTime.now());
     final ParseResponse apiResponse = await registration.save();
     if (apiResponse.success) {
       return apiResponse.result;

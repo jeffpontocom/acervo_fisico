@@ -1,6 +1,11 @@
+import 'package:acervo_fisico/controllers/salvar_relatorio.dart';
+import 'package:acervo_fisico/main.dart';
 import 'package:acervo_fisico/models/documento.dart';
+import 'package:acervo_fisico/models/enums.dart';
 import 'package:acervo_fisico/views/messages.dart';
+import 'package:acervo_fisico/views/pacote_page.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 class DelDocumentos {
@@ -30,8 +35,10 @@ class DelDocumentos {
   }
 
   void _analisarLista({callbackLista}) async {
+    List<Documento> eliminados = [];
+    List<Documento> falhas = [];
     // Progresso
-    int qtdEliminados = 0;
+    int qtdExecutada = 0;
     var controller = AnimationController(
       vsync: provider,
       value: 0,
@@ -60,14 +67,19 @@ class DelDocumentos {
                       ),
                       LinearProgressIndicator(
                         value: controller.value,
-                        semanticsLabel: 'Linear progress indicator',
+                        semanticsLabel: 'Indicador de progresso',
                       ),
                       Container(
                         height: 12,
                       ),
                       Text(
-                        'Eliminado ${qtdEliminados} de ${documentosEliminar.length}',
+                        'Eliminado $qtdExecutada de ${documentosEliminar.length}',
                       ),
+                      qtdExecutada == documentosEliminar.length
+                          ? Text(
+                              'Gerando relatorio...',
+                            )
+                          : const SizedBox(),
                     ],
                   ),
                 ],
@@ -76,17 +88,49 @@ class DelDocumentos {
           );
         });
     // Exclusões
-    //Message.showProgressoComMessagem(
-    //    context: context, message: 'Eliminando itens...');
     for (Documento doc in documentosEliminar) {
       if (await eliminarItem(doc.objectId!)) {
-        qtdEliminados++;
+        eliminados.add(doc);
+        qtdExecutada++;
+      } else {
+        falhas.add(doc);
       }
-      controller.value = (qtdEliminados / documentosEliminar.length);
+      controller.value = (qtdExecutada / documentosEliminar.length);
     }
+    // Relatorio
+    String relatorio = '''
+*APP Acervo Físico*
+Relatório de EXCLUSÕES no pacote: "${mPacote.identificador}"
+${documentosEliminar.length} itens selecionados
+
+
+EXCLUIDOS COM SUCESSO: ${eliminados.length}
+${eliminados.toSet().toString().replaceAll('{}', '- nenhum!').replaceAll('{', '- ').replaceAll('}', '.').replaceAll(', ', ';\n- ')}
+
+
+ERROS: 
+Falha de conexão (tentar novamente): ${falhas.length}
+${falhas.toSet().toString().replaceAll('{}', '- sem registro de falhas!').replaceAll('{', '- ').replaceAll('}', '.').replaceAll(', ', ';\n- ')}
+
+
+Executado em ${DateFormat("dd/MM/yyyy - HH:mm", "pt_BR").format(DateTime.now())}
+Por ${currentUser!.username}
+''';
+    // Salva relatorio
+    await salvarRelatorio(
+      PacoteAction.DEL_DOC.index,
+      relatorio,
+      mPacote,
+    );
+    // Fecha indicador de progresso
     Navigator.pop(context);
-    print('$qtdEliminados documentos eliminados');
-    callbackLista();
+    // Apresenta relatorio
+    Message.showRelatorio(
+        context: context,
+        message: relatorio,
+        onPressed: () {
+          callbackLista();
+        });
   }
 
   Future<bool> eliminarItem(String documentoId) async {

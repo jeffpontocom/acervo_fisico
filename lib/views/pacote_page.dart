@@ -1,7 +1,10 @@
+import 'package:acervo_fisico/controllers/salvar_relatorio.dart';
 import 'package:acervo_fisico/models/enums.dart';
 import 'package:acervo_fisico/models/pacote.dart';
+import 'package:acervo_fisico/views/pacote_relatorios.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 
 import '../main.dart';
 import 'messages.dart';
@@ -43,7 +46,7 @@ class _PacotePageState extends State<PacotePage> {
   Widget build(BuildContext context) {
     initializeDateFormatting('pt_BR', null);
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           titleSpacing: 0,
@@ -66,6 +69,7 @@ class _PacotePageState extends State<PacotePage> {
             tabs: [
               Tab(icon: Icon(Icons.place), text: "Localização"),
               Tab(icon: Icon(Icons.list_rounded), text: "Documentos"),
+              Tab(icon: Icon(Icons.history_rounded), text: "Histórico"),
             ],
           ),
         ),
@@ -73,6 +77,7 @@ class _PacotePageState extends State<PacotePage> {
           children: [
             PacoteLocalizacao(parentCall: myCall),
             PacoteDocumentos(),
+            PacoteRelatorios(),
           ],
         ),
       ),
@@ -125,11 +130,25 @@ class _PacotePageState extends State<PacotePage> {
             Message.showProgressoComMessagem(
                 context: context, message: 'Abrindo pacote...');
             // executa alteracoes
-            mPacote.updatedAct = UpdatedAction.ABRIR.index;
+            mPacote.updatedAct = PacoteAction.ABRIR.index;
             mPacote.selado = false;
             mPacote.seladoBy = currentUser;
             //mPacote.updatedAt = DateTime.now().toUtc();
             await mPacote.update();
+
+            // Relatorio
+            String relatorio = '''
+*APP Acervo Físico*
+Relatório de ABERTURA do pacote: "${mPacote.identificador}"
+
+Executado em ${DateFormat("dd/MM/yyyy - HH:mm", "pt_BR").format(DateTime.now())}
+Por ${currentUser!.username}
+''';
+            await salvarRelatorio(
+              PacoteAction.ABRIR.index,
+              relatorio,
+              mPacote,
+            );
             //fecha progresso
             Navigator.pop(context);
           } else {}
@@ -152,11 +171,25 @@ class _PacotePageState extends State<PacotePage> {
             Message.showProgressoComMessagem(
                 context: context, message: 'Selando pacote...');
             // executa alteracoes
-            mPacote.updatedAct = UpdatedAction.SELAR.index;
+            mPacote.updatedAct = PacoteAction.SELAR.index;
             mPacote.selado = true;
             mPacote.seladoBy = currentUser;
             //mPacote.updatedAt = DateTime.now().toUtc();
             await mPacote.update();
+
+            // Relatorio
+            String relatorio = '''
+*APP Acervo Físico*
+Relatório de SELAMENTO do pacote: "${mPacote.identificador}"
+
+Executado em ${DateFormat("dd/MM/yyyy - HH:mm", "pt_BR").format(DateTime.now())}
+Por ${currentUser!.username}
+''';
+            await salvarRelatorio(
+              PacoteAction.SELAR.index,
+              relatorio,
+              mPacote,
+            );
             //fecha progresso
             Navigator.pop(context);
           } else {}

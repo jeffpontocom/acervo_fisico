@@ -6,6 +6,7 @@ class Pacote extends ParseObject implements ParseCloneable {
   Pacote.clone() : this();
 
   static const String TABLE_NAME = 'TestePacote';
+
   static const String keyId = 'identificador';
   static const String keyTipo = 'tipo';
   static const String keyLocPredio = 'localPredio';
@@ -20,8 +21,7 @@ class Pacote extends ParseObject implements ParseCloneable {
   static const String keySeladoBy = 'seladoBy';
   static const String keyGeoPoint = 'geoPoint';
 
-  /// Looks strangely hacky but due to Flutter not using reflection, we have to
-  /// mimic a clone
+  /// Simula a funcao clone devido ao Flutter nao utilizar reflexao
   @override
   clone(map) => Pacote.clone()..fromJson(map);
 
@@ -58,15 +58,15 @@ class Pacote extends ParseObject implements ParseCloneable {
   ParseUser? get updatedBy => get<ParseUser>(keyUpdatedBy);
   set updatedBy(ParseUser? value) => set<ParseUser>(keyUpdatedBy, value!);
 
-  int get updatedAct => get<int>(keyUpdatedAct) ?? UpdatedAction.SELAR.index;
+  int get updatedAct => get<int>(keyUpdatedAct) ?? PacoteAction.SELAR.index;
   set updatedAct(int value) => set<int>(keyUpdatedAct, value);
 
   ParseGeoPoint? get geoPoint => get<ParseGeoPoint>(keyGeoPoint);
   set geoPoint(ParseGeoPoint? value) => set<ParseGeoPoint>(keyGeoPoint, value!);
 
-  /// Retorna o tipo de pacote
+  /// Retorna a ultima acao realizada no pacote
   String get actionToString {
-    return getUpdatedAction(updatedAct);
+    return getPacoteActionString(updatedAct);
   }
 
   /// Retorna o tipo de pacote

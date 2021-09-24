@@ -4,7 +4,13 @@ import 'package:acervo_fisico/views/home.dart';
 import 'package:flutter/material.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
+import 'models/relatorio.dart';
+
 ParseUser? currentUser;
+
+final String classePacote = 'TestePacote';
+final String classeDocumento = 'TesteDocumento';
+final String classeEliminado = 'PacoteEliminado';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +27,7 @@ void main() async {
     registeredSubClassMap: <String, ParseObjectConstructor>{
       Pacote.TABLE_NAME: () => Pacote(),
       Documento.TABLE_NAME: () => Documento(),
+      Relatorio.TABLE_NAME: () => Relatorio(),
     },
   );
   currentUser = await ParseUser.currentUser() as ParseUser?;

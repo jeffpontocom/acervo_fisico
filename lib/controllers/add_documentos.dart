@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:acervo_fisico/controllers/salvar_relatorio.dart';
 import 'package:acervo_fisico/main.dart';
 import 'package:acervo_fisico/models/documento.dart';
+import 'package:acervo_fisico/models/enums.dart';
 import 'package:acervo_fisico/models/pacote.dart';
 import 'package:acervo_fisico/views/messages.dart';
 import 'package:acervo_fisico/views/pacote_page.dart';
@@ -130,14 +132,19 @@ class AddDocumentos {
                       ),
                       LinearProgressIndicator(
                         value: controller.value,
-                        semanticsLabel: 'Linear progress indicator',
+                        semanticsLabel: 'Indicador de progresso',
                       ),
                       Container(
                         height: 12,
                       ),
                       Text(
-                        'Processado ${analisados} de ${_itensParaAnalise.length}',
+                        'Processado $analisados de ${_itensParaAnalise.length}',
                       ),
+                      analisados == _itensParaAnalise.length
+                          ? Text(
+                              'Gerando relatorio...',
+                            )
+                          : const SizedBox(),
                     ],
                   ),
                 ],
@@ -178,14 +185,12 @@ class AddDocumentos {
       analisados++;
       controller.value = (analisados / _itensParaAnalise.length);
     }
-    Navigator.pop(context); // fecha indicador de progresso
-    Navigator.pop(context);
-    // Abrir relatorio para compartilhamento
+    // Relatorio
     String s = _itensParaAnalise.length <= 1 ? '' : 's';
     String item = _itensParaAnalise.length <= 1 ? 'item' : 'itens';
     String relatorio = '''
 *APP Acervo Físico*
-Relatório de inclusões no pacote: "${mPacote.identificador}"
+Relatório de INCLUSÕES no pacote: "${mPacote.identificador}"
 ${_itensParaAnalise.length} $item identificado$s
 
 
@@ -205,9 +210,20 @@ Falha de conexão (tentar novamente): ${_falhas.length}
 ${_falhas.toSet().toString().replaceAll('{}', '- sem registro de falhas!').replaceAll('{', '- ').replaceAll('}', '.').replaceAll(', ', ';\n- ')}
 
 
-Gerado em ${DateFormat("dd/MM/yyyy - HH:mm", "pt_BR").format(DateTime.now())}
+Executado em ${DateFormat("dd/MM/yyyy - HH:mm", "pt_BR").format(DateTime.now())}
 Por ${currentUser!.username}
 ''';
+    // Salva relatorio
+    await salvarRelatorio(
+      PacoteAction.ADD_DOC.index,
+      relatorio,
+      mPacote,
+    );
+    // Fecha indicador de progresso
+    Navigator.pop(context);
+    // Fecha dialogo de inclusao
+    Navigator.pop(context);
+    // Apresenta relatorio
     Message.showRelatorio(
         context: context,
         message: relatorio,
