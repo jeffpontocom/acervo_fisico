@@ -7,11 +7,6 @@ import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 import 'models/relatorio.dart';
 
 ParseUser? currentUser;
-
-final String classePacote = 'TestePacote';
-final String classeDocumento = 'TesteDocumento';
-final String classeEliminado = 'PacoteEliminado';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Iniciando Back4App/Parse

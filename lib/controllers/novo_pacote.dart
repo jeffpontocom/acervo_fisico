@@ -21,17 +21,20 @@ class NovoPacote {
       return Wrap(
         alignment: WrapAlignment.center,
         children: [
-          Container(
-            margin: EdgeInsets.only(bottom: 24),
-            width: 128,
-            height: 128,
-            decoration: new BoxDecoration(
-              shape: BoxShape.rectangle,
-              //border: Border.all(color: Colors.lightBlue, width: 1),
-              //borderRadius: BorderRadius.all(Radius.circular(16.0)),
-              image: new DecorationImage(
-                fit: BoxFit.cover,
-                image: getTipoPacoteImagem(_pacoteTipo),
+          Hero(
+            tag: 'imgPacote',
+            child: Container(
+              margin: EdgeInsets.only(bottom: 24),
+              width: 128,
+              height: 128,
+              decoration: new BoxDecoration(
+                shape: BoxShape.rectangle,
+                //border: Border.all(color: Colors.lightBlue, width: 1),
+                //borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                image: new DecorationImage(
+                  fit: BoxFit.cover,
+                  image: getTipoPacoteImagem(_pacoteTipo),
+                ),
               ),
             ),
           ),
@@ -144,16 +147,20 @@ class NovoPacote {
       return;
     }
     // Progresso
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const Center(child: CircularProgressIndicator());
-        });
+    Message.showProgressoComMessagem(
+        context: context, message: 'Criando pacote...');
     // Consulta Previa
     List<dynamic> consultaPrevia;
     QueryBuilder<Pacote> query = QueryBuilder<Pacote>(Pacote())
       ..whereEqualTo(Pacote.keyId, codigo);
     final ParseResponse apiResponse = await query.query();
+    // Se nao houver conexao
+    if (apiResponse.statusCode == -1) {
+      Navigator.pop(context); // Fecha progresso
+      Message.showSemConexao(context: context);
+      return;
+    }
+    // Capturar resposta
     if (apiResponse.success && apiResponse.results != null) {
       consultaPrevia = apiResponse.results ?? [];
     } else {
@@ -209,8 +216,8 @@ Por ${currentUser!.username}
       ..set(Pacote.keyUpdatedBy, currentUser)
       ..set(Pacote.keyUpdatedAct, PacoteAction.ABRIR.index)
       ..set(Pacote.keySelado, false)
-      ..set(Pacote.keySeladoBy, currentUser);
-    //..set('updatedAt', DateTime.now());
+      ..set(Pacote.keySeladoBy, currentUser)
+      ..set('updatedAt', DateTime.now());
     final ParseResponse apiResponse = await registration.save();
     if (apiResponse.success) {
       return apiResponse.result;

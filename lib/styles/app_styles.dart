@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+// Margens padrao
+const double margemHcelular = 0.0;
+const double margemHweb = 400.0;
+
 // INTERFACE PADRÃO para caixas de texto
 const mTextField = InputDecoration(
   isDense: false,

@@ -27,6 +27,7 @@ class PacotePage extends StatefulWidget {
 class _PacotePageState extends State<PacotePage> {
   @override
   void initState() {
+    initializeDateFormatting('pt_BR', null);
     mPacote = widget.pacote;
     editMode.value = false;
     refresh = () {
@@ -44,7 +45,6 @@ class _PacotePageState extends State<PacotePage> {
 
   @override
   Widget build(BuildContext context) {
-    initializeDateFormatting('pt_BR', null);
     return DefaultTabController(
       length: 3,
       child: Scaffold(

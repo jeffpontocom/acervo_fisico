@@ -5,6 +5,7 @@ import 'package:acervo_fisico/controllers/localizar_pacote.dart';
 import 'package:acervo_fisico/controllers/novo_pacote.dart';
 import 'package:acervo_fisico/main.dart';
 import 'package:acervo_fisico/src/common.dart';
+import 'package:acervo_fisico/views/pacote_page.dart';
 import 'package:flutter/material.dart';
 
 import 'login.dart';
@@ -29,7 +30,14 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      home: MyHomePage(),
+      //home: MyHomePage(),
+      initialRoute: '/',
+      routes: <String, WidgetBuilder>{
+        '/': (BuildContext context) => new MyHomePage(),
+        '/login': (BuildContext context) => new LoginPage(),
+        '/perfil': (BuildContext context) => new UserPage(),
+        '/pacote': (BuildContext context) => new PacotePage(pacote: mPacote),
+      },
     );
   }
 }
@@ -146,7 +154,7 @@ class _MyHomePageState extends State<MyHomePage> {
               Radius.circular(8.0),
             ),
             borderSide: BorderSide(color: _cores[_contextoAtual])),
-        border: OutlineInputBorder(
+        border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(
             Radius.circular(8.0),
           ),

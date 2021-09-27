@@ -61,17 +61,20 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
   }
 
   Widget get imagem {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 12),
-      width: 128,
-      height: 128,
-      decoration: new BoxDecoration(
-        shape: BoxShape.rectangle,
-        //border: Border.all(color: Colors.lightBlue, width: 1),
-        //borderRadius: BorderRadius.all(Radius.circular(16.0)),
-        image: new DecorationImage(
-          fit: BoxFit.cover,
-          image: getTipoPacoteImagem(_controleTipo),
+    return Hero(
+      tag: 'imgPacote',
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 12),
+        width: 128,
+        height: 128,
+        decoration: new BoxDecoration(
+          shape: BoxShape.rectangle,
+          //border: Border.all(color: Colors.lightBlue, width: 1),
+          //borderRadius: BorderRadius.all(Radius.circular(16.0)),
+          image: new DecorationImage(
+            fit: BoxFit.cover,
+            image: getTipoPacoteImagem(_controleTipo),
+          ),
         ),
       ),
     );
@@ -411,12 +414,13 @@ Por ${currentUser!.username}
               //fecha progresso
               Navigator.pop(context);
               // Voltar a home page
-              Navigator.pushReplacement(
+              Navigator.pop(context);
+              /* Navigator.pushReplacement(
                 context,
                 MaterialPageRoute<void>(
                   builder: (BuildContext context) => MyApp(),
                 ),
-              );
+              ); */
             }
           });
     }
