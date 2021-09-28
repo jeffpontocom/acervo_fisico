@@ -7,6 +7,12 @@ description: Ferramenta de localização e controle do acervo físico do Arquivo
 # Para publicar a versão no servidor local executar no terminal:
 # flutter build web
 
+# Para gerar a versão para Android tipo appbundle
+# Shrinking your code with R8
+# R8 is the new code shrinker from Google, and it’s enabled by default when you build a release APK or AAB. 
+# To disable R8, pass the --no-shrink flag to flutter build apk or flutter build appbundle.
+# flutter build appbundle --no-shrink
+
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
