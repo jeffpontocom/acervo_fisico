@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
-import 'home.dart';
 import 'pacote_page.dart';
 
 final DateFormat _dateFormat = DateFormat.yMMMMd('pt_BR').add_Hms();
