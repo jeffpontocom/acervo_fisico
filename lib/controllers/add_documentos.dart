@@ -204,7 +204,7 @@ Formatação do código (verificar): ${_naoDocumentos.length}
 ${_naoDocumentos.toSet().toString().replaceAll('{}', '- nenhum!').replaceAll('{', '- ').replaceAll('}', '.').replaceAll(', ', ';\n- ')}
 
 Em OUTRO PACOTE (conferir in loco): ${_duplicatas.length}
-${_duplicatas.toSet().toString().replaceAll('{}', '- nenhum!').replaceAll('{', '- ').replaceAll('}', '.').replaceAll(', ', ';\n- ')}
+${duplicatasToString(_duplicatas)}
 
 Falha de conexão (tentar novamente): ${_falhas.length}
 ${_falhas.toSet().toString().replaceAll('{}', '- sem registro de falhas!').replaceAll('{', '- ').replaceAll('}', '.').replaceAll(', ', ';\n- ')}
@@ -213,6 +213,7 @@ ${_falhas.toSet().toString().replaceAll('{}', '- sem registro de falhas!').repla
 Executado em ${DateFormat("dd/MM/yyyy - HH:mm", "pt_BR").format(DateTime.now())}
 Por ${currentUser!.username}
 ''';
+
     // Salva relatorio
     await salvarRelatorio(
       PacoteAction.ADD_DOC.index,
@@ -230,6 +231,24 @@ Por ${currentUser!.username}
         onPressed: () {
           callbackLista();
         });
+  }
+
+  String duplicatasToString(List<Documento> lista) {
+    if (lista.isEmpty) return '- nenhum!';
+    String resultado = '';
+    int iterator = 0;
+    lista.forEach((element) {
+      iterator++;
+      resultado = resultado +
+          '- ' +
+          element.toString() +
+          ' > Pacote: ' +
+          element.pacote!.identificador;
+      iterator < lista.length
+          ? resultado = resultado + ';\n'
+          : resultado = resultado + '.';
+    });
+    return resultado;
   }
 
   List<String> separarItens(String values) {
@@ -331,12 +350,12 @@ Por ${currentUser!.username}
     QueryBuilder<Documento> query = QueryBuilder<Documento>(Documento());
 
     query = query
-      ..whereEqualTo('assuntoBase', documento.assuntoBase)
-      ..whereEqualTo('tipo', documento.tipo)
-      ..whereEqualTo('sequencial', documento.sequencial)
-      ..whereEqualTo('idioma', documento.idioma)
-      ..whereEqualTo('folha', documento.folha)
-      ..whereEqualTo('revisao', documento.revisao)
+      ..whereEqualTo(Documento.keyAssuntoBase, documento.assuntoBase)
+      ..whereEqualTo(Documento.keyTipo, documento.tipo)
+      ..whereEqualTo(Documento.keySequencial, documento.sequencial)
+      ..whereEqualTo(Documento.keyIdioma, documento.idioma)
+      ..whereEqualTo(Documento.keyFolha, documento.folha)
+      ..whereEqualTo(Documento.keyRevisao, documento.revisao)
       ..includeObject([Documento.keyPacote]);
     final ParseResponse apiResponse = await query.query();
     if (apiResponse.success && apiResponse.results != null) {

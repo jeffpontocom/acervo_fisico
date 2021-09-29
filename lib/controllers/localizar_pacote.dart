@@ -63,7 +63,7 @@ class LocalizarPacote {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Padding(
-                    padding: EdgeInsets.all(16),
+                    padding: EdgeInsets.all(24),
                     child: Text(
                       'Selecione o pacote',
                       style: TextStyle(
@@ -82,7 +82,7 @@ class LocalizarPacote {
                           return ListTile(
                               leading: Icon(pacotes[index].selado
                                   ? Icons.verified_rounded
-                                  : Icons.open_in_browser_rounded),
+                                  : Icons.unarchive_rounded),
                               title: Text(
                                 pacotes[index].identificador,
                               ),

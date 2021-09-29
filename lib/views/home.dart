@@ -1,14 +1,13 @@
-import 'dart:ui';
-
-import 'package:acervo_fisico/controllers/localizar_documento.dart';
-import 'package:acervo_fisico/controllers/localizar_pacote.dart';
-import 'package:acervo_fisico/controllers/novo_pacote.dart';
-import 'package:acervo_fisico/main.dart';
-import 'package:acervo_fisico/src/common.dart';
-import 'package:acervo_fisico/views/pacote_page.dart';
 import 'package:flutter/material.dart';
 
+import '../controllers/localizar_documento.dart';
+import '../controllers/localizar_pacote.dart';
+import '../controllers/novo_pacote.dart';
+import '../main.dart';
+import '../src/common.dart';
+import '../views/pacote_page.dart';
 import 'login.dart';
+import 'perfil.dart';
 
 enum contexto { documentos, pacotes }
 
@@ -30,7 +29,6 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      //home: MyHomePage(),
       initialRoute: '/',
       routes: <String, WidgetBuilder>{
         '/': (BuildContext context) => new MyHomePage(),
@@ -50,30 +48,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // VARIAVEIS
+  /* VARIAVEIS */
   int _contextoAtual = contexto.documentos.index;
-
-  // Variaveis para Botoes
-  late List<bool> _isSelected = [true, false]; //um boleano para cada botão
+  List<bool> _isSelected = [true, false]; //um boleano para cada botão
   final List<Color> _cores = [Colors.grey.shade800, Colors.blue];
+  final TextEditingController _controleBusca = TextEditingController();
 
-  // Variaveis para campo de busca
-  TextEditingController _searchController = TextEditingController();
-
-  // METODOS
+  /* METODOS */
 
   /// Ir para a pagina de login ou logout dependendo do status da aplicacao
   void _loginOrLogout() {
     if (currentUser != null) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => UserPage()),
-      );
+      Navigator.pushNamed(context, '/perfil');
     } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
-      );
+      Navigator.pushNamed(context, '/login');
     }
   }
 
@@ -87,11 +75,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   /// Abrir dialogo para criacao de pacote
-  void _novoPacote() {
+  void _criarPacote() {
     NovoPacote(context);
   }
 
-  // WIDGETS
+  /* WIDGETS */
 
   Widget get logotipo {
     return Column(
@@ -106,6 +94,8 @@ class _MyHomePageState extends State<MyHomePage> {
           style: TextStyle(
             fontSize: 18.0,
           ),
+          overflow: TextOverflow.ellipsis,
+          softWrap: false,
         ),
         Text(
           'acervo físico',
@@ -113,6 +103,8 @@ class _MyHomePageState extends State<MyHomePage> {
             fontSize: 40.0,
             fontFamily: 'Baumans',
           ),
+          overflow: TextOverflow.ellipsis,
+          softWrap: false,
         ),
       ],
     );
@@ -121,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget get boxPesquisa {
     return TextFormField(
       key: null,
-      controller: _searchController,
+      controller: _controleBusca,
       onFieldSubmitted: (value) {
         _localizar(value);
       },
@@ -136,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         filled: true,
         fillColor: Colors.white,
-        suffixIcon: _searchController.text.isNotEmpty
+        suffixIcon: _controleBusca.text.isNotEmpty
             ? IconButton(
                 icon: Icon(
                   Icons.clear,
@@ -144,7 +136,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 onPressed: () {
                   setState(() {
-                    _searchController.clear();
+                    _controleBusca.clear();
                   });
                 },
               )
@@ -164,60 +156,68 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget get boxSelectContexto {
-    return ToggleButtons(
-      children: <Widget>[
-        Container(
-            width: 150,
-            child: new Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                new Icon(
-                  Icons.list_alt_rounded,
-                ),
-                new SizedBox(
-                  width: 4.0,
-                ),
-                new Text(
-                  "DOCUMENTO",
-                )
-              ],
-            )),
-        Container(
-            width: 150,
-            child: new Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                new Icon(
-                  Icons.folder_rounded,
-                ),
-                new SizedBox(
-                  width: 4.0,
-                ),
-                new Text(
-                  "PACOTE",
-                ),
-              ],
-            )),
-      ],
-      fillColor: _cores[_contextoAtual],
-      selectedColor: Colors.white,
-      borderRadius: BorderRadius.circular(8.0),
-      onPressed: (int index) {
-        setState(() {
-          _contextoAtual = index;
-          for (int i = 0; i < _isSelected.length; i++) {
-            _isSelected[i] = i == index;
-          }
-        });
-      },
-      isSelected: _isSelected,
-    );
+    return LayoutBuilder(builder: (context, constraints) {
+      return ToggleButtons(
+        constraints: BoxConstraints(
+          minWidth: (constraints.maxWidth - 30) / 2,
+          maxWidth: (constraints.maxWidth - 30) / 2,
+          minHeight: 48,
+        ),
+        children: [
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              const Icon(
+                Icons.list_alt_rounded,
+              ),
+              Text(
+                "DOCUMENTO",
+                overflow: TextOverflow.ellipsis,
+                softWrap: false,
+              )
+            ],
+          ),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              const Icon(
+                Icons.folder_rounded,
+              ),
+              const Text(
+                "PACOTE",
+                overflow: TextOverflow.ellipsis,
+                softWrap: false,
+              )
+            ],
+          ),
+        ],
+        isSelected: _isSelected,
+        fillColor: _cores[_contextoAtual],
+        selectedColor: Colors.white,
+        borderRadius: BorderRadius.circular(8.0),
+        onPressed: (int index) {
+          setState(() {
+            _contextoAtual = index;
+            for (int i = 0; i < _isSelected.length; i++) {
+              _isSelected[i] = i == index;
+            }
+          });
+        },
+      );
+    });
   }
 
-  // METODOS DO SISTEMA
+  /* METODOS DO SISTEMA */
+
   @override
   void dispose() {
-    _searchController.dispose();
+    _controleBusca.dispose();
     super.dispose();
   }
 
@@ -254,12 +254,12 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             logotipo,
             ConstrainedBox(
-              constraints: BoxConstraints(minWidth: 300, maxWidth: 600),
+              constraints: BoxConstraints(minWidth: 200, maxWidth: 600),
               child: Column(
                 children: [
                   boxPesquisa,
                   SizedBox.square(dimension: 32),
-                  boxSelectContexto
+                  boxSelectContexto,
                 ],
               ),
             ),
@@ -271,7 +271,7 @@ class _MyHomePageState extends State<MyHomePage> {
               label: Text('Novo pacote'),
               icon: Icon(Icons.add),
               onPressed: () {
-                _novoPacote();
+                _criarPacote();
               },
               heroTag: null,
             )

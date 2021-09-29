@@ -1,11 +1,11 @@
-import 'package:acervo_fisico/controllers/salvar_relatorio.dart';
-import 'package:acervo_fisico/models/enums.dart';
-import 'package:acervo_fisico/models/pacote.dart';
-import 'package:acervo_fisico/views/pacote_relatorios.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
+import '../controllers/salvar_relatorio.dart';
+import '../models/enums.dart';
+import '../models/pacote.dart';
+import '../views/pacote_relatorios.dart';
 import '../main.dart';
 import 'messages.dart';
 import 'pacote_documentos.dart';
@@ -50,17 +50,19 @@ class _PacotePageState extends State<PacotePage> {
       child: Scaffold(
         appBar: AppBar(
           titleSpacing: 0,
+          centerTitle: true,
           title: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
                 mPacote.selado ? 'Pacote selado' : 'Pacote aberto',
                 style: TextStyle(color: Colors.white, fontSize: 20.0),
               ),
               Text(
-                '${mPacote.tipoToString}: ${mPacote.identificador}',
-                style: TextStyle(color: Colors.white, fontSize: 12.0),
+                //'${mPacote.tipoToString}: ${mPacote.identificador}',
+                'ID: ${mPacote.identificador}',
+                style: TextStyle(color: Colors.blue.shade200, fontSize: 13.0),
               )
             ],
           ),
@@ -96,7 +98,7 @@ class _PacotePageState extends State<PacotePage> {
         mPacote.selado
             ? TextButton.icon(
                 label: Text('ABRIR'),
-                icon: Icon(Icons.open_in_browser_rounded),
+                icon: Icon(Icons.unarchive_rounded),
                 onPressed: () {
                   setState(() {
                     abrirPacote();

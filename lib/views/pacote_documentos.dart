@@ -164,12 +164,12 @@ class _PacoteDocumentosState extends State<PacoteDocumentos>
     QueryBuilder<Documento> query = QueryBuilder<Documento>(Documento())
       ..whereEqualTo(Documento.keyPacote,
           (Pacote()..objectId = mPacote.objectId).toPointer())
-      ..orderByAscending('assuntBase')
-      ..orderByAscending('tipo')
-      ..orderByAscending('sequencial')
-      ..orderByAscending('idioma')
-      ..orderByAscending('revisao')
-      ..orderByAscending('folha');
+      ..orderByAscending(Documento.keyAssuntoBase)
+      ..orderByAscending(Documento.keyTipo)
+      ..orderByAscending(Documento.keySequencial)
+      ..orderByAscending(Documento.keyIdioma)
+      ..orderByAscending(Documento.keyRevisao)
+      ..orderByAscending(Documento.keyFolha);
     final apiResponse = await query.query();
 
     if (apiResponse.statusCode == -1) {
