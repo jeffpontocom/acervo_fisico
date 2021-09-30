@@ -1,6 +1,6 @@
-import 'package:acervo_fisico/models/enums.dart';
-import 'package:acervo_fisico/models/pacote.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import '../models/enums.dart';
+import '../models/pacote.dart';
 
 class Relatorio extends ParseObject implements ParseCloneable {
   Relatorio() : super(TABLE_NAME);

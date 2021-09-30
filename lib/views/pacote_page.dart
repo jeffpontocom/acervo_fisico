@@ -15,10 +15,15 @@ late Pacote mPacote;
 ValueNotifier<bool> editMode = new ValueNotifier(false);
 var refresh;
 
-class PacotePage extends StatefulWidget {
+class PacoteArgumentos {
   final Pacote pacote;
+  PacoteArgumentos(this.pacote);
+}
 
-  PacotePage({Key? key, required this.pacote}) : super(key: key);
+class PacotePage extends StatefulWidget {
+  static const routeName = '/pacote';
+
+  PacotePage({Key? key}) : super(key: key);
 
   @override
   _PacotePageState createState() => _PacotePageState();
@@ -28,13 +33,24 @@ class _PacotePageState extends State<PacotePage> {
   @override
   void initState() {
     initializeDateFormatting('pt_BR', null);
-    mPacote = widget.pacote;
     editMode.value = false;
     refresh = () {
       setState(() {});
     };
     editMode.addListener(refresh);
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (ModalRoute.of(context)?.settings.arguments == null) {
+      Navigator.pop(context);
+      return;
+    }
+    final PacoteArgumentos args =
+        ModalRoute.of(context)!.settings.arguments as PacoteArgumentos;
+    mPacote = args.pacote;
+    super.didChangeDependencies();
   }
 
   @override
@@ -153,7 +169,7 @@ Por ${currentUser!.username}
             );
             //fecha progresso
             Navigator.pop(context);
-          } else {}
+          }
           // atualiza interface pai
           myCall();
         });

@@ -1,3 +1,4 @@
+import 'package:acervo_fisico/controllers/localizar_pacote.dart';
 import 'package:acervo_fisico/controllers/salvar_relatorio.dart';
 import 'package:acervo_fisico/main.dart';
 import 'package:acervo_fisico/models/enums.dart';
@@ -25,8 +26,8 @@ class NovoPacote {
             tag: 'imgPacote',
             child: Container(
               margin: EdgeInsets.only(bottom: 24),
-              width: 128,
-              height: 128,
+              width: 96,
+              height: 96,
               decoration: new BoxDecoration(
                 shape: BoxShape.rectangle,
                 //border: Border.all(color: Colors.lightBlue, width: 1),
@@ -86,57 +87,35 @@ class NovoPacote {
   }
 
   NovoPacote(this.context) {
-    showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
-        ),
-        builder: (context) {
-          return Padding(
-            padding: MediaQuery.of(context).viewInsets,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.all(24),
-                  child: Text(
-                    'NOVO PACOTE',
-                    style: TextStyle(
-                        color: Colors.blue,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 48, vertical: 24),
-                  child: Column(
-                    children: [
-                      tipo,
-                      identificador,
-                      SizedBox(
-                        height: 48,
-                      ),
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          _criarPacote(
-                            _pacoteId.trim().toUpperCase(),
-                            _pacoteTipo,
-                          );
-                        },
-                        icon: Icon(Icons.new_label_rounded),
-                        label: Text('Criar'),
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: Size(150, 50),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+    Message.showBottomDialog(
+      context: context,
+      titulo: 'Novo pacote',
+      conteudo: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+        child: Column(
+          children: [
+            tipo,
+            identificador,
+            SizedBox(
+              height: 48,
             ),
-          );
-        });
+            ElevatedButton.icon(
+              onPressed: () {
+                _criarPacote(
+                  _pacoteId.trim().toUpperCase(),
+                  _pacoteTipo,
+                );
+              },
+              icon: Icon(Icons.new_label_rounded),
+              label: Text('Criar'),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(150, 50),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void _criarPacote(String codigo, int tipo) async {
@@ -184,7 +163,7 @@ Relatório de CRIAÇÃO do pacote: "${pacote.identificador}"
 Executado em ${DateFormat("dd/MM/yyyy - HH:mm", "pt_BR").format(DateTime.now())}
 Por ${currentUser!.username}
 ''';
-        await salvarRelatorio(
+        var apiResponse = await salvarRelatorio(
           PacoteAction.CRIAR.index,
           relatorio,
           pacote,
@@ -193,14 +172,19 @@ Por ${currentUser!.username}
         Navigator.pop(context);
         // Fecha bottom dialog
         Navigator.pop(context);
-        // Abre ficha do pacote
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => PacotePage(
-                    pacote: pacote,
-                  )),
-        );
+        if (apiResponse.statusCode == -1) {
+          Message.showSemConexao(context: context);
+        } else {
+          // Abre ficha do pacote
+          if (apiResponse.success && apiResponse.results != null) {
+            irParaPacote(context, pacote);
+          } else {
+            Message.showErro(
+                context: context,
+                message:
+                    'Houve algum problema na criação. Consulte se o pacote foi criado corretamente e tente novamente!');
+          }
+        }
       }
     } else {
       Navigator.pop(context); // Fecha progresso

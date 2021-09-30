@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import 'package:url_strategy/url_strategy.dart';
 
 import 'models/documento.dart';
 import 'models/pacote.dart';
@@ -8,6 +9,7 @@ import 'views/home.dart';
 
 ParseUser? currentUser;
 void main() async {
+  setPathUrlStrategy(); // remove o hash '#' das URLs
   WidgetsFlutterBinding.ensureInitialized();
   // Iniciando Back4App/Parse
   final keyApplicationId = 'UJImpAAk0xdg1gB1OQtMf2bqEpe3aANxT6Sa2Vbp';
@@ -17,7 +19,7 @@ void main() async {
     keyApplicationId,
     keyParseServerUrl,
     clientKey: keyClientKey, // Required for some setups
-    debug: true, // When enabled, prints logs to console
+    // debug: true, // When enabled, prints logs to console
     // Subclasses
     registeredSubClassMap: <String, ParseObjectConstructor>{
       Pacote.TABLE_NAME: () => Pacote(),

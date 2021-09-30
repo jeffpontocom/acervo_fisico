@@ -1,5 +1,5 @@
-import 'package:acervo_fisico/models/pacote.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import '../models/pacote.dart';
 
 class Documento extends ParseObject implements ParseCloneable {
   Documento() : super(TABLE_NAME);

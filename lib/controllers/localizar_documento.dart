@@ -1,11 +1,9 @@
-import 'package:acervo_fisico/controllers/localizar_pacote.dart';
-import 'package:acervo_fisico/models/documento.dart';
-import 'package:acervo_fisico/models/pacote.dart';
-import 'package:acervo_fisico/views/messages.dart';
-import 'package:acervo_fisico/views/pacote_page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+
+import '../models/documento.dart';
+import '../views/messages.dart';
+import 'localizar_pacote.dart';
 
 class LocalizarDocumento {
   final BuildContext context;
@@ -248,7 +246,7 @@ class LocalizarDocumento {
     _apresentarResultados(resultados.cast());
   }
 
-  /// Busca na base de dados
+  /// Apresenta os resultados ou vai direto para o pacote
   void _apresentarResultados(List<Documento> documentos) {
     // Se nenhum documento localizado
     if (documentos.length == 0) {
@@ -256,91 +254,38 @@ class LocalizarDocumento {
     }
     // Se apenas um documento localizado, vai direto ao pacote
     else if (documentos.length == 1) {
-      //irParaPacote(documentos.first.pacote);
-      LocalizarPacote(context, documentos.first.pacote?.identificador);
+      irParaPacote(context, documentos.first.pacote!);
     }
     // Se diversos documentos localizados, mostrar dialogo de selecao
     else {
-      showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
-          ),
-          builder: (context) {
-            return FractionallySizedBox(
-              heightFactor: 0.7,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Text(
-                      'Selecione o documento',
-                      style: TextStyle(
-                          color: Colors.blue,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: ListView.builder(
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        itemCount: documentos.length,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                              leading: Icon(Icons.document_scanner_rounded),
-                              title: Text(
-                                documentos[index].toString(),
-                              ),
-                              onTap: () {
-                                LocalizarPacote(
-                                    context,
-                                    documentos[index].pacote?.identificador ??
-                                        null);
-                              });
-                        }),
-                  ),
-                ],
-              ),
-            );
-          });
-    }
-  }
-
-  //TODO => FALHA: Ir direto para pacote nao traz a informacao do usuario que atualizou o pacote
-  void irParaPacote(Pacote? pacote) {
-    if (pacote != null) {
-      print(pacote);
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => PacotePage(
-                  pacote: pacote,
-                )),
+      // Constroi a lista
+      ListView listaDocumentos = ListView.builder(
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true,
+        itemCount: documentos.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(
+              documentos[index].toString(),
+            ),
+            subtitle: Text(documentos[index].pacote?.identificador != null
+                ? 'Pacote: ${documentos[index].pacote!.identificador}'
+                : 'ERRO: Sem pacote vinculado'),
+            //trailing: Icon(Icons.document_scanner_rounded),
+            visualDensity: VisualDensity.compact,
+            onTap: documentos[index].pacote != null
+                ? () {
+                    irParaPacote(context, documentos[index].pacote!);
+                  }
+                : null,
+          );
+        },
       );
-    } else {
-      showModalBottomSheet(
+      // Apresenta o dialog
+      Message.showBottomDialog(
           context: context,
-          builder: (context) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.all(64),
-                  child: Text(
-                    'ERRO: Nenhum pacote vinculado a esse documento.',
-                    style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
-            );
-          });
+          titulo: 'Selecione o documento',
+          conteudo: listaDocumentos);
     }
   }
 }

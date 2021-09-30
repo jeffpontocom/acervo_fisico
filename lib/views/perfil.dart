@@ -5,6 +5,8 @@ import '../main.dart';
 import 'messages.dart';
 
 class UserPage extends StatelessWidget {
+  static const routeName = '/perfil';
+
   @override
   Widget build(BuildContext context) {
     /* METODOS */
@@ -14,7 +16,7 @@ class UserPage extends StatelessWidget {
       var response = await currentUser!.logout();
       if (response.success) {
         currentUser = null;
-        Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+        Navigator.pop(context, true);
       } else {
         Message.showErro(context: context, message: response.error!.message);
       }
@@ -47,7 +49,7 @@ class UserPage extends StatelessWidget {
               height: 128,
             ),
             Container(
-              height: 50,
+              //height: 50,
               width: 200,
               child: ElevatedButton.icon(
                 icon: Icon(Icons.logout_rounded),

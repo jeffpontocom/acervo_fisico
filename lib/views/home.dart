@@ -4,7 +4,7 @@ import '../controllers/localizar_documento.dart';
 import '../controllers/localizar_pacote.dart';
 import '../controllers/novo_pacote.dart';
 import '../main.dart';
-import '../src/common.dart';
+import '../util/utils.dart';
 import '../views/pacote_page.dart';
 import 'login.dart';
 import 'perfil.dart';
@@ -12,29 +12,37 @@ import 'perfil.dart';
 enum contexto { documentos, pacotes }
 
 class MyApp extends StatelessWidget {
+  static const routeName = '/';
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Acervo físico',
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+        //visualDensity: VisualDensity.adaptivePlatformDensity,
         buttonTheme: ButtonThemeData(
           textTheme: ButtonTextTheme.accent,
+          height: 48,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            minimumSize: Size(64, 48),
+          ),
         ),
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
             primary: Colors.white,
+            minimumSize: Size(64, 48),
           ),
         ),
       ),
       debugShowCheckedModeBanner: false,
-      initialRoute: '/',
+      initialRoute: routeName,
       routes: <String, WidgetBuilder>{
-        '/': (BuildContext context) => new MyHomePage(),
-        '/login': (BuildContext context) => new LoginPage(),
-        '/perfil': (BuildContext context) => new UserPage(),
-        '/pacote': (BuildContext context) => new PacotePage(pacote: mPacote),
+        routeName: (BuildContext context) => new MyHomePage(),
+        LoginPage.routeName: (BuildContext context) => new LoginPage(),
+        UserPage.routeName: (BuildContext context) => new UserPage(),
+        PacotePage.routeName: (BuildContext context) => new PacotePage(),
       },
     );
   }
@@ -57,11 +65,16 @@ class _MyHomePageState extends State<MyHomePage> {
   /* METODOS */
 
   /// Ir para a pagina de login ou logout dependendo do status da aplicacao
-  void _loginOrLogout() {
+  void _loginOrLogout() async {
+    final result;
     if (currentUser != null) {
-      Navigator.pushNamed(context, '/perfil');
+      result = await Navigator.pushNamed(context, UserPage.routeName);
     } else {
-      Navigator.pushNamed(context, '/login');
+      result = await Navigator.pushNamed(context, LoginPage.routeName);
+    }
+    // caso tenha realizado login ou logout com sucesso, recarregar a pagina
+    if (result == true) {
+      setState(() {});
     }
   }
 
@@ -266,16 +279,17 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      floatingActionButton: (currentUser != null && !tecladoVisivel(context))
-          ? FloatingActionButton.extended(
-              label: Text('Novo pacote'),
-              icon: Icon(Icons.add),
-              onPressed: () {
-                _criarPacote();
-              },
-              heroTag: null,
-            )
-          : null,
+      floatingActionButton:
+          (currentUser != null && !Util.tecladoVisivel(context))
+              ? FloatingActionButton.extended(
+                  label: Text('Novo pacote'),
+                  icon: Icon(Icons.add),
+                  onPressed: () {
+                    _criarPacote();
+                  },
+                  heroTag: null,
+                )
+              : null,
     );
   }
 }

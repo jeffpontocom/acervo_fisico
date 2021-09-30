@@ -1,15 +1,16 @@
 import 'dart:convert';
 
-import 'package:acervo_fisico/controllers/salvar_relatorio.dart';
-import 'package:acervo_fisico/main.dart';
-import 'package:acervo_fisico/models/documento.dart';
-import 'package:acervo_fisico/models/enums.dart';
-import 'package:acervo_fisico/models/pacote.dart';
-import 'package:acervo_fisico/views/messages.dart';
-import 'package:acervo_fisico/views/pacote_page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+
+import '../controllers/salvar_relatorio.dart';
+import '../main.dart';
+import '../models/documento.dart';
+import '../models/enums.dart';
+import '../models/pacote.dart';
+import '../views/messages.dart';
+import '../views/pacote_page.dart';
 
 class AddDocumentos {
   final BuildContext context;
@@ -46,58 +47,32 @@ class AddDocumentos {
       required this.pacoteId,
       required this.provider,
       callback}) {
-    showModalBottomSheet(
+    Message.showBottomDialog(
       context: context,
-      isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
+      titulo: 'Adicionar documentos',
+      conteudo: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 0),
+        child: Column(
+          children: [
+            campoLista,
+            SizedBox(
+              height: 12,
+            ),
+            ElevatedButton.icon(
+              icon: Icon(Icons.send_and_archive_rounded),
+              label: Text('Analisar e adicionar'),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(150, 48),
+              ),
+              onPressed: () {
+                _analistarLista(callbackLista: () {
+                  callback();
+                });
+              },
+            ),
+          ],
+        ),
       ),
-      builder: (context) {
-        return Padding(
-          padding: MediaQuery.of(context).viewInsets,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.all(24),
-                child: Text(
-                  'ADICIONAR DOCUMENTOS',
-                  style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 0),
-                child: Column(
-                  children: [
-                    campoLista,
-                    SizedBox(
-                      height: 24,
-                    ),
-                    ElevatedButton.icon(
-                      icon: Icon(Icons.send_and_archive_rounded),
-                      label: Text('Analisar e adicionar'),
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: Size(150, 50),
-                      ),
-                      onPressed: () {
-                        _analistarLista(callbackLista: () {
-                          callback();
-                        });
-                      },
-                    ),
-                    SizedBox(
-                      height: 24,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 

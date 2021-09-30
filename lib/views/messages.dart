@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -83,17 +82,19 @@ class Message {
       required String message,
       Function(bool)? onPressed}) {
     showDialog(
-      barrierDismissible: false,
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Alerta!"),
           content: Text(message),
+          buttonPadding: EdgeInsets.all(0),
+          actionsPadding: EdgeInsets.symmetric(horizontal: 8),
           actionsAlignment: MainAxisAlignment.spaceBetween,
           actions: <Widget>[
             MaterialButton(
               child: const Text("CANCELAR"),
-              textColor: Colors.red,
+              textColor: Colors.grey,
               onPressed: () {
                 if (onPressed != null) {
                   onPressed(false);
@@ -106,6 +107,51 @@ class Message {
                 if (onPressed != null) {
                   onPressed(true);
                 }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  static void showAlerta3Opcoes(
+      {required BuildContext context,
+      required String message,
+      required Function(bool?) onPressed}) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Alerta!"),
+          content: Text(message),
+          buttonPadding: EdgeInsets.all(0),
+          actionsPadding: EdgeInsets.symmetric(horizontal: 8),
+          actionsAlignment: MainAxisAlignment.spaceBetween,
+          actions: <Widget>[
+            MaterialButton(
+              child: const Text("DESFAZER"),
+              textColor: Colors.red,
+              onPressed: () {
+                onPressed(false);
+              },
+            ),
+            SizedBox(
+              width: 16,
+            ),
+            MaterialButton(
+              child: const Text("CANCELAR"),
+              textColor: Colors.grey,
+              onPressed: () {
+                onPressed(null);
+              },
+            ),
+            MaterialButton(
+              child: const Text("OK"),
+              minWidth: 24,
+              onPressed: () {
+                onPressed(true);
               },
             ),
           ],
@@ -261,5 +307,64 @@ class Message {
             ],
           );
         });
+  }
+
+  static void showBottomDialog(
+      {required BuildContext context,
+      required String titulo,
+      Widget? conteudo}) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
+      ),
+      constraints: BoxConstraints(
+          minHeight: MediaQuery.of(context).size.height * 0.3,
+          maxHeight: MediaQuery.of(context).size.height * 0.8),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 12,
+            top: 12,
+            right: 12,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 12,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Container(
+                width: 64,
+                height: 4,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                  color: Colors.grey,
+                ),
+              ),
+              Row(
+                children: [
+                  const CloseButton(),
+                  Expanded(
+                    child: Text(
+                      '$titulo',
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 48,
+                  )
+                ],
+              ),
+              Flexible(
+                child: conteudo ?? Container(),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

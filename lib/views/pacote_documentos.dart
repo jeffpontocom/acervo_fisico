@@ -1,12 +1,12 @@
-import 'package:acervo_fisico/controllers/add_documentos.dart';
-import 'package:acervo_fisico/controllers/del_documentos.dart';
-import 'package:acervo_fisico/main.dart';
-import 'package:acervo_fisico/models/documento.dart';
-import 'package:acervo_fisico/models/pacote.dart';
-import 'package:acervo_fisico/styles/customs.dart';
 import 'package:flutter/material.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
+import '../controllers/add_documentos.dart';
+import '../controllers/del_documentos.dart';
+import '../main.dart';
+import '../models/documento.dart';
+import '../models/pacote.dart';
+import '../styles/customs.dart';
 import 'pacote_page.dart';
 
 class PacoteDocumentos extends StatefulWidget {

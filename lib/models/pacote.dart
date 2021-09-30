@@ -1,5 +1,5 @@
-import 'package:acervo_fisico/models/enums.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import '../models/enums.dart';
 
 class Pacote extends ParseObject implements ParseCloneable {
   Pacote() : super(TABLE_NAME);

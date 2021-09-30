@@ -1,10 +1,10 @@
-import 'package:acervo_fisico/models/pacote.dart';
-import 'package:acervo_fisico/models/relatorio.dart';
-import 'package:acervo_fisico/src/common.dart';
-import 'package:acervo_fisico/views/messages.dart';
 import 'package:flutter/material.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
+import '../models/pacote.dart';
+import '../models/relatorio.dart';
+import '../util/utils.dart';
+import '../views/messages.dart';
 import 'pacote_page.dart';
 
 class PacoteRelatorios extends StatefulWidget {
@@ -54,7 +54,7 @@ class _PacoteRelatoriosState extends State<PacoteRelatorios> {
                       isThreeLine: true,
                       title: Text('${lista[index].tipoToString}'),
                       subtitle: Text(
-                          '${mDateFormat.format(lista[index].createdAt!)}' +
+                          '${Util.mDateFormat.format(lista[index].createdAt!)}' +
                               '\n' +
                               'Por ${lista[index].geradoPor!.username}'),
                       trailing: Text('${index + 1}',

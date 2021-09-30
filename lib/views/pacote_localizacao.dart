@@ -1,18 +1,16 @@
-import 'package:acervo_fisico/controllers/salvar_relatorio.dart';
-import 'package:acervo_fisico/main.dart';
-import 'package:acervo_fisico/models/documento.dart';
-import 'package:acervo_fisico/models/enums.dart';
-import 'package:acervo_fisico/models/pacote.dart';
-import 'package:acervo_fisico/src/common.dart';
-import 'package:acervo_fisico/styles/app_styles.dart';
-import 'package:acervo_fisico/views/messages.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
+import '../controllers/salvar_relatorio.dart';
+import '../main.dart';
+import '../models/documento.dart';
+import '../models/enums.dart';
+import '../models/pacote.dart';
+import '../util/utils.dart';
+import '../styles/app_styles.dart';
+import '../views/messages.dart';
 import 'pacote_page.dart';
-
-final DateFormat _dateFormat = DateFormat.yMMMMd('pt_BR').add_Hms();
 
 class PacoteLocalizacao extends StatefulWidget {
   PacoteLocalizacao({Key? key, this.parentCall}) : super(key: key);
@@ -211,7 +209,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
                 style: TextStyle(
                     color: Colors.blueGrey, fontWeight: FontWeight.bold)),
             Text(' em ', style: const TextStyle(color: Colors.grey)),
-            Text('${_dateFormat.format(mPacote.updatedAt.toLocal())}.',
+            Text('${Util.mDateFormat.format(mPacote.updatedAt.toLocal())}.',
                 style:
                     TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
           ],
@@ -268,10 +266,11 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
       onPressed: () async {
         if (editMode.value) {
           await salvarAlteracoes();
+        } else {
+          setState(() {
+            editMode.value = !editMode.value;
+          });
         }
-        setState(() {
-          editMode.value = !editMode.value;
-        });
       },
       style: TextButton.styleFrom(
         minimumSize: Size(double.minPositive, double.infinity),
@@ -296,17 +295,23 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
   /// Salva as alteracoes no pacote
   Future<void> salvarAlteracoes() async {
     // abre mensagem alerta
-    Message.showAlerta(
+    Message.showAlerta3Opcoes(
         context: context,
         message:
             'Tem certeza que deseja salvar as alterações nos dados básicos deste pacote?',
         onPressed: (value) async {
           // fecha mensagem alerta
           Navigator.pop(context);
-          if (value) {
-            // abre progresso
+          if (value == null) {
+            // Nao executa nada
+            return;
+          } else if (value == false) {
+            // Desfaz alteracoes
+            dadosOriginais();
+          } else if (value == true) {
+            // Abre progresso
             Message.showProgressoComMessagem(
-                context: context, message: 'Salvando alterações');
+                context: context, message: 'Salvando alterações...');
             // Relatorio
             String relatorio = '''
 *APP Acervo Físico*
@@ -343,9 +348,11 @@ Por ${currentUser!.username}
             );
             //fecha progresso
             Navigator.pop(context);
-          } else {
-            dadosOriginais();
           }
+          // fecha modo de edicao
+          setState(() {
+            editMode.value = false;
+          });
           // atualiza interface pai
           widget.parentCall!();
         });
@@ -414,12 +421,6 @@ Por ${currentUser!.username}
               Navigator.pop(context);
               // Voltar a home page
               Navigator.pop(context);
-              /* Navigator.pushReplacement(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (BuildContext context) => MyApp(),
-                ),
-              ); */
             }
           });
     }
@@ -507,7 +508,7 @@ Por ${currentUser!.username}
                             alignment: Alignment.bottomLeft,
                             padding: EdgeInsets.symmetric(vertical: 32),
                             child: editMode.value
-                                ? (tecladoVisivel(context)
+                                ? (Util.tecladoVisivel(context)
                                     ? Container()
                                     : eliminar)
                                 : Container(),

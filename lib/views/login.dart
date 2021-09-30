@@ -1,14 +1,15 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 import '../main.dart';
 import 'messages.dart';
 
-GlobalKey<FormState> _formUser = GlobalKey<FormState>();
+//GlobalKey<FormState> _formUser = GlobalKey<FormState>();
 GlobalKey<FormState> _formPass = GlobalKey<FormState>();
 
 class LoginPage extends StatefulWidget {
+  static const routeName = '/login';
+
   LoginPage({Key? key}) : super(key: key);
 
   @override
@@ -38,7 +39,7 @@ class _LoginPageState extends State<LoginPage> {
 
     if (response.success) {
       currentUser = response.result as ParseUser;
-      Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+      Navigator.pop(context, true);
     } else {
       Message.showErro(context: context, message: response.error!.message);
     }
@@ -46,46 +47,30 @@ class _LoginPageState extends State<LoginPage> {
 
   /// Abre dialogo para confirmar e-mail e solicitar redefinicao de senha
   void redefinirSenhaDialog() {
-    showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
+    Message.showBottomDialog(
+      context: context,
+      titulo: 'Redefinir senha',
+      conteudo: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            editUser,
+            const SizedBox(
+              height: 12,
+            ),
+            ElevatedButton.icon(
+              icon: Icon(Icons.send_rounded),
+              label: Text('SOLICITAR'),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(150, 48),
+              ),
+              onPressed: () => redefinirSenha(),
+            ),
+          ],
         ),
-        builder: (context) {
-          return Padding(
-              padding: MediaQuery.of(context).viewInsets,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(32),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Redefinir senha',
-                      style: TextStyle(
-                          color: Colors.blue,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(
-                      height: 24,
-                    ),
-                    editUser,
-                    const SizedBox(
-                      height: 24,
-                    ),
-                    Container(
-                      height: 48,
-                      width: 150,
-                      child: ElevatedButton(
-                        child: const Text('SOLICITAR'),
-                        onPressed: () => redefinirSenha(),
-                      ),
-                    ),
-                  ],
-                ),
-              ));
-        });
+      ),
+    );
   }
 
   /// Executa solicitacao de redefinicao de senha

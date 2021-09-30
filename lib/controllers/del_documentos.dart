@@ -1,12 +1,13 @@
-import 'package:acervo_fisico/controllers/salvar_relatorio.dart';
-import 'package:acervo_fisico/main.dart';
-import 'package:acervo_fisico/models/documento.dart';
-import 'package:acervo_fisico/models/enums.dart';
-import 'package:acervo_fisico/views/messages.dart';
-import 'package:acervo_fisico/views/pacote_page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+
+import '../controllers/salvar_relatorio.dart';
+import '../main.dart';
+import '../models/documento.dart';
+import '../models/enums.dart';
+import '../views/messages.dart';
+import '../views/pacote_page.dart';
 
 class DelDocumentos {
   final BuildContext context;
