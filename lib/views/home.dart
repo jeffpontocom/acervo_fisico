@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import '../controllers/localizar_documento.dart';
 import '../controllers/localizar_pacote.dart';
@@ -227,6 +228,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   /* METODOS DO SISTEMA */
+
+  @override
+  void initState() {
+    initializeDateFormatting('pt_BR', null);
+    super.initState();
+  }
 
   @override
   void dispose() {
