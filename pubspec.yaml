@@ -43,6 +43,8 @@ dependencies:
   intl: ^0.17.0
   share: ^2.0.4
   url_strategy: ^0.2.0 # para remover o hash '#' das URLs
+  connectivity_plus: ^1.4.0
+  universal_internet_checker: ^0.1.2
 
 dev_dependencies:
   flutter_test:
@@ -74,13 +76,14 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/icons/ic_launcher.png
+    - assets/icons/ufo.png
+    - assets/icons/band-aid.png
+    - assets/icons/magician.png
     - assets/images/caixaA4.png
     - assets/images/gaveta.jpg
     - assets/images/indefinido.png
     - assets/images/pastaA3.png
     - assets/images/tubo.png
-    - assets/images/ufo.png
-    - assets/images/band-aid.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

@@ -1,3 +1,4 @@
+import 'package:acervo_fisico/models/enums.dart';
 import 'package:flutter/material.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
@@ -21,50 +22,67 @@ class _PacoteRelatoriosState extends State<PacoteRelatorios> {
     return StatefulBuilder(
         builder: (BuildContext context, StateSetter alertState) {
       return NestedScrollView(
-          floatHeaderSlivers: true,
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return [
-              SliverToBoxAdapter(
-                child: Container(
-                  color: Colors.amber,
-                  padding: EdgeInsets.all(8),
-                  child: Text(
-                    '${lista.length} ações sobre o pacote',
-                    textAlign: TextAlign.center,
-                  ),
+        floatHeaderSlivers: true,
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            SliverToBoxAdapter(
+              child: Container(
+                color: Colors.amber,
+                padding: EdgeInsets.all(8),
+                child: Text(
+                  '${lista.length} ações sobre o pacote',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            )
+          ];
+        },
+        body: lista.isEmpty
+            ? Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image(
+                      image: AssetImage('assets/icons/magician.png'),
+                      height: 128,
+                      width: 128,
+                    ),
+                    Container(height: 24),
+                    Text(
+                      'Nenhum ação realizada sobre o pacote até o momento.',
+                      style: Theme.of(context).textTheme.subtitle1,
+                    )
+                  ],
                 ),
               )
-            ];
-          },
-          body: lista.isEmpty
-              ? Center(
-                  child: Image(
-                    image: AssetImage(
-                        'assets/images/ufo.png'), //todo mudar essa imagem
-                    height: 128,
-                    width: 128,
-                  ),
-                )
-              : ListView.builder(
+            : Scrollbar(
+                isAlwaysShown: true,
+                showTrackOnHover: true,
+                hoverThickness: 18,
+                child: ListView.builder(
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
                   itemCount: lista.length,
                   itemBuilder: (context, index) {
                     return ListTile(
                       isThreeLine: true,
+                      leading: getTipoRelatorioIcon(lista[index].tipo),
                       title: Text('${lista[index].tipoToString}'),
                       subtitle: Text(
-                          '${Util.mDateFormat.format(lista[index].createdAt!)}' +
+                          '${Util.mDateFormat.format(lista[index].createdAt!.toLocal())}' +
                               '\n' +
                               'Por ${lista[index].geradoPor!.username}'),
-                      trailing: Text('${index + 1}',
+                      trailing: Text('${lista.length - index}',
                           style: TextStyle(color: Colors.grey)),
                       onTap: () {
                         Message.showRelatorio(
                             context: context, message: lista[index].mensagem);
                       },
                     );
-                  }));
+                  },
+                ),
+              ),
+      );
     });
   }
 
@@ -108,7 +126,7 @@ class _PacoteRelatoriosState extends State<PacoteRelatorios> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Image(
-                      image: AssetImage('assets/images/band-aid.png'),
+                      image: AssetImage('assets/icons/band-aid.png'),
                       height: 128,
                       width: 128,
                     ),

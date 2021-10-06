@@ -35,89 +35,103 @@ class _PacoteDocumentosState extends State<PacoteDocumentos>
     return StatefulBuilder(
         builder: (BuildContext context, StateSetter alertState) {
       return NestedScrollView(
-          floatHeaderSlivers: true,
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return [
-              SliverVisibility(
-                visible: !mPacote.selado && currentUser != null,
-                sliver: SliverPersistentHeader(
-                  pinned: true,
-                  delegate: MySliverAppBarDelegate(
-                    minHeight: 56,
-                    maxHeight: 56,
-                    child: Container(
-                      color: Colors.blueGrey,
-                      padding: EdgeInsets.symmetric(horizontal: 24),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          TextButton.icon(
-                            onPressed: lista.isEmpty
-                                ? null
-                                : () {
-                                    alertState(() {
-                                      if (allSelected == null) {
-                                        allSelected = true;
-                                      } else {
-                                        allSelected = !allSelected!;
-                                      }
-                                      if (allSelected == true) {
-                                        docsSelected.clear();
-                                        docsSelected.addAll(lista);
-                                      } else if (allSelected == false) {
-                                        docsSelected.clear();
-                                      }
-                                    });
-                                  },
-                            icon: Icon(checkbox),
-                            label: Text('Selecionar tudo'),
-                          ),
-                          allSelected == false
-                              ? TextButton.icon(
-                                  icon: Icon(Icons.add_circle_rounded),
-                                  label: Text('ADICIONAR'),
-                                  onPressed: () {
-                                    adicionarDocs();
-                                  },
-                                )
-                              : TextButton.icon(
-                                  icon: Icon(Icons.delete_forever_rounded),
-                                  label: Text('EXCLUIR'),
-                                  onPressed: () {
-                                    eliminarDocs();
-                                    //todo excluir documentos (avisar sobre)
-                                  },
-                                ),
-                        ],
-                      ),
+        floatHeaderSlivers: true,
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            SliverVisibility(
+              visible: !mPacote.selado && currentUser != null,
+              sliver: SliverPersistentHeader(
+                pinned: true,
+                delegate: MySliverAppBarDelegate(
+                  minHeight: 56,
+                  maxHeight: 56,
+                  child: Container(
+                    color: Colors.blueGrey,
+                    padding: EdgeInsets.symmetric(horizontal: 24),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        TextButton.icon(
+                          onPressed: lista.isEmpty
+                              ? null
+                              : () {
+                                  alertState(() {
+                                    if (allSelected == null) {
+                                      allSelected = true;
+                                    } else {
+                                      allSelected = !allSelected!;
+                                    }
+                                    if (allSelected == true) {
+                                      docsSelected.clear();
+                                      docsSelected.addAll(lista);
+                                    } else if (allSelected == false) {
+                                      docsSelected.clear();
+                                    }
+                                  });
+                                },
+                          icon: Icon(checkbox),
+                          label: Text('Selecionar tudo'),
+                        ),
+                        allSelected == false
+                            ? TextButton.icon(
+                                icon: Icon(Icons.add_circle_rounded),
+                                label: Text('ADICIONAR'),
+                                onPressed: () {
+                                  adicionarDocs();
+                                },
+                              )
+                            : TextButton.icon(
+                                icon: Icon(Icons.delete_sweep_rounded),
+                                label: Text('EXCLUIR'),
+                                onPressed: () {
+                                  eliminarDocs();
+                                  //todo excluir documentos (avisar sobre)
+                                },
+                              ),
+                      ],
                     ),
                   ),
                 ),
               ),
-              SliverToBoxAdapter(
-                child: Container(
-                  color: Colors.amber,
-                  padding: EdgeInsets.all(8),
-                  child: Text(
-                    docsSelected.isEmpty
-                        ? '${lista.length} documento(s) no pacote'
-                        : '${docsSelected.length} selecionado(s)',
-                    textAlign: TextAlign.center,
-                  ),
+            ),
+            SliverToBoxAdapter(
+              child: Container(
+                color: Colors.amber,
+                padding: EdgeInsets.all(8),
+                child: Text(
+                  docsSelected.isEmpty
+                      ? '${lista.length} documento(s) no pacote'
+                      : '${docsSelected.length} selecionado(s)',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            )
+          ];
+        },
+        body: lista.isEmpty
+            ? Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image(
+                      image: AssetImage('assets/icons/ufo.png'),
+                      height: 128,
+                      width: 128,
+                    ),
+                    Container(height: 24),
+                    Text(
+                      'Nenhum documento no pacote.',
+                      style: Theme.of(context).textTheme.subtitle1,
+                    )
+                  ],
                 ),
               )
-            ];
-          },
-          body: lista.isEmpty
-              ? Center(
-                  child: Image(
-                    image: AssetImage('assets/images/ufo.png'),
-                    height: 128,
-                    width: 128,
-                  ),
-                )
-              : ListView.builder(
+            : Scrollbar(
+                isAlwaysShown: true,
+                showTrackOnHover: true,
+                hoverThickness: 18,
+                child: ListView.builder(
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
                   itemCount: lista.length,
@@ -156,7 +170,10 @@ class _PacoteDocumentosState extends State<PacoteDocumentos>
                       },
                       //dense: true,
                     );
-                  }));
+                  },
+                ),
+              ),
+      );
     });
   }
 
@@ -232,7 +249,7 @@ class _PacoteDocumentosState extends State<PacoteDocumentos>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Image(
-                      image: AssetImage('assets/images/band-aid.png'),
+                      image: AssetImage('assets/icons/band-aid.png'),
                       height: 128,
                       width: 128,
                     ),

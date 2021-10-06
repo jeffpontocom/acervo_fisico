@@ -1,14 +1,14 @@
-import 'package:acervo_fisico/controllers/localizar_pacote.dart';
-import 'package:acervo_fisico/controllers/salvar_relatorio.dart';
-import 'package:acervo_fisico/main.dart';
-import 'package:acervo_fisico/models/enums.dart';
-import 'package:acervo_fisico/models/pacote.dart';
-import 'package:acervo_fisico/styles/app_styles.dart';
-import 'package:acervo_fisico/views/messages.dart';
-import 'package:acervo_fisico/views/pacote_page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+
+import '../controllers/localizar_pacote.dart';
+import '../controllers/salvar_relatorio.dart';
+import '../main.dart';
+import '../models/enums.dart';
+import '../models/pacote.dart';
+import '../styles/app_styles.dart';
+import '../views/messages.dart';
 
 class NovoPacote {
   final BuildContext context;
@@ -21,17 +21,16 @@ class NovoPacote {
         builder: (BuildContext context, StateSetter innerState) {
       return Wrap(
         alignment: WrapAlignment.center,
+        runSpacing: 24,
+        spacing: 24,
         children: [
           Hero(
             tag: 'imgPacote',
             child: Container(
-              margin: EdgeInsets.only(bottom: 24),
               width: 96,
               height: 96,
               decoration: new BoxDecoration(
                 shape: BoxShape.rectangle,
-                //border: Border.all(color: Colors.lightBlue, width: 1),
-                //borderRadius: BorderRadius.all(Radius.circular(16.0)),
                 image: new DecorationImage(
                   fit: BoxFit.cover,
                   image: getTipoPacoteImagem(_pacoteTipo),
@@ -44,6 +43,7 @@ class NovoPacote {
               iconDisabledColor: Colors.transparent,
               decoration: mTextField.copyWith(
                 labelText: 'Tipo',
+                constraints: BoxConstraints(maxWidth: 480),
               ),
               autofocus: false,
               isExpanded: true,
@@ -76,6 +76,7 @@ class NovoPacote {
       decoration: mTextField.copyWith(
         labelText: 'Identificador',
         hintText: 'Ex.: 20211231.1',
+        constraints: BoxConstraints(maxWidth: 600),
       ),
       onChanged: (value) {
         _pacoteId = value;
@@ -91,7 +92,7 @@ class NovoPacote {
       context: context,
       titulo: 'Novo pacote',
       conteudo: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 24),
         child: Column(
           children: [
             tipo,

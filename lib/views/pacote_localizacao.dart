@@ -85,6 +85,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
             decoration: mTextField.copyWith(
               labelText: 'Tipo',
               enabled: editMode.value,
+              constraints: BoxConstraints(maxWidth: 480),
             ),
             isExpanded: true,
             items: TipoPacote.values
@@ -188,6 +189,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
       decoration: mTextField.copyWith(
         labelText: 'Observações:',
         floatingLabelBehavior: FloatingLabelBehavior.always,
+        constraints: BoxConstraints(maxWidth: 1200),
       ),
     );
   }
@@ -246,7 +248,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
   Widget get eliminar {
     return TextButton.icon(
       label: Text('Eliminar pacote'),
-      icon: Icon(Icons.delete),
+      icon: Icon(Icons.delete_forever_rounded),
       style: ElevatedButton.styleFrom(
         primary: Colors.red,
         minimumSize: Size(150, 50),
@@ -466,57 +468,61 @@ Por ${currentUser!.username}
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             cabecalho,
-            Flexible(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.all(24),
-                      child: Column(
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                flex: 2,
-                                child: Column(
-                                  children: [
-                                    imagem,
-                                    tipo,
-                                  ],
-                                ),
+            Expanded(
+              child: Scrollbar(
+                isAlwaysShown: true,
+                showTrackOnHover: true,
+                hoverThickness: 18,
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.all(24),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Flexible(
+                              flex: 2,
+                              child: Column(
+                                children: [
+                                  imagem,
+                                  tipo,
+                                ],
                               ),
-                              SizedBox(
-                                width: 24,
+                            ),
+                            SizedBox(
+                              width: 24,
+                            ),
+                            Flexible(
+                              flex: 3,
+                              child: Column(
+                                children: [
+                                  identificador,
+                                  locPredio,
+                                  locNivel1,
+                                  locNivel2,
+                                  locNivel3,
+                                ],
                               ),
-                              Expanded(
-                                flex: 3,
-                                child: Column(
-                                  children: [
-                                    identificador,
-                                    locPredio,
-                                    locNivel1,
-                                    locNivel2,
-                                    locNivel3,
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          observacoes,
-                          Container(
-                            alignment: Alignment.bottomLeft,
-                            padding: EdgeInsets.symmetric(vertical: 32),
-                            child: editMode.value
-                                ? (Util.tecladoVisivel(context)
+                            ),
+                          ],
+                        ),
+                        observacoes,
+                        editMode.value
+                            ? Container(
+                                alignment: Alignment.bottomLeft,
+                                padding: EdgeInsets.symmetric(vertical: 32),
+                                child: (Util.tecladoVisivel(context)
                                     ? Container()
-                                    : eliminar)
-                                : Container(),
-                          ),
-                        ],
-                      ),
+                                    : eliminar),
+                              )
+                            : Container(),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),

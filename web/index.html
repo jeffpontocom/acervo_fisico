@@ -26,14 +26,38 @@
   <title>Acervo Físico ENCA.DT</title>
   <link rel="manifest" href="manifest.json">
   <link rel="shortcut icon" href="favicon.png" />
+  <style>
+    div *{
+      font-family:Arial, Helvetica, sans-serif;
+    }
+    .centered {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+    .centered *{
+      text-align: center;
+      color: black;
+    }
+    </style>
 </head>
 <body>
+  <!-- Interface de carregamento  -->
+  <div class="centered">
+      <img src="icons/Icon-192.png" alt="Logo Acervo Físico" />
+      <h2>Acervo Físico ENCA.DT</h2>
+      <span id="mStatus">Carregando...</span>
+  </div>
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->
   <script>
+
     var serviceWorkerVersion = null;
     var scriptLoaded = false;
+
     function loadMainDartJs() {
       if (scriptLoaded) {
         return;
@@ -44,7 +68,20 @@
       scriptTag.type = 'application/javascript';
       document.body.append(scriptTag);
     }
+    
+    // Verifica se a internet esta disponivel
+    // Impede a tela branca caso o script mainDartJs não seja baixado
+    fetch('https://www.back4app.com/', {mode: 'no-cors'})
+      .then(function(response) {
+        console.log('Conexão com a internet encontrada. Fetch =', response.ok);
+      })
+      .catch(function(error) {
+        console.log('Conexão falhou', error)
+        status = 'Não é possível acessar o sistema!\n\nVerifique sua conexão com a Internet ou tente em outro navegador mais atualizado.';
+        document.getElementById('mStatus').innerText = status;
+      });
 
+    // Verifica se instancia trabalha com Service Workers
     if ('serviceWorker' in navigator) {
       // Service workers are supported. Use them.
       window.addEventListener('load', function () {

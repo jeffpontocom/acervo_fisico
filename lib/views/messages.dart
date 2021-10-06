@@ -359,7 +359,12 @@ class Message {
                 ],
               ),
               Flexible(
-                child: conteudo ?? Container(),
+                child: Scrollbar(
+                  isAlwaysShown: true,
+                  showTrackOnHover: true,
+                  hoverThickness: 18,
+                  child: conteudo ?? Container(),
+                ),
               ),
             ],
           ),

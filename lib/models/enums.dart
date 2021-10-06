@@ -101,3 +101,28 @@ String getTipoRelatorioString(int index) {
       return '[Ação indefinida]';
   }
 }
+
+Icon getTipoRelatorioIcon(int index) {
+  switch (index) {
+    case 0:
+      return Icon(Icons.new_label_rounded); //'Criação do pacote';
+    case 1:
+      return Icon(Icons.unarchive_rounded); //'Abertura do pacote';
+    case 2:
+      return Icon(Icons.verified_rounded); //'Selamento do pacote';
+    case 3:
+      return Icon(
+          Icons.edit_location_alt_rounded); //'Cadastro posto em edição';
+    case 4:
+      return Icon(
+          Icons.edit_location_alt_rounded); //'Alteração de dados cadastrais';
+    case 5:
+      return Icon(Icons.post_add_rounded); //'Inclusão de documentos';
+    case 6:
+      return Icon(Icons.delete_sweep_rounded); //'Exclusão de documentos';
+    case 7:
+      return Icon(Icons.delete_forever_rounded); //'Eliminação do pacote';
+    default:
+      return Icon(Icons.device_unknown_rounded); //'[Ação indefinida]';
+  }
+}

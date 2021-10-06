@@ -32,6 +32,7 @@ class AddDocumentos {
         hintText: '4000dc15200p(1)r1\n4000dc15201p(1)r0c\n4000dc15201p(2)r0a',
         hintStyle: TextStyle(color: Colors.grey.shade400),
         border: OutlineInputBorder(),
+        constraints: BoxConstraints(maxWidth: 900),
       ),
       minLines: 7,
       maxLines: 10,
@@ -51,7 +52,7 @@ class AddDocumentos {
       context: context,
       titulo: 'Adicionar documentos',
       conteudo: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 0),
+        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 24),
         child: Column(
           children: [
             campoLista,

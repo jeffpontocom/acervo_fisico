@@ -1,53 +1,18 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:universal_internet_checker/universal_internet_checker.dart';
 
 import '../controllers/localizar_documento.dart';
 import '../controllers/localizar_pacote.dart';
 import '../controllers/novo_pacote.dart';
 import '../main.dart';
 import '../util/utils.dart';
-import '../views/pacote_page.dart';
 import 'login.dart';
 import 'perfil.dart';
 
 enum contexto { documentos, pacotes }
-
-class MyApp extends StatelessWidget {
-  static const routeName = '/';
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Acervo físico',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        //visualDensity: VisualDensity.adaptivePlatformDensity,
-        buttonTheme: ButtonThemeData(
-          textTheme: ButtonTextTheme.accent,
-          height: 48,
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            minimumSize: Size(64, 48),
-          ),
-        ),
-        textButtonTheme: TextButtonThemeData(
-          style: TextButton.styleFrom(
-            primary: Colors.white,
-            minimumSize: Size(64, 48),
-          ),
-        ),
-      ),
-      debugShowCheckedModeBanner: false,
-      initialRoute: routeName,
-      routes: <String, WidgetBuilder>{
-        routeName: (BuildContext context) => new MyHomePage(),
-        LoginPage.routeName: (BuildContext context) => new LoginPage(),
-        UserPage.routeName: (BuildContext context) => new UserPage(),
-        PacotePage.routeName: (BuildContext context) => new PacotePage(),
-      },
-    );
-  }
-}
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key}) : super(key: key);
@@ -59,6 +24,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   /* VARIAVEIS */
   int _contextoAtual = contexto.documentos.index;
+  StreamSubscription? subscription;
+  UniversalInternetChecker _internetChecker = UniversalInternetChecker();
+  ConnectionStatus? _status;
   List<bool> _isSelected = [true, false]; //um boleano para cada botão
   final List<Color> _cores = [Colors.grey.shade800, Colors.blue];
   final TextEditingController _controleBusca = TextEditingController();
@@ -232,71 +200,98 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     initializeDateFormatting('pt_BR', null);
+    UniversalInternetChecker.checkAddress = 'www.back4app.com';
+    _status = ConnectionStatus.unknown;
+    subscription = _internetChecker.onConnectionChange.listen((connected) {
+      setState(() {
+        _status = connected;
+        if (connected == ConnectionStatus.offline) {
+          final snackBar =
+              SnackBar(content: Text('Sem conexão com a internet!'));
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        } else if (connected == ConnectionStatus.online) {
+          SnackBar(content: Text('Conexão estabelecida!'));
+        }
+      });
+    });
     super.initState();
   }
 
   @override
   void dispose() {
     _controleBusca.dispose();
+    subscription?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        shadowColor: Colors.transparent,
-        foregroundColor: Colors.black54,
-        title: ListTile(
-          title: Text(
-              currentUser != null ? currentUser!.username! : 'Apenas consulta'),
-          subtitle: Text(currentUser != null
-              ? currentUser!.emailAddress!
-              : 'Clique para realizar login'),
-          dense: true,
-          contentPadding: EdgeInsets.all(0),
-          trailing: Icon(Icons.person_pin),
-          visualDensity: VisualDensity.compact,
-          onTap: () => _loginOrLogout(),
+        backgroundColor: Colors.grey.shade100,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          foregroundColor: Colors.black54,
+          title: ListTile(
+            title: Text(currentUser != null
+                ? currentUser!.username!
+                : 'Apenas consulta'),
+            subtitle: Text(currentUser != null
+                ? currentUser!.emailAddress!
+                : 'Clique para realizar login'),
+            dense: true,
+            contentPadding: EdgeInsets.all(0),
+            trailing: Icon(Icons.person_pin),
+            visualDensity: VisualDensity.compact,
+            onTap: () => _loginOrLogout(),
+          ),
         ),
-      ),
-      body: Container(
-        padding: EdgeInsets.all(24),
-        alignment: Alignment.center,
-        child: Wrap(
-          alignment: WrapAlignment.center,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          runAlignment: WrapAlignment.center,
-          runSpacing: 32,
-          spacing: 32,
-          children: [
-            logotipo,
-            ConstrainedBox(
-              constraints: BoxConstraints(minWidth: 200, maxWidth: 600),
-              child: Column(
-                children: [
-                  boxPesquisa,
-                  SizedBox.square(dimension: 32),
-                  boxSelectContexto,
-                ],
+        body: Container(
+          padding: EdgeInsets.all(24),
+          alignment: Alignment.center,
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            runAlignment: WrapAlignment.center,
+            runSpacing: 32,
+            spacing: 32,
+            children: [
+              logotipo,
+              ConstrainedBox(
+                constraints: BoxConstraints(minWidth: 200, maxWidth: 600),
+                child: Column(
+                  children: [
+                    boxPesquisa,
+                    SizedBox.square(dimension: 32),
+                    boxSelectContexto,
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-      floatingActionButton:
-          (currentUser != null && !Util.tecladoVisivel(context))
-              ? FloatingActionButton.extended(
-                  label: Text('Novo pacote'),
-                  icon: Icon(Icons.add),
-                  onPressed: () {
-                    _criarPacote();
-                  },
-                  heroTag: null,
-                )
-              : null,
-    );
+        floatingActionButton:
+            (currentUser != null && !Util.tecladoVisivel(context))
+                ? FloatingActionButton.extended(
+                    label: Text('Novo pacote'),
+                    icon: Icon(Icons.add),
+                    onPressed: () {
+                      _criarPacote();
+                    },
+                    heroTag: null,
+                  )
+                : null);
+    /* bottomSheet: _status == ConnectionStatus.offline
+            ? Container(
+                height: 56,
+                padding: EdgeInsets.all(12),
+                alignment: Alignment.center,
+                color: Colors.red,
+                child: Text(
+                  'Sem conexão com a internet',
+                  style: TextStyle(color: Colors.white),
+                ),
+              )
+            : null); */
   }
 }

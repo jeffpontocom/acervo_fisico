@@ -8,6 +8,7 @@ const double margemHweb = 400.0;
 const mTextField = InputDecoration(
   isDense: false,
   hintStyle: TextStyle(color: Colors.grey),
+  constraints: BoxConstraints(maxWidth: 600),
   labelStyle: TextStyle(
     color: Colors.grey,
     fontSize: 18,
