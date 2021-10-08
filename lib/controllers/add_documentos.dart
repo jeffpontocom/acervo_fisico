@@ -130,13 +130,12 @@ class AddDocumentos {
         });
     // Separar itens e adicionar a lista para analise
     _itensParaAnalise = separarItens(_memoValores);
+    // Remover itens em branco
     _itensParaAnalise.remove('');
-    print('${_itensParaAnalise.length} iten(s) identificado(s)');
-    // Iniciar progresso 0/XX (Validados: xx; Duplicatas: xx; Mal-formados: xx; Falhas: xx)
-
-    // Analisar cada item se documento
+    print('Analisando ${_itensParaAnalise.length} item(s)...');
+    // Analisar cada item se atende padrões de documento Itaipu
     for (String value in _itensParaAnalise) {
-      //print('$value \n');
+      // Analise
       Documento? verificado = verificarItem(value);
       // se não documento acrescentar na lista e nao documentos
       if (verificado == null) {
@@ -237,6 +236,9 @@ Por ${currentUser!.username}
     return ls.convert(values);
   }
 
+  /// Verifica se string atende padrões de documentos Itaipu
+  /// Obrigatório: Assunto Base, Tipo, Sequencial, Idioma, Folha e Revisão
+  /// Ex.: 4000DC15200P(1)R0A
   Documento? verificarItem(String value) {
     String assuntoBase = '';
     String tipo = '';
@@ -245,21 +247,33 @@ Por ${currentUser!.username}
     String folha = '';
     String revisao = '';
 
+    // Remover traço inicial (se houver)
+    while (value.startsWith('-')) {
+      value = value.replaceFirst('-', '');
+    }
+    // Remover ponto no final (se houver)
+    while (value.endsWith('.')) {
+      value = value.replaceFirst('.', '', value.length - 1);
+    }
+
+    // Valida se tem o número mínimo de caracteres
     if (value.length < 17) {
       print('Item nao possui caracteres suficientes: $value');
       return null;
     }
-    if (!(value.contains('('))) {
-      print('Item nao possui identificador de folha: $value');
-      return null;
-    }
 
-    // identificadores de folhas
+    // Posições dos identificadores de folhas (inicio e fim)
     int posFolhaIni = value.indexOf('(');
     int posFolhaFim = value.indexOf(')');
+    print('PosFolhaIni: $posFolhaIni');
+    print('PosFolhaFim: $posFolhaFim');
 
-    if (posFolhaFim == -1 || posFolhaIni < 12 || posFolhaIni > 13) {
-      print('Ma formacao do codigo: $value');
+    // Valida se o identificador de folha está no trecho possível
+    if (posFolhaIni == -1 ||
+        posFolhaFim == -1 ||
+        posFolhaIni < 12 ||
+        posFolhaIni > 13) {
+      print('Identificador de folha inexistente ou mal posicionado: $value');
       return null;
     }
 
@@ -311,6 +325,7 @@ Por ${currentUser!.username}
       return null;
     }
 
+    // Cria o item validado
     Documento doc = new Documento();
     doc.assuntoBase = assuntoBase;
     doc.tipo = tipo;
@@ -322,6 +337,7 @@ Por ${currentUser!.username}
     return doc;
   }
 
+  /// Verifica se já há registro do documento no banco de dados
   Future<Documento?> verificarDuplicata(Documento documento) async {
     QueryBuilder<Documento> query = QueryBuilder<Documento>(Documento());
 
@@ -341,6 +357,7 @@ Por ${currentUser!.username}
     }
   }
 
+  /// Registra o documento no banco de dados
   Future<Documento?> salvarItem(Documento documento) async {
     final registration = Documento()
       ..set(Documento.keyAssuntoBase, documento.assuntoBase)

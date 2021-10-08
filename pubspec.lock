@@ -99,13 +99,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.1"
-  cupertino_icons:
-    dependency: "direct main"
-    description:
-      name: cupertino_icons
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.3"
   dbus:
     dependency: transitive
     description:
@@ -483,13 +476,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.0"
-  universal_internet_checker:
-    dependency: "direct main"
-    description:
-      name: universal_internet_checker
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.2"
   url_strategy:
     dependency: "direct main"
     description:

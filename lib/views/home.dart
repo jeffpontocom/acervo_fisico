@@ -1,8 +1,8 @@
 import 'dart:async';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:universal_internet_checker/universal_internet_checker.dart';
 
 import '../controllers/localizar_documento.dart';
 import '../controllers/localizar_pacote.dart';
@@ -23,15 +23,49 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   /* VARIAVEIS */
+
+  /// Contextuais
   int _contextoAtual = contexto.documentos.index;
-  StreamSubscription? subscription;
-  UniversalInternetChecker _internetChecker = UniversalInternetChecker();
-  ConnectionStatus? _status;
   List<bool> _isSelected = [true, false]; //um boleano para cada botão
   final List<Color> _cores = [Colors.grey.shade800, Colors.blue];
   final TextEditingController _controleBusca = TextEditingController();
 
+  /// Conexão com a internet
+  late StreamSubscription<ConnectivityResult> _subscription;
+  SnackBar snackBar = new SnackBar(
+    content: Text('Seja bem vindo!'),
+  );
+
   /* METODOS */
+
+  /// Atualiza status de conexao
+  void _updateStatus(ConnectivityResult connectivityResult) async {
+    ScaffoldMessenger.of(context).clearSnackBars();
+    if (connectivityResult == ConnectivityResult.mobile) {
+      snackBar = SnackBar(
+        content: Text('Conexão mobile estabelecida!'),
+        backgroundColor: Colors.green.shade900,
+      );
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      snackBar = SnackBar(
+        content: Text('Conexão wifi estabelecida!'),
+        backgroundColor: Colors.green.shade900,
+      );
+    } else if (connectivityResult == ConnectivityResult.ethernet) {
+      snackBar = SnackBar(
+        content: Text('Conexão ethernet estabelecida!'),
+        backgroundColor: Colors.green.shade900,
+      );
+    } else {
+      snackBar = SnackBar(
+        content: Text('Sem conexão com a internet!'),
+        dismissDirection: DismissDirection.horizontal,
+        backgroundColor: Colors.red.shade900,
+        duration: Duration(days: 365),
+      );
+    }
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
 
   /// Ir para a pagina de login ou logout dependendo do status da aplicacao
   void _loginOrLogout() async {
@@ -200,27 +234,14 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     initializeDateFormatting('pt_BR', null);
-    UniversalInternetChecker.checkAddress = 'www.back4app.com';
-    _status = ConnectionStatus.unknown;
-    subscription = _internetChecker.onConnectionChange.listen((connected) {
-      setState(() {
-        _status = connected;
-        if (connected == ConnectionStatus.offline) {
-          final snackBar =
-              SnackBar(content: Text('Sem conexão com a internet!'));
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        } else if (connected == ConnectionStatus.online) {
-          SnackBar(content: Text('Conexão estabelecida!'));
-        }
-      });
-    });
+    _subscription = Connectivity().onConnectivityChanged.listen(_updateStatus);
     super.initState();
   }
 
   @override
   void dispose() {
     _controleBusca.dispose();
-    subscription?.cancel();
+    _subscription.cancel();
     super.dispose();
   }
 
