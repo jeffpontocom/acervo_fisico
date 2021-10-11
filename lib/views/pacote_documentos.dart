@@ -181,6 +181,7 @@ class _PacoteDocumentosState extends State<PacoteDocumentos>
     QueryBuilder<Documento> query = QueryBuilder<Documento>(Documento())
       ..whereEqualTo(Documento.keyPacote,
           (Pacote()..objectId = mPacote.objectId).toPointer())
+      ..setLimit(500) // O padrao e 100
       ..orderByAscending(Documento.keyAssuntoBase)
       ..orderByAscending(Documento.keyTipo)
       ..orderByAscending(Documento.keySequencial)
