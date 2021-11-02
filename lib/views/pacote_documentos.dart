@@ -1,3 +1,4 @@
+import 'package:acervo_fisico/controllers/transf_docs.dart';
 import 'package:flutter/material.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
@@ -81,14 +82,24 @@ class _PacoteDocumentosState extends State<PacoteDocumentos>
                                   adicionarDocs();
                                 },
                               )
-                            : TextButton.icon(
-                                icon: Icon(Icons.delete_sweep_rounded),
-                                label: Text('EXCLUIR'),
-                                onPressed: () {
-                                  eliminarDocs();
-                                  //todo excluir documentos (avisar sobre)
-                                },
-                              ),
+                            : Row(
+                                children: [
+                                  TextButton.icon(
+                                    icon: Icon(Icons.transform_rounded),
+                                    label: Text('TRANSFERIR'),
+                                    onPressed: () {
+                                      transferirDocs();
+                                    },
+                                  ),
+                                  TextButton.icon(
+                                    icon: Icon(Icons.delete_sweep_rounded),
+                                    label: Text('EXCLUIR'),
+                                    onPressed: () {
+                                      eliminarDocs();
+                                    },
+                                  ),
+                                ],
+                              )
                       ],
                     ),
                   ),
@@ -221,6 +232,16 @@ class _PacoteDocumentosState extends State<PacoteDocumentos>
     DelDocumentos(
         context: context,
         documentosEliminar: docsSelected,
+        provider: this,
+        callback: () {
+          setState(() {});
+        });
+  }
+
+  void transferirDocs() {
+    TransfDocumentos(
+        context: context,
+        docsParaTransferir: docsSelected,
         provider: this,
         callback: () {
           setState(() {});

@@ -80,6 +80,7 @@ class Message {
   static void showAlerta(
       {required BuildContext context,
       required String message,
+      Widget? extra,
       Function(bool)? onPressed}) {
     showDialog(
       context: context,
@@ -87,7 +88,13 @@ class Message {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Alerta!"),
-          content: Text(message),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(message),
+              extra ?? SizedBox(),
+            ],
+          ),
           buttonPadding: EdgeInsets.all(0),
           actionsPadding: EdgeInsets.symmetric(horizontal: 8),
           actionsAlignment: MainAxisAlignment.spaceBetween,

@@ -54,6 +54,7 @@ enum PacoteAction {
   ADD_DOC,
   DEL_DOC,
   ELIMINAR,
+  TRANSFERIR,
 }
 
 String getPacoteActionString(int index) {
@@ -74,6 +75,8 @@ String getPacoteActionString(int index) {
       return 'Documentos excluidos';
     case 7:
       return 'Eliminado';
+    case 8:
+      return 'Transferência';
     default:
       return '[Ação indefinida]';
   }
@@ -97,6 +100,8 @@ String getTipoRelatorioString(int index) {
       return 'Exclusão de documentos';
     case 7:
       return 'Eliminação do pacote';
+    case 8:
+      return 'Transferência de documentos';
     default:
       return '[Ação indefinida]';
   }
@@ -122,6 +127,8 @@ Icon getTipoRelatorioIcon(int index) {
       return Icon(Icons.delete_sweep_rounded); //'Exclusão de documentos';
     case 7:
       return Icon(Icons.delete_forever_rounded); //'Eliminação do pacote';
+    case 8:
+      return Icon(Icons.transform_rounded); //'Transferência de documentos';
     default:
       return Icon(Icons.device_unknown_rounded); //'[Ação indefinida]';
   }
