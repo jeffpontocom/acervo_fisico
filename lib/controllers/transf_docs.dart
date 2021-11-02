@@ -1,4 +1,3 @@
-import 'package:acervo_fisico/controllers/localizar_pacote.dart';
 import 'package:acervo_fisico/models/pacote.dart';
 import 'package:acervo_fisico/styles/app_styles.dart';
 import 'package:flutter/material.dart';
@@ -27,32 +26,37 @@ class TransfDocumentos {
     TextEditingController ctrPacoteRecebedor = TextEditingController();
     Message.showAlerta(
       context: context,
-      message:
-          'Informe o localizador do pacote para o qual deseja transferir os documentos.',
-      extra: TextFormField(
-          key: _formKey,
-          //autovalidateMode: AutovalidateMode.always,
-          validator: (value) {
-            return pacoteRecebedor != null
-                ? null
-                : 'Nenhum pacote identificado';
-          },
-          controller: ctrPacoteRecebedor,
-          decoration: mTextField.copyWith(
-              prefixIcon: pacoteRecebedor != null
-                  ? Icon(Icons.check)
-                  : Icon(Icons.search)),
-          onFieldSubmitted: (texto) {
-            _buscarPacotes(
+      message: '''
+      Informe o localizador do pacote para o qual deseja transferir os documentos.
+      Apenas pacotes abertos podem receber transferências.
+
+      ''',
+      extra: Form(
+        key: _formKey,
+        child: TextFormField(
+            controller: ctrPacoteRecebedor,
+            validator: (value) {
+              return pacoteRecebedor != null
+                  ? null
+                  : 'Nenhum pacote encontrado';
+            },
+            decoration: mTextField.copyWith(
+                suffixIcon: pacoteRecebedor != null
+                    ? Icon(Icons.check)
+                    : Icon(Icons.search)),
+            onFieldSubmitted: (texto) {
+              _buscarPacotes(
                 termo: texto,
                 callback: (encontrado) {
                   pacoteRecebedor = encontrado;
-                  ctrPacoteRecebedor.text =
-                      pacoteRecebedor?.identificador ?? 'Não encontrado';
+                  if (pacoteRecebedor != null) {
+                    ctrPacoteRecebedor.text = pacoteRecebedor!.identificador;
+                  }
                   _formKey.currentState?.validate();
-                  //_formKey.currentState!.setState(() {});
-                });
-          }),
+                },
+              );
+            }),
+      ),
       onPressed: (executar) {
         if (executar && pacoteRecebedor != null) {
           Navigator.pop(context);
@@ -194,6 +198,8 @@ Por ${currentUser!.username}
     // Busca principal
     QueryBuilder<Pacote> query =
         QueryBuilder.or(Pacote(), [queryExata, queryContem])
+          ..whereEqualTo(Pacote.keySelado, false)
+          ..whereNotEqualTo('objectId', mPacote.objectId)
           ..orderByAscending(Pacote.keyId);
     // Executa busca
     final ParseResponse apiResponse = await query.query();
@@ -214,12 +220,10 @@ Por ${currentUser!.username}
     // Se não encontrar, mostrar dialogo de alerta
     if (pacotes.length <= 0) {
       callback(null);
-      //return;
     }
     // Se encontrar termo exato, ir para Widget VerPacote()
     else if (pacotes.length == 1) {
       callback(pacotes.first);
-      //return;
     }
     // Se encontrar mais de uma opção, mostrar dialogo de seleção
     else {
