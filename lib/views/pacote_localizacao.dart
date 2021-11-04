@@ -1,3 +1,5 @@
+import 'package:acervo_fisico/controllers/criar_pdf.dart';
+import 'package:acervo_fisico/views/pacote_documentos.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
@@ -195,36 +197,38 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
   }
 
   Widget get alteracoes {
+    var textColor = Colors.blueGrey.shade400;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Wrap(
           children: [
             Text('Situação atual: ',
-                style: TextStyle(color: Colors.grey, fontSize: 15)),
+                style: TextStyle(color: textColor, fontSize: 15)),
           ],
         ),
         Wrap(
           children: [
-            Text('• ', style: const TextStyle(color: Colors.grey)),
+            Text('• ', style: TextStyle(color: textColor)),
             Text('${mPacote.actionToString}',
                 style: TextStyle(
-                    color: Colors.blueGrey, fontWeight: FontWeight.bold)),
-            Text(' em ', style: const TextStyle(color: Colors.grey)),
+                    color: Colors.blueGrey.shade700,
+                    fontWeight: FontWeight.bold)),
+            Text(' em ', style: TextStyle(color: textColor)),
             Text('${Util.mDateFormat.format(mPacote.updatedAt.toLocal())}.',
                 style:
-                    TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+                    TextStyle(color: textColor, fontWeight: FontWeight.bold)),
           ],
         ),
         Wrap(
           children: [
             Text(
               '• Editado por ',
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(color: textColor),
             ),
             Text(
               mPacote.updatedBy?.username ?? 'Importação de dados',
-              style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold),
+              style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -232,12 +236,11 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
           children: [
             Text(
               mPacote.selado ? '• Selado por ' : '• Aberto por ',
-              style: const TextStyle(color: Colors.grey),
+              style: TextStyle(color: textColor),
             ),
             Text(
               mPacote.seladoBy?.username ?? '[Sem identificação]',
-              style: const TextStyle(
-                  color: Colors.grey, fontWeight: FontWeight.bold),
+              style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -255,6 +258,19 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
       ),
       onPressed: () {
         eliminarPacote();
+      },
+    );
+  }
+
+  Widget get gerarPdf {
+    return ElevatedButton.icon(
+      label: Text('Gerar PDF'),
+      icon: Icon(Icons.picture_as_pdf_rounded),
+      style: ElevatedButton.styleFrom(
+        minimumSize: Size(150, 50),
+      ),
+      onPressed: () {
+        gerarPdfPacote();
       },
     );
   }
@@ -358,6 +374,13 @@ Por ${currentUser!.username}
           // atualiza interface pai
           widget.parentCall!();
         });
+  }
+
+  //// Gerar PDF com informações do pacote
+  gerarPdfPacote() async {
+    var lista = await getDocumentos();
+    List<Documento> documentos = lista.cast();
+    GerarPdfPage(pacote: mPacote, documentos: documentos).criarPaginas();
   }
 
   /// Elimina o pacote
@@ -530,11 +553,14 @@ Por ${currentUser!.username}
                 ? Container()
                 : Container(
                     width: double.infinity,
-                    color: Colors.grey.shade200,
+                    color: Colors.blueGrey.shade100,
                     child: Padding(
                       padding:
                           EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      child: alteracoes,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [alteracoes, gerarPdf],
+                      ),
                     ),
                   ),
           ],

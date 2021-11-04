@@ -44,12 +44,20 @@ class _PacotePageState extends State<PacotePage> {
   @override
   void didChangeDependencies() {
     if (ModalRoute.of(context)?.settings.arguments == null) {
-      Navigator.pop(context);
-      return;
+      Pacote().getObject('2COyFooEaD').then((value) {
+        if (value.results != null) {
+          setState(() {
+            mPacote = value.results?.first;
+          });
+        } else {
+          Navigator.canPop(context);
+        }
+      });
+    } else {
+      final PacoteArgumentos args =
+          ModalRoute.of(context)!.settings.arguments as PacoteArgumentos;
+      mPacote = args.pacote;
     }
-    final PacoteArgumentos args =
-        ModalRoute.of(context)!.settings.arguments as PacoteArgumentos;
-    mPacote = args.pacote;
     super.didChangeDependencies();
   }
 

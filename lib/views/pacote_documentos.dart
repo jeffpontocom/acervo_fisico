@@ -188,29 +188,6 @@ class _PacoteDocumentosState extends State<PacoteDocumentos>
     });
   }
 
-  Future<List<dynamic>> getDocumentos() async {
-    QueryBuilder<Documento> query = QueryBuilder<Documento>(Documento())
-      ..whereEqualTo(Documento.keyPacote,
-          (Pacote()..objectId = mPacote.objectId).toPointer())
-      ..setLimit(500) // O padrao e 100
-      ..orderByAscending(Documento.keyAssuntoBase)
-      ..orderByAscending(Documento.keyTipo)
-      ..orderByAscending(Documento.keySequencial)
-      ..orderByAscending(Documento.keyIdioma)
-      ..orderByAscending(Documento.keyRevisao)
-      ..orderByAscending(Documento.keyFolha);
-    final apiResponse = await query.query();
-
-    if (apiResponse.statusCode == -1) {
-      return [-1];
-    }
-    if (apiResponse.success && apiResponse.results != null) {
-      return apiResponse.results ?? [];
-    } else {
-      return [];
-    }
-  }
-
   void resetSelection() {
     docsSelected.clear();
     itemTapped = [];
@@ -295,5 +272,28 @@ class _PacoteDocumentosState extends State<PacoteDocumentos>
         );
       },
     );
+  }
+}
+
+Future<List<dynamic>> getDocumentos() async {
+  QueryBuilder<Documento> query = QueryBuilder<Documento>(Documento())
+    ..whereEqualTo(Documento.keyPacote,
+        (Pacote()..objectId = mPacote.objectId).toPointer())
+    ..setLimit(500) // O padrao e 100
+    ..orderByAscending(Documento.keyAssuntoBase)
+    ..orderByAscending(Documento.keyTipo)
+    ..orderByAscending(Documento.keySequencial)
+    ..orderByAscending(Documento.keyIdioma)
+    ..orderByAscending(Documento.keyRevisao)
+    ..orderByAscending(Documento.keyFolha);
+  final apiResponse = await query.query();
+
+  if (apiResponse.statusCode == -1) {
+    return [-1];
+  }
+  if (apiResponse.success && apiResponse.results != null) {
+    return apiResponse.results ?? [];
+  } else {
+    return [];
   }
 }
