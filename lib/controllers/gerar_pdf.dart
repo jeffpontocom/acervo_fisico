@@ -1,17 +1,14 @@
-//import 'dart:io';
-
-import 'package:universal_io/io.dart';
-//import  '' if (dart.library.html) 'dart:html'as html;
 import 'dart:typed_data';
 
-import 'package:acervo_fisico/models/documento.dart';
-import 'package:acervo_fisico/models/pacote.dart';
-import 'package:acervo_fisico/util/utils.dart';
-import 'package:flutter/foundation.dart';
-import 'package:open_file/open_file.dart';
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+
+import '../models/documento.dart';
+import '../models/pacote.dart';
+import '../util/utils.dart';
+import '../util/work_native.dart' if (dart.library.html) '../util/work_web.dart'
+    as util;
 
 class GerarPdfPage {
   final Pacote pacote;
@@ -98,7 +95,8 @@ class GerarPdfPage {
               width: 70,
               child: pw.BarcodeWidget(
                 barcode: pw.Barcode.qrCode(),
-                data: 'Pacote#${pacote.identificador}',
+                data:
+                    'https://encadt.itaipu.gov.br/acervo/pacote/${pacote.objectId}',
                 drawText: true,
               ),
             ),
@@ -170,29 +168,8 @@ class GerarPdfPage {
       ),
     );
 
-    String fileName;
-    var file;
-    if (Platform.isAndroid) {
-      fileName =
-          '/storage/emulated/0/Android/data/itaipu.encadt.acervo_fisico/Pacote_${pacote.identificador}.pdf';
-      file = File(fileName);
-    } else {
-      fileName = 'Pacote_${pacote.identificador}.pdf';
-      file = File(fileName);
-    }
-    await file.writeAsBytes(await pdf.save());
-    OpenFile.open(file.path);
-
-    /* if (kIsWeb) {
-      //Uint8List pdfInBytes = await pdf.save();
-      /* final blob = html.Blob([pdfInBytes], 'application/pdf');
-      final url = html.Url.createObjectUrlFromBlob(blob);
-      html.window.open(url, '_blank');
-      html.Url.revokeObjectUrl(url); */
-    } else {
-      String fileName = 'Pacote_${pacote.identificador}.pdf';
-      var file = File(fileName);
-      await file.writeAsBytes(await pdf.save());
-    } */
+    String fileName = 'Pacote (${pacote.identificador}).pdf';
+    Uint8List pdfInBytes = await pdf.save();
+    util.abrirArquivo(fileName: fileName, pdfInBytes: pdfInBytes);
   }
 }

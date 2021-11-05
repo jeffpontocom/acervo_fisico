@@ -1,4 +1,4 @@
-import 'package:acervo_fisico/controllers/criar_pdf.dart';
+import 'package:acervo_fisico/controllers/gerar_pdf.dart';
 import 'package:acervo_fisico/views/pacote_documentos.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';

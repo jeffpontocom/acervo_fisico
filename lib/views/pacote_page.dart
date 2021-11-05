@@ -11,7 +11,7 @@ import 'messages.dart';
 import 'pacote_documentos.dart';
 import 'pacote_localizacao.dart';
 
-late Pacote mPacote;
+Pacote mPacote = Pacote();
 ValueNotifier<bool> editMode = new ValueNotifier(false);
 var refresh;
 
@@ -71,41 +71,54 @@ class _PacotePageState extends State<PacotePage> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          titleSpacing: 0,
-          centerTitle: true,
-          title: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                mPacote.selado ? 'Pacote selado' : 'Pacote aberto',
-                style: TextStyle(color: Colors.white, fontSize: 20.0),
+      child: Builder(
+        //future: Pacote().getObject('2COyFooEaD'),
+        //initialData: mPacote,
+        builder: (context) {
+          if (mPacote.objectId != null) {
+            return Scaffold(
+              appBar: AppBar(
+                titleSpacing: 0,
+                centerTitle: true,
+                title: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      mPacote.selado ? 'Pacote selado' : 'Pacote aberto',
+                      style: TextStyle(color: Colors.white, fontSize: 20.0),
+                    ),
+                    Text(
+                      //'${mPacote.tipoToString}: ${mPacote.identificador}',
+                      'ID: ${mPacote.identificador}',
+                      style: TextStyle(
+                          color: Colors.blue.shade200, fontSize: 13.0),
+                    )
+                  ],
+                ),
+                actions: pacoteActions,
+                bottom: TabBar(
+                  tabs: [
+                    Tab(icon: Icon(Icons.place), text: "Localização"),
+                    Tab(icon: Icon(Icons.list_rounded), text: "Documentos"),
+                    Tab(icon: Icon(Icons.history_rounded), text: "Histórico"),
+                  ],
+                ),
               ),
-              Text(
-                //'${mPacote.tipoToString}: ${mPacote.identificador}',
-                'ID: ${mPacote.identificador}',
-                style: TextStyle(color: Colors.blue.shade200, fontSize: 13.0),
-              )
-            ],
-          ),
-          actions: pacoteActions,
-          bottom: TabBar(
-            tabs: [
-              Tab(icon: Icon(Icons.place), text: "Localização"),
-              Tab(icon: Icon(Icons.list_rounded), text: "Documentos"),
-              Tab(icon: Icon(Icons.history_rounded), text: "Histórico"),
-            ],
-          ),
-        ),
-        body: TabBarView(
-          children: [
-            PacoteLocalizacao(parentCall: myCall),
-            PacoteDocumentos(),
-            PacoteRelatorios(),
-          ],
-        ),
+              body: TabBarView(
+                children: [
+                  PacoteLocalizacao(parentCall: myCall),
+                  PacoteDocumentos(),
+                  PacoteRelatorios(),
+                ],
+              ),
+            );
+          } else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
       ),
     );
   }

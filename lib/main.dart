@@ -19,6 +19,7 @@ import 'package:uni_links/uni_links.dart';
 /// Variavel global para guardar atual usuario do sistema
 ParseUser? currentUser;
 bool _initialUriIsHandled = false;
+Uri? latestUri;
 
 void main() async {
   setPathUrlStrategy(); // remove o hash '#' das URLs
@@ -64,7 +65,6 @@ class Init {
 
 /// Classe base para app
 class MyApp extends StatefulWidget {
-  static const routeName = '/';
   const MyApp({Key? key}) : super(key: key);
 
   @override
@@ -73,7 +73,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   Uri? _initialUri;
-  Uri? _latestUri;
   Object? _err;
 
   StreamSubscription? _sub;
@@ -106,14 +105,14 @@ class _MyAppState extends State<MyApp> {
         if (!mounted) return;
         print('got uri: $uri');
         setState(() {
-          _latestUri = uri;
+          latestUri = uri;
           _err = null;
         });
       }, onError: (Object err) {
         if (!mounted) return;
         print('got err: $err');
         setState(() {
-          _latestUri = null;
+          latestUri = null;
           if (err is FormatException) {
             _err = err;
           } else {
@@ -137,7 +136,7 @@ class _MyAppState extends State<MyApp> {
     // was a weidget that will be disposed of (ex. a navigation route change).
     if (!_initialUriIsHandled) {
       _initialUriIsHandled = true;
-      _showSnackBar('_handleInitialUri called');
+      //_showSnackBar('_handleInitialUri called');
       try {
         final uri = await getInitialUri();
         if (uri == null) {
@@ -158,7 +157,7 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  void _showSnackBar(String msg) {
+  /* void _showSnackBar(String msg) {
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       final context = _scaffoldKey.currentContext;
       if (context != null) {
@@ -167,7 +166,7 @@ class _MyAppState extends State<MyApp> {
         ));
       }
     });
-  }
+  } */
 
   @override
   Widget build(BuildContext context) {
@@ -191,9 +190,9 @@ class _MyAppState extends State<MyApp> {
           ),
         ),
       ),
-      initialRoute: MyApp.routeName,
+      initialRoute: '/',
       routes: <String, WidgetBuilder>{
-        MyApp.routeName: (BuildContext context) => new MyHomePage(),
+        '/': (BuildContext context) => new MyHomePage(),
         LoginPage.routeName: (BuildContext context) => new LoginPage(),
         UserPage.routeName: (BuildContext context) => new UserPage(),
         PacotePage.routeName: (BuildContext context) => new PacotePage(),
@@ -241,11 +240,11 @@ List<String>? getCmds() {
   ];
 }
 
-List<Widget> intersperse(Iterable<Widget> list, Widget item) {
+/* List<Widget> intersperse(Iterable<Widget> list, Widget item) {
   final initialValue = <Widget>[];
   return list.fold(initialValue, (all, el) {
     if (all.isNotEmpty) all.add(item);
     all.add(el);
     return all;
   });
-}
+} */

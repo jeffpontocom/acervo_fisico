@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:acervo_fisico/models/pacote.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -10,6 +11,7 @@ import '../controllers/novo_pacote.dart';
 import '../main.dart';
 import '../util/utils.dart';
 import 'login.dart';
+import 'pacote_page.dart';
 import 'perfil.dart';
 
 enum contexto { documentos, pacotes }
@@ -247,6 +249,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (latestUri != null) {}
     return Scaffold(
         backgroundColor: Colors.grey.shade100,
         appBar: AppBar(
@@ -285,6 +288,18 @@ class _MyHomePageState extends State<MyHomePage> {
                     boxPesquisa,
                     SizedBox.square(dimension: 32),
                     boxSelectContexto,
+                    latestUri != null
+                        ? OutlinedButton(
+                            onPressed: () async {
+                              final id = latestUri?.pathSegments.last;
+                              print(id);
+                              await Pacote().getObject(id!).then(
+                                  (value) => mPacote = value.results?.first);
+                              Navigator.pushNamed(
+                                  context, PacotePage.routeName);
+                            },
+                            child: Text('Abrir qrcode'))
+                        : SizedBox(),
                   ],
                 ),
               ),
@@ -302,6 +317,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     heroTag: null,
                   )
                 : null);
+
     /* bottomSheet: _status == ConnectionStatus.offline
             ? Container(
                 height: 56,
