@@ -1,37 +1,34 @@
 import 'dart:async';
+import 'package:acervo_fisico/app_module.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 import 'package:url_strategy/url_strategy.dart';
 
 import 'models/documento.dart';
 import 'models/pacote.dart';
 import 'models/relatorio.dart';
-import 'views/home.dart';
-import 'views/login.dart';
-import 'views/pacote_page.dart';
-import 'views/perfil.dart';
 
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:uni_links/uni_links.dart';
 
 /// Variavel global para guardar atual usuario do sistema
 ParseUser? currentUser;
-bool _initialUriIsHandled = false;
-Uri? latestUri;
+// Variaveis para controle de links de entrada
+Uri? incomingLink;
 
 void main() async {
   setPathUrlStrategy(); // remove o hash '#' das URLs
   WidgetsFlutterBinding.ensureInitialized();
   await Init.initialize();
-  runApp(MyApp());
+  runApp(ModularApp(module: AppModule(), child: MyApp()));
 }
 
 class Init {
   static Future initialize() async {
     await _registrarServicos();
-    await _carregarConfiguracoes();
+    //await _carregarConfiguracoes();
   }
 
   /// Registra todos os serviços necessários a execução do sistema
@@ -72,15 +69,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  Uri? _initialUri;
-  Object? _err;
-
   StreamSubscription? _sub;
-
-  final _scaffoldKey = GlobalKey();
-  final _cmds = getCmds();
-  final _cmdStyle = const TextStyle(
-      fontFamily: 'Courier', fontSize: 12.0, fontWeight: FontWeight.w700);
+  bool _initialUriIsHandled = false;
 
   @override
   void initState() {
@@ -104,21 +94,11 @@ class _MyAppState extends State<MyApp> {
       _sub = uriLinkStream.listen((Uri? uri) {
         if (!mounted) return;
         print('got uri: $uri');
-        setState(() {
-          latestUri = uri;
-          _err = null;
-        });
+        incomingLink = uri;
       }, onError: (Object err) {
         if (!mounted) return;
         print('got err: $err');
-        setState(() {
-          latestUri = null;
-          if (err is FormatException) {
-            _err = err;
-          } else {
-            _err = null;
-          }
-        });
+        incomingLink = null;
       });
     }
   }
@@ -139,34 +119,22 @@ class _MyAppState extends State<MyApp> {
       //_showSnackBar('_handleInitialUri called');
       try {
         final uri = await getInitialUri();
-        if (uri == null) {
-          print('no initial uri');
-        } else {
-          print('got initial uri: $uri');
-        }
         if (!mounted) return;
-        setState(() => _initialUri = uri);
+        if (uri == null) {
+          print('Sem link de entrada');
+        } else {
+          print('Link de entrada: $uri');
+        }
+        incomingLink = uri;
       } on PlatformException {
         // Platform messages may fail but we ignore the exception
         print('falied to get initial uri');
       } on FormatException catch (err) {
         if (!mounted) return;
-        print('malformed initial uri');
-        setState(() => _err = err);
+        print('malformed initial uri: ' + err.message);
       }
     }
   }
-
-  /* void _showSnackBar(String msg) {
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      final context = _scaffoldKey.currentContext;
-      if (context != null) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(msg),
-        ));
-      }
-    });
-  } */
 
   @override
   Widget build(BuildContext context) {
@@ -191,60 +159,29 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
       initialRoute: '/',
-      routes: <String, WidgetBuilder>{
+      /* routes: <String, WidgetBuilder>{
         '/': (BuildContext context) => new MyHomePage(),
         LoginPage.routeName: (BuildContext context) => new LoginPage(),
         UserPage.routeName: (BuildContext context) => new UserPage(),
         PacotePage.routeName: (BuildContext context) => new PacotePage(),
-      },
+      }, */
+      /* onGenerateRoute: (settings) {
+        switch (settings.name) {
+          case LoginPage.routeName:
+            return MaterialPageRoute(builder: (context) => LoginPage());
+          case UserPage.routeName:
+            return MaterialPageRoute(builder: (context) => UserPage());
+          case PacotePage.routeName:
+            final pacoteId = settings.arguments as String;
+            return MaterialPageRoute(
+                settings: RouteSettings(name: '${settings.name}/?id=$pacoteId'),
+                builder: (context) => PacotePage(mPacoteId: pacoteId));
+          case '/':
+          default:
+            return MaterialPageRoute(builder: (context) => MyHomePage());
+        }
+      }, */
       debugShowCheckedModeBanner: false,
-    );
+    ).modular();
   }
 }
-
-List<String>? getCmds() {
-  late final String cmd;
-  var cmdSuffix = '';
-
-  const plainPath = 'path/subpath';
-  const args = 'path/portion/?uid=123&token=abc';
-  const emojiArgs =
-      '?arr%5b%5d=123&arr%5b%5d=abc&addr=1%20Nowhere%20Rd&addr=Rand%20City%F0%9F%98%82';
-
-  if (kIsWeb) {
-    return [
-      plainPath,
-      args,
-      emojiArgs,
-      // Cannot create malformed url, since the browser will ensure it is valid
-    ];
-  }
-
-  if (Platform.isIOS) {
-    cmd = '/usr/bin/xcrun simctl openurl booted';
-  } else if (Platform.isAndroid) {
-    cmd = '\$ANDROID_HOME/platform-tools/adb shell \'am start'
-        ' -a android.intent.action.VIEW'
-        ' -c android.intent.category.BROWSABLE -d';
-    cmdSuffix = "'";
-  } else {
-    return null;
-  }
-
-  // https://orchid-forgery.glitch.me/mobile/redirect/
-  return [
-    '$cmd "unilinks://host/$plainPath"$cmdSuffix',
-    '$cmd "unilinks://example.com/$args"$cmdSuffix',
-    '$cmd "unilinks://example.com/$emojiArgs"$cmdSuffix',
-    '$cmd "unilinks://@@malformed.invalid.url/path?"$cmdSuffix',
-  ];
-}
-
-/* List<Widget> intersperse(Iterable<Widget> list, Widget item) {
-  final initialValue = <Widget>[];
-  return list.fold(initialValue, (all, el) {
-    if (all.isNotEmpty) all.add(item);
-    all.add(el);
-    return all;
-  });
-} */

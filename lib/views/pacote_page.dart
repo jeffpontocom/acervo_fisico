@@ -15,21 +15,22 @@ Pacote mPacote = Pacote();
 ValueNotifier<bool> editMode = new ValueNotifier(false);
 var refresh;
 
-class PacoteArgumentos {
-  final Pacote pacote;
-  PacoteArgumentos(this.pacote);
-}
-
 class PacotePage extends StatefulWidget {
   static const routeName = '/pacote';
+  final String? mPacoteId;
 
-  PacotePage({Key? key}) : super(key: key);
+  PacotePage({Key? key, required this.mPacoteId}) : super(key: key);
 
   @override
   _PacotePageState createState() => _PacotePageState();
 }
 
 class _PacotePageState extends State<PacotePage> {
+  Future<Pacote> getPacote() async {
+    var response = await Pacote().getObject(widget.mPacoteId!);
+    return response.results?.first as Pacote;
+  }
+
   @override
   void initState() {
     initializeDateFormatting('pt_BR', null);
@@ -42,26 +43,6 @@ class _PacotePageState extends State<PacotePage> {
   }
 
   @override
-  void didChangeDependencies() {
-    if (ModalRoute.of(context)?.settings.arguments == null) {
-      Pacote().getObject('2COyFooEaD').then((value) {
-        if (value.results != null) {
-          setState(() {
-            mPacote = value.results?.first;
-          });
-        } else {
-          Navigator.canPop(context);
-        }
-      });
-    } else {
-      final PacoteArgumentos args =
-          ModalRoute.of(context)!.settings.arguments as PacoteArgumentos;
-      mPacote = args.pacote;
-    }
-    super.didChangeDependencies();
-  }
-
-  @override
   void dispose() {
     editMode.removeListener(refresh);
     super.dispose();
@@ -69,14 +50,14 @@ class _PacotePageState extends State<PacotePage> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Builder(
-        //future: Pacote().getObject('2COyFooEaD'),
-        //initialData: mPacote,
-        builder: (context) {
-          if (mPacote.objectId != null) {
-            return Scaffold(
+    return FutureBuilder(
+      future: getPacote(),
+      builder: (context, AsyncSnapshot<Pacote> snapshot) {
+        if (snapshot.hasData) {
+          mPacote = snapshot.data!;
+          return DefaultTabController(
+            length: 3,
+            child: Scaffold(
               appBar: AppBar(
                 titleSpacing: 0,
                 centerTitle: true,
@@ -84,12 +65,13 @@ class _PacotePageState extends State<PacotePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    // Título
                     Text(
                       mPacote.selado ? 'Pacote selado' : 'Pacote aberto',
                       style: TextStyle(color: Colors.white, fontSize: 20.0),
                     ),
+                    // Subtítulo
                     Text(
-                      //'${mPacote.tipoToString}: ${mPacote.identificador}',
                       'ID: ${mPacote.identificador}',
                       style: TextStyle(
                           color: Colors.blue.shade200, fontSize: 13.0),
@@ -112,14 +94,22 @@ class _PacotePageState extends State<PacotePage> {
                   PacoteRelatorios(),
                 ],
               ),
-            );
-          } else {
-            return Center(
+            ),
+          );
+        } else if (snapshot.hasError) {
+          return Scaffold(
+            body: Center(
+              child: Text('Erro:\n${snapshot.error}'),
+            ),
+          );
+        } else {
+          return Scaffold(
+            body: Center(
               child: CircularProgressIndicator(),
-            );
-          }
-        },
-      ),
+            ),
+          );
+        }
+      },
     );
   }
 

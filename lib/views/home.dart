@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:acervo_fisico/models/pacote.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -67,6 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     }
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    _irParaLinkEntrada(); //// teste
   }
 
   /// Ir para a pagina de login ou logout dependendo do status da aplicacao
@@ -95,6 +95,17 @@ class _MyHomePageState extends State<MyHomePage> {
   /// Abrir dialogo para criacao de pacote
   void _criarPacote() {
     NovoPacote(context);
+  }
+
+  /// Ir para link de entrada
+  void _irParaLinkEntrada() {
+    if (incomingLink != null)
+      WidgetsBinding.instance!.addPostFrameCallback((_) {
+        final id = incomingLink?.queryParameters['id']!;
+        incomingLink = null;
+        print('Acessando por link de entrada - Pacote: $id');
+        Navigator.pushNamed(context, PacotePage.routeName + '?id=$id');
+      });
   }
 
   /* WIDGETS */
@@ -237,6 +248,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     initializeDateFormatting('pt_BR', null);
     _subscription = Connectivity().onConnectivityChanged.listen(_updateStatus);
+
     super.initState();
   }
 
@@ -249,7 +261,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (latestUri != null) {}
     return Scaffold(
         backgroundColor: Colors.grey.shade100,
         appBar: AppBar(
@@ -288,10 +299,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     boxPesquisa,
                     SizedBox.square(dimension: 32),
                     boxSelectContexto,
-                    latestUri != null
+                    /* incomingLink != null
                         ? OutlinedButton(
                             onPressed: () async {
-                              final id = latestUri?.pathSegments.last;
+                              final id = incomingLink?.pathSegments.last;
                               print(id);
                               await Pacote().getObject(id!).then(
                                   (value) => mPacote = value.results?.first);
@@ -299,7 +310,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   context, PacotePage.routeName);
                             },
                             child: Text('Abrir qrcode'))
-                        : SizedBox(),
+                        : SizedBox(), */
                   ],
                 ),
               ),

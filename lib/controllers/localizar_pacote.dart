@@ -97,33 +97,5 @@ class LocalizarPacote {
 
 /// Abre diretamente o pacote selecionado
 Future<void> irParaPacote(BuildContext context, Pacote pacote) async {
-  // Abre tela de progresso
-  Message.showProgressoComMessagem(
-      context: context, message: 'Abrindo pacote...');
-  // Executa busca
-  QueryBuilder<Pacote> query = QueryBuilder<Pacote>(Pacote())
-    ..whereEqualTo('objectId', pacote.objectId)
-    ..includeObject([
-      Pacote.keyUpdatedBy,
-      Pacote.keySeladoBy
-    ]); // necessario para trazer as informacoes do objeto (nao apenas ID)
-  final ParseResponse apiResponse = await query.query();
-  // Fecha tela de progresso
-  Navigator.pop(context);
-  // Sem conexao
-  if (apiResponse.statusCode == -1) {
-    Message.showSemConexao(context: context);
-  }
-  if (apiResponse.success && apiResponse.results != null) {
-    // Ir para o pacote
-    var thisPacote = apiResponse.results!.first as Pacote;
-    Navigator.pushNamed(context, PacotePage.routeName,
-        arguments: PacoteArgumentos(thisPacote));
-  } else {
-    // Apresenta erro
-    Message.showErro(
-        context: context,
-        message:
-            'Falha ao tentar abrir pacote. Verifique com o administrador.');
-  }
+  Navigator.pushNamed(context, PacotePage.routeName + '?id=${pacote.objectId}');
 }

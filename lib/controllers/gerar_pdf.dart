@@ -96,7 +96,7 @@ class GerarPdfPage {
               child: pw.BarcodeWidget(
                 barcode: pw.Barcode.qrCode(),
                 data:
-                    'https://encadt.itaipu.gov.br/acervo/pacote/${pacote.objectId}',
+                    'https://encadt.itaipu.gov.br/acervo/pacote?id=${pacote.objectId}',
                 drawText: true,
               ),
             ),
