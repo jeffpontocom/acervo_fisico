@@ -3,7 +3,7 @@ import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 import '../models/documento.dart';
 import '../views/messages.dart';
-import 'localizar_pacote.dart';
+import 'pacote_query.dart';
 
 class LocalizarDocumento {
   final BuildContext context;

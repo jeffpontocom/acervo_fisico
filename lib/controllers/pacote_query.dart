@@ -27,7 +27,7 @@ class LocalizarPacote {
 
   void _executarBusca() async {
     List<dynamic> resultados;
-    String value = termo!.trim().toUpperCase();
+    String value = termo!.trim().toUpperCase().replaceAll(' ', '');
     //Busca exata
     QueryBuilder<Pacote> queryExata = QueryBuilder<Pacote>(Pacote())
       ..whereEqualTo(Pacote.keyId, value);

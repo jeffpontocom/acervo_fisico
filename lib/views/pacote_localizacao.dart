@@ -1,11 +1,12 @@
-import 'package:acervo_fisico/controllers/gerar_pdf.dart';
+import 'package:acervo_fisico/controllers/pacote_pdf.dart';
 import 'package:acervo_fisico/views/pacote_documentos.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
-import '../controllers/salvar_relatorio.dart';
-import '../main.dart';
+import '../app_data.dart';
+import '../controllers/relatorio_add.dart';
 import '../models/documento.dart';
 import '../models/enums.dart';
 import '../models/pacote.dart';
@@ -53,7 +54,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
             'Dados básicos',
             style: Theme.of(context).primaryTextTheme.subtitle1,
           ),
-          currentUser != null ? editarOuSalvar : Container(),
+          AppData.currentUser != null ? editarOuSalvar : Container(),
         ],
       ),
     );
@@ -197,7 +198,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
   }
 
   Widget get alteracoes {
-    var textColor = Colors.blueGrey.shade400;
+    var textColor = Colors.blue;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -212,8 +213,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
             Text('• ', style: TextStyle(color: textColor)),
             Text('${mPacote.actionToString}',
                 style: TextStyle(
-                    color: Colors.blueGrey.shade700,
-                    fontWeight: FontWeight.bold)),
+                    color: Colors.blue.shade900, fontWeight: FontWeight.bold)),
             Text(' em ', style: TextStyle(color: textColor)),
             Text('${Util.mDateFormat.format(mPacote.updatedAt.toLocal())}.',
                 style:
@@ -262,15 +262,21 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
     );
   }
 
+  bool _gerarPdfState = false;
   Widget get gerarPdf {
     return ElevatedButton.icon(
-      label: Text('Gerar PDF'),
-      icon: Icon(Icons.picture_as_pdf_rounded),
-      style: ElevatedButton.styleFrom(
-        minimumSize: Size(150, 50),
-      ),
-      onPressed: () {
-        gerarPdfPacote();
+      label: kIsWeb ? Text('Gerar PDF') : Text('Gerar'),
+      icon: _gerarPdfState
+          ? CircularProgressIndicator()
+          : Icon(Icons.picture_as_pdf_sharp),
+      onPressed: () async {
+        setState(() {
+          _gerarPdfState = true;
+        });
+        await gerarPdfPacote();
+        setState(() {
+          _gerarPdfState = false;
+        });
       },
     );
   }
@@ -345,7 +351,7 @@ ANDAR: ${mPacote.localNivel3 != _controleNivel3.text ? mPacote.localNivel3 : "[s
 Observações: ${mPacote.observacao != _controleObs.text ? mPacote.observacao : "[sem alteração]"}
 
 Executado em ${DateFormat("dd/MM/yyyy - HH:mm", "pt_BR").format(DateTime.now())}
-Por ${currentUser!.username}
+Por ${AppData.currentUser?.username ?? "**administrador**"}
 ''';
             // executa alteracoes
             mPacote.tipo = _controleTipo;
@@ -356,7 +362,7 @@ Por ${currentUser!.username}
             mPacote.localNivel3 = _controleNivel3.text;
             mPacote.observacao = _controleObs.text;
             mPacote.updatedAct = PacoteAction.SALVAR.index;
-            mPacote.updatedBy = currentUser;
+            mPacote.updatedBy = AppData.currentUser;
             mPacote.updatedAt = DateTime.now();
             await mPacote.update();
             await salvarRelatorio(
@@ -377,10 +383,11 @@ Por ${currentUser!.username}
   }
 
   //// Gerar PDF com informações do pacote
-  gerarPdfPacote() async {
+  Future<bool> gerarPdfPacote() async {
     var lista = await getDocumentos();
     List<Documento> documentos = lista.cast();
     GerarPdfPage(pacote: mPacote, documentos: documentos).criarPaginas();
+    return true;
   }
 
   /// Elimina o pacote
@@ -428,12 +435,12 @@ Observações (anteriores): ${mPacote.observacao}
 Observações (novas): ${_controleObs.text}
 
 Executado em ${DateFormat("dd/MM/yyyy - HH:mm", "pt_BR").format(DateTime.now())}
-Por ${currentUser!.username}
+Por ${AppData.currentUser?.username ?? "**administrador**"}
 ''';
               // NAO executar alteracoes
               // Apenas campos de updated
               mPacote.updatedAct = PacoteAction.ELIMINAR.index;
-              mPacote.updatedBy = currentUser;
+              mPacote.updatedBy = AppData.currentUser;
               mPacote.updatedAt = DateTime.now();
               await salvarEliminado();
               await salvarRelatorio(
@@ -452,7 +459,8 @@ Por ${currentUser!.username}
   }
 
   Future<void> salvarEliminado() async {
-    final eliminado = ParseObject('PacoteEliminado')
+    String className = kReleaseMode ? 'PacoteEliminado' : 'TesteEliminado';
+    final eliminado = ParseObject(className)
       ..set(Pacote.keyId, mPacote.identificador)
       ..set(Pacote.keyTipo, mPacote.tipo)
       ..set(Pacote.keyLocPredio, mPacote.localPredio)
@@ -483,6 +491,7 @@ Por ${currentUser!.username}
   @override
   Widget build(BuildContext context) {
     return InkWell(
+        hoverColor: Colors.transparent,
         splashColor: Colors.transparent,
         onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());
@@ -553,7 +562,7 @@ Por ${currentUser!.username}
                 ? Container()
                 : Container(
                     width: double.infinity,
-                    color: Colors.blueGrey.shade100,
+                    color: Colors.grey.shade200,
                     child: Padding(
                       padding:
                           EdgeInsets.symmetric(horizontal: 24, vertical: 12),

@@ -1,12 +1,16 @@
+import 'package:acervo_fisico/styles/customs.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
-import '../controllers/salvar_relatorio.dart';
+import '../app_data.dart';
+import '../controllers/relatorio_add.dart';
 import '../models/enums.dart';
 import '../models/pacote.dart';
 import '../views/pacote_relatorios.dart';
-import '../main.dart';
 import 'messages.dart';
 import 'pacote_documentos.dart';
 import 'pacote_localizacao.dart';
@@ -27,8 +31,65 @@ class PacotePage extends StatefulWidget {
 
 class _PacotePageState extends State<PacotePage> {
   Future<Pacote> getPacote() async {
-    var response = await Pacote().getObject(widget.mPacoteId!);
+    QueryBuilder<Pacote> query = QueryBuilder<Pacote>(Pacote())
+      ..whereEqualTo(keyVarObjectId, widget.mPacoteId)
+      ..includeObject([Pacote.keySeladoBy, Pacote.keyUpdatedBy]);
+    var response = await query.query();
     return response.results?.first as Pacote;
+  }
+
+  AppBar get appBar {
+    return AppBar(
+      leading: BackButton(
+        onPressed: () {
+          if (Navigator.canPop(context)) {
+            Navigator.pop(context);
+          } else {
+            Modular.to.navigate('/');
+          }
+        },
+      ),
+      titleSpacing: 0,
+      centerTitle: true,
+      title: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Título
+          Text(
+            mPacote.selado ? 'Pacote selado' : 'Pacote aberto',
+            style: TextStyle(color: Colors.white, fontSize: 20.0),
+          ),
+          // Subtítulo
+          Text(
+            'ID: ${mPacote.identificador}',
+            style: TextStyle(color: Colors.blue.shade200, fontSize: 13.0),
+          )
+        ],
+      ),
+      actions: pacoteActions,
+      bottom: tabBars,
+    );
+  }
+
+  TabBar get tabBars {
+    return TabBar(
+      tabs: [
+        Tab(icon: Icon(Icons.place), text: "Localização"),
+        Tab(icon: Icon(Icons.list_rounded), text: "Documentos"),
+        Tab(icon: Icon(Icons.history_rounded), text: "Histórico"),
+      ],
+    );
+  }
+
+  Widget get tabViews {
+    return TabBarView(
+      children: [
+        PacoteLocalizacao(parentCall: myCall),
+        PacoteDocumentos(),
+        PacoteRelatorios(),
+      ],
+    );
   }
 
   @override
@@ -58,54 +119,29 @@ class _PacotePageState extends State<PacotePage> {
           return DefaultTabController(
             length: 3,
             child: Scaffold(
-              appBar: AppBar(
-                titleSpacing: 0,
-                centerTitle: true,
-                title: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Título
-                    Text(
-                      mPacote.selado ? 'Pacote selado' : 'Pacote aberto',
-                      style: TextStyle(color: Colors.white, fontSize: 20.0),
-                    ),
-                    // Subtítulo
-                    Text(
-                      'ID: ${mPacote.identificador}',
-                      style: TextStyle(
-                          color: Colors.blue.shade200, fontSize: 13.0),
-                    )
-                  ],
-                ),
-                actions: pacoteActions,
-                bottom: TabBar(
-                  tabs: [
-                    Tab(icon: Icon(Icons.place), text: "Localização"),
-                    Tab(icon: Icon(Icons.list_rounded), text: "Documentos"),
-                    Tab(icon: Icon(Icons.history_rounded), text: "Histórico"),
-                  ],
-                ),
-              ),
-              body: TabBarView(
-                children: [
-                  PacoteLocalizacao(parentCall: myCall),
-                  PacoteDocumentos(),
-                  PacoteRelatorios(),
-                ],
-              ),
+              appBar: appBar,
+              body: tabViews,
             ),
           );
         } else if (snapshot.hasError) {
           return Scaffold(
             body: Center(
-              child: Text('Erro:\n${snapshot.error}'),
+              child: Text('Ocorreu um erro:\n${snapshot.error}'),
             ),
           );
         } else {
           return Scaffold(
             body: Center(
-              child: CircularProgressIndicator(),
+              child: Wrap(
+                direction: Axis.vertical,
+                alignment: WrapAlignment.center,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 24,
+                children: [
+                  CircularProgressIndicator(),
+                  MyGreyText('Carregando dados do pacote')
+                ],
+              ),
             ),
           );
         }
@@ -118,7 +154,7 @@ class _PacotePageState extends State<PacotePage> {
   }
 
   List<Widget> get pacoteActions {
-    if (currentUser == null || editMode.value) {
+    if (AppData.currentUser == null || editMode.value) {
       return [];
     } else {
       return [
@@ -161,7 +197,7 @@ class _PacotePageState extends State<PacotePage> {
             // executa alteracoes
             mPacote.updatedAct = PacoteAction.ABRIR.index;
             mPacote.selado = false;
-            mPacote.seladoBy = currentUser;
+            mPacote.seladoBy = AppData.currentUser;
             //mPacote.updatedAt = DateTime.now().toUtc();
             await mPacote.update();
 
@@ -171,7 +207,7 @@ class _PacotePageState extends State<PacotePage> {
 Relatório de ABERTURA do pacote: "${mPacote.identificador}"
 
 Executado em ${DateFormat("dd/MM/yyyy - HH:mm", "pt_BR").format(DateTime.now())}
-Por ${currentUser!.username}
+Por ${AppData.currentUser?.username ?? "**administrador**"}
 ''';
             await salvarRelatorio(
               PacoteAction.ABRIR.index,
@@ -202,7 +238,7 @@ Por ${currentUser!.username}
             // executa alteracoes
             mPacote.updatedAct = PacoteAction.SELAR.index;
             mPacote.selado = true;
-            mPacote.seladoBy = currentUser;
+            mPacote.seladoBy = AppData.currentUser;
             //mPacote.updatedAt = DateTime.now().toUtc();
             await mPacote.update();
 
@@ -212,7 +248,7 @@ Por ${currentUser!.username}
 Relatório de SELAMENTO do pacote: "${mPacote.identificador}"
 
 Executado em ${DateFormat("dd/MM/yyyy - HH:mm", "pt_BR").format(DateTime.now())}
-Por ${currentUser!.username}
+Por ${AppData.currentUser!.username}
 ''';
             await salvarRelatorio(
               PacoteAction.SELAR.index,

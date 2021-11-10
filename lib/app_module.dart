@@ -15,6 +15,7 @@ class AppModule extends Module {
     ChildRoute(LoginPage.routeName, child: (_, __) => LoginPage()),
     ChildRoute(UserPage.routeName, child: (_, __) => UserPage()),
     ChildRoute(PacotePage.routeName,
-        child: (_, args) => PacotePage(mPacoteId: args.queryParams['id'])),
+        child: (_, args) => PacotePage(mPacoteId: args.queryParams['id']),
+        transition: TransitionType.leftToRightWithFade),
   ];
 }

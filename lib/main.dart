@@ -1,21 +1,20 @@
 import 'dart:async';
-import 'package:acervo_fisico/app_module.dart';
+import 'package:acervo_fisico/app_data.dart';
+import 'package:acervo_fisico/views/home.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import 'package:uni_links/uni_links.dart';
 import 'package:url_strategy/url_strategy.dart';
 
+import 'app_module.dart';
 import 'models/documento.dart';
 import 'models/pacote.dart';
 import 'models/relatorio.dart';
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
-import 'package:uni_links/uni_links.dart';
-
-/// Variavel global para guardar atual usuario do sistema
-ParseUser? currentUser;
-// Variaveis para controle de links de entrada
+/// Variavel global para receber de link de entrada (qrcode)
 Uri? incomingLink;
 
 void main() async {
@@ -28,7 +27,6 @@ void main() async {
 class Init {
   static Future initialize() async {
     await _registrarServicos();
-    //await _carregarConfiguracoes();
   }
 
   /// Registra todos os serviços necessários a execução do sistema
@@ -42,21 +40,17 @@ class Init {
       keyApplicationId,
       keyParseServerUrl,
       clientKey: keyClientKey, // Required for some setups
-      // debug: true, // When enabled, prints logs to console
+      debug: false, // When enabled, prints logs to console
       // Subclasses
       registeredSubClassMap: <String, ParseObjectConstructor>{
-        Pacote.TABLE_NAME: () => Pacote(),
-        Documento.TABLE_NAME: () => Documento(),
-        Relatorio.TABLE_NAME: () => Relatorio(),
+        Pacote.className: () => Pacote(),
+        Documento.className: () => Documento(),
+        Relatorio.className: () => Relatorio(),
       },
     );
-    currentUser = await ParseUser.currentUser() as ParseUser?;
+    await AppData().init();
+    //currentUser = await ParseUser.currentUser() as ParseUser?;
     print("Registro de serviços finalizado");
-  }
-
-  static _carregarConfiguracoes() async {
-    print("Carregamento de configurações iniciado");
-    print("Carregamento de configurações finalizado");
   }
 }
 
@@ -158,30 +152,9 @@ class _MyAppState extends State<MyApp> {
           ),
         ),
       ),
-      initialRoute: '/',
-      /* routes: <String, WidgetBuilder>{
-        '/': (BuildContext context) => new MyHomePage(),
-        LoginPage.routeName: (BuildContext context) => new LoginPage(),
-        UserPage.routeName: (BuildContext context) => new UserPage(),
-        PacotePage.routeName: (BuildContext context) => new PacotePage(),
-      }, */
-      /* onGenerateRoute: (settings) {
-        switch (settings.name) {
-          case LoginPage.routeName:
-            return MaterialPageRoute(builder: (context) => LoginPage());
-          case UserPage.routeName:
-            return MaterialPageRoute(builder: (context) => UserPage());
-          case PacotePage.routeName:
-            final pacoteId = settings.arguments as String;
-            return MaterialPageRoute(
-                settings: RouteSettings(name: '${settings.name}/?id=$pacoteId'),
-                builder: (context) => PacotePage(mPacoteId: pacoteId));
-          case '/':
-          default:
-            return MaterialPageRoute(builder: (context) => MyHomePage());
-        }
-      }, */
-      debugShowCheckedModeBanner: false,
+      home: MyHomePage(),
+      //initialRoute: '/',
+      debugShowCheckedModeBanner: !kReleaseMode,
     ).modular();
   }
 }

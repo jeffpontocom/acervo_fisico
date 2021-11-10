@@ -1,11 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 import '../models/enums.dart';
 
 class Pacote extends ParseObject implements ParseCloneable {
-  Pacote() : super(TABLE_NAME);
+  Pacote() : super(className);
   Pacote.clone() : this();
 
-  static const String TABLE_NAME = 'TestePacote';
+  static final String className = kReleaseMode ? 'Pacote' : 'TestePacote';
 
   static const String keyId = 'identificador';
   static const String keyTipo = 'tipo';

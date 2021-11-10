@@ -1,11 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 import '../models/pacote.dart';
 
 class Documento extends ParseObject implements ParseCloneable {
-  Documento() : super(TABLE_NAME);
+  Documento() : super(className);
   Documento.clone() : this();
 
-  static const String TABLE_NAME = 'TesteDocumento';
+  static final String className = kReleaseMode ? 'Documento' : 'TesteDocumento';
 
   static const String keyAssuntoBase = 'assuntoBase';
   static const String keyTipo = 'tipo';

@@ -1,6 +1,6 @@
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
-import '../main.dart';
+import '../app_data.dart';
 import '../models/pacote.dart';
 import '../models/relatorio.dart';
 
@@ -10,6 +10,6 @@ Future<ParseResponse> salvarRelatorio(
     ..set(Relatorio.keyTipo, tipo)
     ..set(Relatorio.keyMensagem, mensagem)
     ..set(Relatorio.keyPacote, pacote)
-    ..set(Relatorio.keyGeradoPor, currentUser);
+    ..set(Relatorio.keyGeradoPor, AppData.currentUser);
   return registration.save();
 }

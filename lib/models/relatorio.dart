@@ -1,12 +1,14 @@
+import 'package:flutter/foundation.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 import '../models/enums.dart';
 import '../models/pacote.dart';
 
 class Relatorio extends ParseObject implements ParseCloneable {
-  Relatorio() : super(TABLE_NAME);
+  Relatorio() : super(className);
   Relatorio.clone() : this();
 
-  static const String TABLE_NAME = 'Relatorio';
+  static final String className = kReleaseMode ? 'Relatorio' : 'TesteRelatorio';
+
   static const String keyTipo = 'tipo';
   static const String keyMensagem = 'mensagem';
   static const String keyPacote = 'pacote';

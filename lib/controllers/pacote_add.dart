@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
-import '../controllers/localizar_pacote.dart';
-import '../controllers/salvar_relatorio.dart';
-import '../main.dart';
+import '../app_data.dart';
 import '../models/enums.dart';
 import '../models/pacote.dart';
 import '../styles/app_styles.dart';
 import '../views/messages.dart';
+import 'pacote_query.dart';
+import 'relatorio_add.dart';
 
 class NovoPacote {
   final BuildContext context;
@@ -103,7 +103,7 @@ class NovoPacote {
             ElevatedButton.icon(
               onPressed: () {
                 _criarPacote(
-                  _pacoteId.trim().toUpperCase(),
+                  _pacoteId,
                   _pacoteTipo,
                 );
               },
@@ -120,6 +120,7 @@ class NovoPacote {
   }
 
   void _criarPacote(String codigo, int tipo) async {
+    codigo = codigo.toUpperCase().trim().replaceAll(' ', '');
     // Verifica a string
     if (codigo.isEmpty) {
       Message.showErro(
@@ -162,7 +163,7 @@ class NovoPacote {
 Relatório de CRIAÇÃO do pacote: "${pacote.identificador}"
 
 Executado em ${DateFormat("dd/MM/yyyy - HH:mm", "pt_BR").format(DateTime.now())}
-Por ${currentUser!.username}
+Por ${AppData.currentUser?.username ?? "**administrador**"}
 ''';
         var apiResponse = await salvarRelatorio(
           PacoteAction.CRIAR.index,
@@ -198,10 +199,10 @@ Por ${currentUser!.username}
     final registration = Pacote()
       ..set(Pacote.keyId, codigo)
       ..set(Pacote.keyTipo, tipo)
-      ..set(Pacote.keyUpdatedBy, currentUser)
+      ..set(Pacote.keyUpdatedBy, AppData.currentUser)
       ..set(Pacote.keyUpdatedAct, PacoteAction.ABRIR.index)
       ..set(Pacote.keySelado, false)
-      ..set(Pacote.keySeladoBy, currentUser)
+      ..set(Pacote.keySeladoBy, AppData.currentUser)
       ..set('updatedAt', DateTime.now());
     final ParseResponse apiResponse = await registration.save();
     if (apiResponse.success) {

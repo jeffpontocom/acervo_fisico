@@ -1,12 +1,16 @@
 import 'dart:async';
 
+import 'package:acervo_fisico/styles/customs.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-import '../controllers/localizar_documento.dart';
-import '../controllers/localizar_pacote.dart';
-import '../controllers/novo_pacote.dart';
+import '../app_data.dart';
+import '../controllers/docs_query.dart';
+import '../controllers/pacote_query.dart';
+import '../controllers/pacote_add.dart';
 import '../main.dart';
 import '../util/utils.dart';
 import 'login.dart';
@@ -72,10 +76,12 @@ class _MyHomePageState extends State<MyHomePage> {
   /// Ir para a pagina de login ou logout dependendo do status da aplicacao
   void _loginOrLogout() async {
     final result;
-    if (currentUser != null) {
-      result = await Navigator.pushNamed(context, UserPage.routeName);
+    if (AppData.currentUser != null) {
+      result = await Modular.to.pushNamed(UserPage.routeName);
+      //result = await Navigator.pushNamed(context, UserPage.routeName);
     } else {
-      result = await Navigator.pushNamed(context, LoginPage.routeName);
+      result = await Modular.to.pushNamed(LoginPage.routeName);
+      //result = await Navigator.pushNamed(context, LoginPage.routeName);
     }
     // caso tenha realizado login ou logout com sucesso, recarregar a pagina
     if (result == true) {
@@ -135,6 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
           overflow: TextOverflow.ellipsis,
           softWrap: false,
         ),
+        MyGreyText('${AppData.version}'),
       ],
     );
   }
@@ -268,11 +275,11 @@ class _MyHomePageState extends State<MyHomePage> {
           shadowColor: Colors.transparent,
           foregroundColor: Colors.black54,
           title: ListTile(
-            title: Text(currentUser != null
-                ? currentUser!.username!
+            title: Text(AppData.currentUser != null
+                ? AppData.currentUser!.username!
                 : 'Apenas consulta'),
-            subtitle: Text(currentUser != null
-                ? currentUser!.emailAddress!
+            subtitle: Text(AppData.currentUser != null
+                ? AppData.currentUser!.emailAddress!
                 : 'Clique para realizar login'),
             dense: true,
             contentPadding: EdgeInsets.all(0),
@@ -299,18 +306,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     boxPesquisa,
                     SizedBox.square(dimension: 32),
                     boxSelectContexto,
-                    /* incomingLink != null
-                        ? OutlinedButton(
-                            onPressed: () async {
-                              final id = incomingLink?.pathSegments.last;
-                              print(id);
-                              await Pacote().getObject(id!).then(
-                                  (value) => mPacote = value.results?.first);
-                              Navigator.pushNamed(
-                                  context, PacotePage.routeName);
-                            },
-                            child: Text('Abrir qrcode'))
-                        : SizedBox(), */
                   ],
                 ),
               ),
@@ -318,7 +313,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         floatingActionButton:
-            (currentUser != null && !Util.tecladoVisivel(context))
+            (AppData.currentUser != null && !Util.tecladoVisivel(context))
                 ? FloatingActionButton.extended(
                     label: Text('Novo pacote'),
                     icon: Icon(Icons.add),
@@ -328,18 +323,5 @@ class _MyHomePageState extends State<MyHomePage> {
                     heroTag: null,
                   )
                 : null);
-
-    /* bottomSheet: _status == ConnectionStatus.offline
-            ? Container(
-                height: 56,
-                padding: EdgeInsets.all(12),
-                alignment: Alignment.center,
-                color: Colors.red,
-                child: Text(
-                  'Sem conexão com a internet',
-                  style: TextStyle(color: Colors.white),
-                ),
-              )
-            : null); */
   }
 }

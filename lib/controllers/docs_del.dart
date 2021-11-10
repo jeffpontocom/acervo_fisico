@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
-import '../controllers/salvar_relatorio.dart';
-import '../main.dart';
+import 'relatorio_add.dart';
+import '../app_data.dart';
 import '../models/documento.dart';
 import '../models/enums.dart';
 import '../views/messages.dart';
@@ -115,7 +115,7 @@ ${falhas.toSet().toString().replaceAll('{}', '- sem registro de falhas!').replac
 
 
 Executado em ${DateFormat("dd/MM/yyyy - HH:mm", "pt_BR").format(DateTime.now())}
-Por ${currentUser!.username}
+Por ${AppData.currentUser?.username ?? "**administrador**"}
 ''';
     // Salva relatorio
     await salvarRelatorio(

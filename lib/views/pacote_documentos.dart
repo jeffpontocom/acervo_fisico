@@ -1,10 +1,10 @@
-import 'package:acervo_fisico/controllers/transf_docs.dart';
+import 'package:acervo_fisico/controllers/docs_transf.dart';
 import 'package:flutter/material.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
-import '../controllers/add_documentos.dart';
-import '../controllers/del_documentos.dart';
-import '../main.dart';
+import '../app_data.dart';
+import '../controllers/docs_add.dart';
+import '../controllers/docs_del.dart';
 import '../models/documento.dart';
 import '../models/pacote.dart';
 import '../styles/customs.dart';
@@ -40,7 +40,7 @@ class _PacoteDocumentosState extends State<PacoteDocumentos>
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return [
             SliverVisibility(
-              visible: !mPacote.selado && currentUser != null,
+              visible: !mPacote.selado && AppData.currentUser != null,
               sliver: SliverPersistentHeader(
                 pinned: true,
                 delegate: MySliverAppBarDelegate(
@@ -148,7 +148,7 @@ class _PacoteDocumentosState extends State<PacoteDocumentos>
                   itemCount: lista.length,
                   itemBuilder: (context, index) {
                     return ListTile(
-                      leading: mPacote.selado || currentUser == null
+                      leading: mPacote.selado || AppData.currentUser == null
                           ? null
                           : Checkbox(
                               value: docsSelected.contains(lista[index]),

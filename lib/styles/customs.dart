@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 
+/// AppBarDelegate customizado para atender requisitos de tamanho minimo e máximo
 class MySliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   final double minHeight;
   final double maxHeight;
@@ -31,4 +32,14 @@ class MySliverAppBarDelegate extends SliverPersistentHeaderDelegate {
         minHeight != oldDelegate.minHeight ||
         child != oldDelegate.child;
   }
+}
+
+/// Classe de textos customizados
+class MyGreyText extends Text {
+  /// Widget de Texto com padrão de cor Cinza
+  MyGreyText(String data)
+      : super(
+          data,
+          style: TextStyle(color: Colors.grey),
+        );
 }

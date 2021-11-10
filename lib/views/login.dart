@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
-import '../main.dart';
+import '../app_data.dart';
 import 'messages.dart';
 
-//GlobalKey<FormState> _formUser = GlobalKey<FormState>();
 GlobalKey<FormState> _formPass = GlobalKey<FormState>();
 
 class LoginPage extends StatefulWidget {
@@ -33,13 +33,15 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    final user = ParseUser(username, password, null);
+    Message.showProgressoComMessagem(
+        context: context, message: 'Efetuando login...');
+    var response = await ParseUser(username, password, null).login();
 
-    var response = await user.login();
-
+    Modular.to.pop();
     if (response.success) {
-      currentUser = response.result as ParseUser;
-      Navigator.pop(context, true);
+      AppData.currentUser = response.result as ParseUser;
+      //Navigator.pop(context, true);
+      Modular.to.maybePop(true);
     } else {
       Message.showErro(context: context, message: response.error!.message);
     }

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../main.dart';
+import '../app_data.dart';
 import 'messages.dart';
 
 class UserPage extends StatelessWidget {
@@ -13,9 +13,9 @@ class UserPage extends StatelessWidget {
 
     /// Executa o logout do usuario
     void fazerLogout() async {
-      var response = await currentUser!.logout();
+      var response = await AppData.currentUser!.logout();
       if (response.success) {
-        currentUser = null;
+        AppData.currentUser = null;
         Navigator.pop(context, true);
       } else {
         Message.showErro(context: context, message: response.error!.message);
@@ -36,12 +36,12 @@ class UserPage extends StatelessWidget {
               size: 128,
             ),
             Text(
-              '${currentUser!.username}',
+              '${AppData.currentUser!.username}',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             Text(
-              '${currentUser!.emailAddress}',
+              '${AppData.currentUser!.emailAddress}',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.grey),
             ),
