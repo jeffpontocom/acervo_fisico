@@ -56,22 +56,20 @@ Apenas pacotes abertos podem receber transferências.
               );
             }),
       ),
-      onPressed: pacoteRecebedor == null
-          ? (value) {
-              value
-                  ? _formKey.currentState?.validate()
-                  : Navigator.pop(context);
-            }
-          : (executar) {
-              if (executar) {
-                Navigator.pop(context);
-                _analisarLista(callbackLista: () {
-                  callback();
-                });
-              } else {
-                Navigator.pop(context);
-              }
-            },
+      onPressed: (executar) {
+        if (executar) {
+          if (pacoteRecebedor != null) {
+            Navigator.pop(context);
+            _analisarLista(callbackLista: () {
+              callback();
+            });
+          } else {
+            _formKey.currentState?.validate();
+          }
+        } else {
+          Navigator.pop(context);
+        }
+      },
     );
   }
 
