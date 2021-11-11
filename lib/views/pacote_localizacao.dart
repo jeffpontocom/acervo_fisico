@@ -229,7 +229,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
               style: TextStyle(color: textColor),
             ),
             Text(
-              mPacote.seladoBy?.username ?? '[Sem identificação]',
+              mPacote.seladoBy?.username ?? 'Importação de dados',
               style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
             ),
           ],

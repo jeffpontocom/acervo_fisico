@@ -59,7 +59,7 @@ class Pacote extends ParseObject implements ParseCloneable {
   ParseUser? get updatedBy => get<ParseUser>(keyUpdatedBy);
   set updatedBy(ParseUser? value) => set<ParseUser>(keyUpdatedBy, value!);
 
-  int get updatedAct => get<int>(keyUpdatedAct) ?? PacoteAction.SELAR.index;
+  int get updatedAct => get<int>(keyUpdatedAct) ?? PacoteAction.MIGRADO.index;
   set updatedAct(int value) => set<int>(keyUpdatedAct, value);
 
   ParseGeoPoint? get geoPoint => get<ParseGeoPoint>(keyGeoPoint);

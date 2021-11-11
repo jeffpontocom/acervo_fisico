@@ -55,6 +55,7 @@ enum PacoteAction {
   DEL_DOC,
   ELIMINAR,
   TRANSFERIR,
+  MIGRADO,
 }
 
 String getPacoteActionString(int index) {
@@ -77,6 +78,8 @@ String getPacoteActionString(int index) {
       return 'Eliminação';
     case 8:
       return 'Transferência';
+    case 9:
+      return 'Migração';
     default:
       return '[Ação indefinida]';
   }
@@ -102,6 +105,8 @@ String getTipoRelatorioString(int index) {
       return 'Eliminação do pacote';
     case 8:
       return 'Transferência de documentos';
+    case 9:
+      return 'Migração de dados';
     default:
       return '[Ação indefinida]';
   }
@@ -129,6 +134,8 @@ Icon getTipoRelatorioIcon(int index) {
       return Icon(Icons.delete_forever_rounded); //'Eliminação do pacote';
     case 8:
       return Icon(Icons.transform_rounded); //'Transferência de documentos';
+    case 9:
+      return Icon(Icons.import_export_rounded); //'Migração de dados';
     default:
       return Icon(Icons.device_unknown_rounded); //'[Ação indefinida]';
   }
