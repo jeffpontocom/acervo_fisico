@@ -18,4 +18,5 @@ class Util {
 
   /// Formato de data padrão "1 de janeiro de 2020 23:59:59."
   static final DateFormat mDateFormat = DateFormat.yMMMMd('pt_BR').add_Hms();
+  static final DateFormat mShortDateFormat = DateFormat.yMd('pt_BR').add_Hms();
 }

@@ -60,21 +60,21 @@ enum PacoteAction {
 String getPacoteActionString(int index) {
   switch (index) {
     case 0:
-      return 'Criado';
+      return 'Criação';
     case 1:
-      return 'Aberto';
+      return 'Abertura';
     case 2:
-      return 'Selado';
+      return 'Selamento';
     case 3:
       return 'Em edição';
     case 4:
-      return 'Editado';
+      return 'Edição realizada';
     case 5:
       return 'Documentos adicionados';
     case 6:
       return 'Documentos excluidos';
     case 7:
-      return 'Eliminado';
+      return 'Eliminação';
     case 8:
       return 'Transferência';
     default:

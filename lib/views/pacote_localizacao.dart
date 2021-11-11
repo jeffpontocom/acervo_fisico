@@ -54,7 +54,9 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
             'Dados básicos',
             style: Theme.of(context).primaryTextTheme.subtitle1,
           ),
-          AppData.currentUser != null ? editarOuSalvar : Container(),
+          AppData.currentUser != null && mPacote.selado
+              ? (editMode.value ? Row(children: [desfazer, salvar]) : editar)
+              : Container(),
         ],
       ),
     );
@@ -198,7 +200,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
   }
 
   Widget get alteracoes {
-    var textColor = Colors.blue;
+    var textColor = Colors.grey.shade500;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -206,18 +208,6 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
           children: [
             Text('Situação atual: ',
                 style: TextStyle(color: textColor, fontSize: 15)),
-          ],
-        ),
-        Wrap(
-          children: [
-            Text('• ', style: TextStyle(color: textColor)),
-            Text('${mPacote.actionToString}',
-                style: TextStyle(
-                    color: Colors.blue.shade900, fontWeight: FontWeight.bold)),
-            Text(' em ', style: TextStyle(color: textColor)),
-            Text('${Util.mDateFormat.format(mPacote.updatedAt.toLocal())}.',
-                style:
-                    TextStyle(color: textColor, fontWeight: FontWeight.bold)),
           ],
         ),
         Wrap(
@@ -242,6 +232,19 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
               mPacote.seladoBy?.username ?? '[Sem identificação]',
               style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
             ),
+          ],
+        ),
+        Wrap(
+          children: [
+            Text('• ', style: TextStyle(color: textColor)),
+            Text('${mPacote.actionToString}',
+                style: TextStyle(
+                    color: Colors.blue.shade500, fontWeight: FontWeight.bold)),
+            Text(' em ', style: TextStyle(color: textColor)),
+            Text(
+                '${Util.mShortDateFormat.format(mPacote.updatedAt.toLocal())}.',
+                style:
+                    TextStyle(color: textColor, fontWeight: FontWeight.bold)),
           ],
         ),
       ],
@@ -281,20 +284,43 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
     );
   }
 
-  Widget get editarOuSalvar {
+  Widget get editar {
     return TextButton.icon(
-      label: Text(editMode.value ? 'SALVAR' : 'EDITAR'),
-      icon: Icon(editMode.value
-          ? Icons.save_rounded
-          : Icons.edit_location_alt_rounded),
+      label: const Text('EDITAR'),
+      icon: const Icon(Icons.edit_location_alt_rounded),
+      onPressed: () {
+        setState(() {
+          editMode.value = true;
+        });
+      },
+      style: TextButton.styleFrom(
+        minimumSize: Size(double.minPositive, double.infinity),
+      ),
+    );
+  }
+
+  Widget get salvar {
+    return TextButton.icon(
+      label: Text('SALVAR'),
+      icon: Icon(Icons.save_rounded),
       onPressed: () async {
-        if (editMode.value) {
-          await salvarAlteracoes();
-        } else {
-          setState(() {
-            editMode.value = !editMode.value;
-          });
-        }
+        await salvarAlteracoes();
+      },
+      style: TextButton.styleFrom(
+        minimumSize: Size(double.minPositive, double.infinity),
+      ),
+    );
+  }
+
+  Widget get desfazer {
+    return TextButton.icon(
+      label: Text('DESFAZER'),
+      icon: Icon(Icons.restart_alt_rounded),
+      onPressed: () async {
+        dadosOriginais();
+        setState(() {
+          editMode.value = false;
+        });
       },
       style: TextButton.styleFrom(
         minimumSize: Size(double.minPositive, double.infinity),
@@ -319,20 +345,14 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
   /// Salva as alteracoes no pacote
   Future<void> salvarAlteracoes() async {
     // abre mensagem alerta
-    Message.showAlerta3Opcoes(
+    Message.showAlerta(
         context: context,
         message:
             'Tem certeza que deseja salvar as alterações nos dados básicos deste pacote?',
         onPressed: (value) async {
           // fecha mensagem alerta
           Navigator.pop(context);
-          if (value == null) {
-            // Nao executa nada
-            return;
-          } else if (value == false) {
-            // Desfaz alteracoes
-            dadosOriginais();
-          } else if (value == true) {
+          if (value == true) {
             // Abre progresso
             Message.showProgressoComMessagem(
                 context: context, message: 'Salvando alterações...');
@@ -372,13 +392,13 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
             );
             //fecha progresso
             Navigator.pop(context);
+            // fecha modo de edicao
+            setState(() {
+              editMode.value = false;
+            });
+            // atualiza interface pai
+            widget.parentCall!();
           }
-          // fecha modo de edicao
-          setState(() {
-            editMode.value = false;
-          });
-          // atualiza interface pai
-          widget.parentCall!();
         });
   }
 

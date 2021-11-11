@@ -27,9 +27,8 @@ class TransfDocumentos {
     Message.showAlerta(
       context: context,
       message: '''
-      Informe o localizador do pacote para o qual deseja transferir os documentos.
-      Apenas pacotes abertos podem receber transferências.
-
+Informe o localizador do pacote para o qual deseja transferir os documentos.
+Apenas pacotes abertos podem receber transferências.
       ''',
       extra: Form(
         key: _formKey,
@@ -57,16 +56,22 @@ class TransfDocumentos {
               );
             }),
       ),
-      onPressed: (executar) {
-        if (executar && pacoteRecebedor != null) {
-          Navigator.pop(context);
-          _analisarLista(callbackLista: () {
-            callback();
-          });
-        } else {
-          Navigator.pop(context);
-        }
-      },
+      onPressed: pacoteRecebedor == null
+          ? (value) {
+              value
+                  ? _formKey.currentState?.validate()
+                  : Navigator.pop(context);
+            }
+          : (executar) {
+              if (executar) {
+                Navigator.pop(context);
+                _analisarLista(callbackLista: () {
+                  callback();
+                });
+              } else {
+                Navigator.pop(context);
+              }
+            },
     );
   }
 
