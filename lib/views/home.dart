@@ -133,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
           softWrap: false,
         ),
         Text(
-          'acervo físico',
+          'Acervo físico',
           style: TextStyle(
             fontSize: 40.0,
             fontFamily: 'Baumans',

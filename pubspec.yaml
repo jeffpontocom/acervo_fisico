@@ -46,7 +46,8 @@ dependencies:
   flutter_modular: ^4.2.0 # para trabalhar melhor com Routes
   url_strategy: ^0.2.0 # para remover o hash '#' das URLs
   uni_links: ^0.5.1 # para trabalhar com links externos (qrcode)
-  pdf: ^3.6.1 # para trabalhar com arquivos PDF
+  pdf: ^3.6.1 # para criar arquivos PDF
+  printing: ^5.6.1 # para visualizar arquivos PDF
   open_file: ^3.2.1 # para abrir arquivos nos sistemas operacionais
   path_provider: ^2.0.6 # para descobrir caminho nos sistemas operacionais
   url_launcher: ^6.0.12 # para abrir URLs na web

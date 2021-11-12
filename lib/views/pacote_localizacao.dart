@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import 'package:printing/printing.dart';
 
 import '../app_data.dart';
 import '../controllers/relatorio_add.dart';
@@ -432,7 +433,22 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
 
   //// Gerar Etiqueta do pacote
   Future<bool> gerarEtiquetaPacote() async {
-    await GerarEtiqueta(pacote: mPacote).criarEtiqueta();
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return PdfPreview(
+            build: (format) => GerarEtiqueta(pacote: mPacote).criarEtiqueta(),
+            actions: [
+              PdfPreviewAction(
+                  icon: Icon(Icons.ac_unit_rounded),
+                  onPressed: (context, fn, format) {
+                    //util.abrirArquivo(fileName: fileName, pdfInBytes: fn);
+                  }),
+            ],
+          );
+        });
+
+    //await GerarEtiqueta(pacote: mPacote).criarEtiqueta();
     return true;
   }
 

@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 import '../models/pacote.dart';
 import '../util/work_native.dart' if (dart.library.html) '../util/work_web.dart'
@@ -47,11 +49,11 @@ class GerarEtiqueta {
     );
   }
 
-  Future<void> criarEtiqueta() async {
+  Future<Uint8List> criarEtiqueta() async {
     print('1. Criando etiqueta');
     final pdf = pw.Document();
     print('2. Carrengando fundo');
-    final _bgShape = await rootBundle.loadString('assets/etiqueta.svg');
+    final background = await rootBundle.loadString('assets/etiqueta.svg');
 
     print('3. Criando pagina');
     pdf.addPage(
@@ -62,7 +64,7 @@ class GerarEtiqueta {
           buildBackground: (context) {
             return pw.FullPage(
                 ignoreMargins: true,
-                child: pw.Center(child: pw.SvgImage(svg: _bgShape)));
+                child: pw.Center(child: pw.SvgImage(svg: background)));
           },
         ),
         build: (pw.Context context) => pw.Center(
@@ -74,8 +76,13 @@ class GerarEtiqueta {
     String fileName = 'Etiqueta_Pacote(${pacote.identificador}).pdf';
 
     print('4. Salvando PDF'); // Interface freezes
-    Uint8List pdfInBytes = await pdf.save();
-    print('5. Abrindo arquivo');
-    await util.abrirArquivo(fileName: fileName, pdfInBytes: pdfInBytes);
+
+    return await pdf.save();
+    /* pdf.save().then((value) {
+      print('5. Abrindo arquivo');
+      PdfPreview(build: v,)
+      util.abrirArquivo(fileName: fileName, pdfInBytes: value);
+    }); */
+    //Uint8List pdfInBytes = await pdf.save();
   }
 }
