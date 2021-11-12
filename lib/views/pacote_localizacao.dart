@@ -1,3 +1,4 @@
+import 'package:acervo_fisico/controllers/pacote_etiqueta.dart';
 import 'package:acervo_fisico/controllers/pacote_pdf.dart';
 import 'package:acervo_fisico/views/pacote_documentos.dart';
 import 'package:flutter/foundation.dart';
@@ -206,18 +207,12 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
       children: [
         Wrap(
           children: [
-            Text('Situação atual: ',
-                style: TextStyle(color: textColor, fontSize: 15)),
-          ],
-        ),
-        Wrap(
-          children: [
             Text(
-              '• Editado por ',
+              'Editado por ',
               style: TextStyle(color: textColor),
             ),
             Text(
-              mPacote.updatedBy?.username ?? 'Importação de dados',
+              mPacote.updatedBy?.username ?? '[Migração]',
               style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
             ),
           ],
@@ -225,13 +220,19 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
         Wrap(
           children: [
             Text(
-              mPacote.selado ? '• Selado por ' : '• Aberto por ',
+              mPacote.selado ? 'Selado por ' : 'Aberto por ',
               style: TextStyle(color: textColor),
             ),
             Text(
-              mPacote.seladoBy?.username ?? 'Importação de dados',
+              mPacote.seladoBy?.username ?? '[Migração]',
               style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
             ),
+          ],
+        ),
+        SizedBox.square(dimension: 8),
+        Wrap(
+          children: [
+            Text('Última ação: ', style: TextStyle(color: textColor)),
           ],
         ),
         Wrap(
@@ -268,7 +269,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
   bool _gerarPdfState = false;
   Widget get gerarPdf {
     return ElevatedButton.icon(
-      label: kIsWeb ? Text('Gerar PDF') : Text('Gerar'),
+      label: kIsWeb ? Text('Imprimir em PDF') : Text('Imprimir'),
       icon: _gerarPdfState
           ? CircularProgressIndicator()
           : Icon(Icons.picture_as_pdf_sharp),
@@ -279,6 +280,25 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
         await gerarPdfPacote();
         setState(() {
           _gerarPdfState = false;
+        });
+      },
+    );
+  }
+
+  bool _gerarEtiquetaState = false;
+  Widget get gerarEtiqueta {
+    return ElevatedButton.icon(
+      label: kIsWeb ? Text('Gerar Etiqueta') : Text('Etiqueta'),
+      icon: _gerarEtiquetaState
+          ? CircularProgressIndicator()
+          : Icon(Icons.pin_rounded),
+      onPressed: () async {
+        setState(() {
+          _gerarEtiquetaState = true;
+        });
+        await gerarEtiquetaPacote();
+        setState(() {
+          _gerarEtiquetaState = false;
         });
       },
     );
@@ -407,6 +427,12 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
     var lista = await getDocumentos();
     List<Documento> documentos = lista.cast();
     GerarPdfPage(pacote: mPacote, documentos: documentos).criarPaginas();
+    return true;
+  }
+
+  //// Gerar Etiqueta do pacote
+  Future<bool> gerarEtiquetaPacote() async {
+    await GerarEtiqueta(pacote: mPacote).criarEtiqueta();
     return true;
   }
 
@@ -587,8 +613,25 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
                       padding:
                           EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [alteracoes, gerarPdf],
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: alteracoes,
+                            flex: 2,
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Wrap(
+                              alignment: WrapAlignment.end,
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: [
+                                gerarEtiqueta,
+                                gerarPdf,
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
