@@ -7,6 +7,14 @@ description: Ferramenta de localização e controle do acervo físico do Arquivo
 # Para publicar a versão no servidor local executar no terminal:
 # flutter build web
 
+# Para criar app para Android executar:
+# 1) flutter build appbundle --split-debug-info
+#  
+# Para publicar no github pages executar:
+# 1) flutter pub global run peanut:peanut
+# 2) git push origin --set-upstream gh-pages
+
+
 # Para gerar a versão para Android tipo appbundle
 # Shrinking your code with R8
 # R8 is the new code shrinker from Google, and it’s enabled by default when you build a release APK or AAB. 
@@ -27,7 +35,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.1.1+3
+version: 1.1.1+4
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
