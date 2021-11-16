@@ -1,15 +1,11 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
 
 import '../models/pacote.dart';
-import '../util/work_native.dart' if (dart.library.html) '../util/work_web.dart'
-    as util;
 
 class GerarEtiqueta {
   final Pacote pacote;
@@ -38,7 +34,7 @@ class GerarEtiqueta {
         pw.Text(
           '${pacote.identificador}',
           style: pw.TextStyle(
-            color: PdfColor.fromHex('1565C0'),
+            color: PdfColor.fromHex('1565C0'), // Azul escuro
             fontSize: 20,
             fontWeight: pw.FontWeight.bold,
           ),
@@ -54,7 +50,6 @@ class GerarEtiqueta {
     final pdf = pw.Document();
     print('2. Carrengando fundo');
     final background = await rootBundle.loadString('assets/etiqueta.svg');
-
     print('3. Criando pagina');
     pdf.addPage(
       pw.Page(
@@ -72,17 +67,7 @@ class GerarEtiqueta {
         ),
       ),
     );
-
-    String fileName = 'Etiqueta_Pacote(${pacote.identificador}).pdf';
-
-    print('4. Salvando PDF'); // Interface freezes
-
+    print('4. Salvando PDF');
     return await pdf.save();
-    /* pdf.save().then((value) {
-      print('5. Abrindo arquivo');
-      PdfPreview(build: v,)
-      util.abrirArquivo(fileName: fileName, pdfInBytes: value);
-    }); */
-    //Uint8List pdfInBytes = await pdf.save();
   }
 }

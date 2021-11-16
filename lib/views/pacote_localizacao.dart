@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
+import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
 
 import '../app_data.dart';
@@ -270,15 +271,17 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
   bool _gerarPdfState = false;
   Widget get gerarPdf {
     return ElevatedButton.icon(
-      label: kIsWeb ? Text('Imprimir em PDF') : Text('Imprimir'),
+      label: Text('Resumo'),
       icon: _gerarPdfState
           ? CircularProgressIndicator()
           : Icon(Icons.picture_as_pdf_sharp),
+      style: ElevatedButton.styleFrom(
+          fixedSize: Size(150, 36), alignment: Alignment.centerLeft),
       onPressed: () async {
         setState(() {
           _gerarPdfState = true;
         });
-        await gerarPdfPacote();
+        gerarPdfPacote();
         setState(() {
           _gerarPdfState = false;
         });
@@ -286,21 +289,14 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
     );
   }
 
-  bool _gerarEtiquetaState = false;
   Widget get gerarEtiqueta {
     return ElevatedButton.icon(
       label: kIsWeb ? Text('Gerar Etiqueta') : Text('Etiqueta'),
-      icon: _gerarEtiquetaState
-          ? CircularProgressIndicator()
-          : Icon(Icons.pin_rounded),
-      onPressed: () async {
-        setState(() {
-          _gerarEtiquetaState = true;
-        });
-        await gerarEtiquetaPacote();
-        setState(() {
-          _gerarEtiquetaState = false;
-        });
+      icon: const Icon(Icons.pin_rounded),
+      style: ElevatedButton.styleFrom(
+          fixedSize: Size(150, 36), alignment: Alignment.centerLeft),
+      onPressed: () {
+        gerarEtiquetaPacote();
       },
     );
   }
@@ -424,32 +420,39 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
   }
 
   //// Gerar PDF com informações do pacote
-  Future<bool> gerarPdfPacote() async {
+  void gerarPdfPacote() async {
     var lista = await getDocumentos();
     List<Documento> documentos = lista.cast();
-    GerarPdfPage(pacote: mPacote, documentos: documentos).criarPaginas();
-    return true;
+    Message.showPdf(
+      context: context,
+      titulo: 'Resumo',
+      conteudo: PdfPreview(
+        build: (format) {
+          return GerarPdfPage(pacote: mPacote, documentos: documentos)
+              .criarPaginas(format);
+        },
+        canDebug: false,
+        pdfFileName: 'Pacote_${mPacote.identificador}',
+        maxPageWidth: 600,
+      ),
+    );
   }
 
   //// Gerar Etiqueta do pacote
-  Future<bool> gerarEtiquetaPacote() async {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return PdfPreview(
-            build: (format) => GerarEtiqueta(pacote: mPacote).criarEtiqueta(),
-            actions: [
-              PdfPreviewAction(
-                  icon: Icon(Icons.ac_unit_rounded),
-                  onPressed: (context, fn, format) {
-                    //util.abrirArquivo(fileName: fileName, pdfInBytes: fn);
-                  }),
-            ],
-          );
-        });
-
-    //await GerarEtiqueta(pacote: mPacote).criarEtiqueta();
-    return true;
+  void gerarEtiquetaPacote() async {
+    Message.showPdf(
+      context: context,
+      titulo: 'Etiqueta',
+      conteudo: PdfPreview(
+        build: (format) {
+          return GerarEtiqueta(pacote: mPacote).criarEtiqueta();
+        },
+        canDebug: false,
+        pageFormats: {'A6': PdfPageFormat.a6},
+        pdfFileName: 'Etiqueta_${mPacote.identificador}',
+        maxPageWidth: 600,
+      ),
+    );
   }
 
   /// Elimina o pacote

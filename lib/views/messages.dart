@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:share/share.dart';
 
 class Message {
+  /// Apresenta popup com o título "Sucesso!"
   static void showSucesso(
       {required BuildContext context,
       required String message,
@@ -30,6 +31,7 @@ class Message {
     );
   }
 
+  /// Apresenta popup com o título "Erro!"
   static void showErro(
       {required BuildContext context,
       required String message,
@@ -56,6 +58,7 @@ class Message {
     );
   }
 
+  /// Apresenta popup com informação de erro na conexão com a internet
   static void showSemConexao({required BuildContext context}) {
     showDialog(
       context: context,
@@ -77,6 +80,7 @@ class Message {
     );
   }
 
+  /// Apresenta popup de alerta
   static void showAlerta(
       {required BuildContext context,
       required String message,
@@ -122,6 +126,7 @@ class Message {
     );
   }
 
+  /// Apresenta popup de alerta com 3 opções de ação
   static void showAlerta3Opcoes(
       {required BuildContext context,
       required String message,
@@ -167,6 +172,7 @@ class Message {
     );
   }
 
+  /// Apresenta popup com a informação "Não localizado"
   static void showNotFound(
       {required BuildContext context, VoidCallback? onPressed}) {
     showDialog(
@@ -191,6 +197,7 @@ class Message {
     );
   }
 
+  /// Apresenta popup de relatório (com texto selecionável)
   static void showRelatorio(
       {required BuildContext context,
       required String message,
@@ -262,6 +269,72 @@ class Message {
     });
   }
 
+  /// Apresenta popup no padrão bottom dialog
+  static void showPdf(
+      {required BuildContext context,
+      required String titulo,
+      Widget? conteudo}) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.blue,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
+      ),
+      constraints: BoxConstraints(
+          minHeight: MediaQuery.of(context).size.height * 0.3,
+          maxHeight: MediaQuery.of(context).size.height * 0.8),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 0,
+            top: 12,
+            right: 0,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 0,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Container(
+                width: 64,
+                height: 4,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                  color: Colors.black26,
+                ),
+              ),
+              Row(
+                children: [
+                  const CloseButton(
+                    color: Colors.white,
+                  ),
+                  Expanded(
+                    child: Text(
+                      '$titulo',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 20, color: Colors.white),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 48,
+                  )
+                ],
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Flexible(
+                child: conteudo ?? Container(),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  /// Apresenta popup com indicador de execução
   static void showProgressoComMessagem(
       {required BuildContext context, required String message}) {
     showDialog(
@@ -288,6 +361,7 @@ class Message {
         });
   }
 
+  /// Apresenta tela de progresso com medidor
   static void showProgressoComMedidor(
       {required BuildContext context,
       required String message,
@@ -316,6 +390,7 @@ class Message {
         });
   }
 
+  /// Apresenta popup no padrão bottom dialog
   static void showBottomDialog(
       {required BuildContext context,
       required String titulo,

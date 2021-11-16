@@ -7,15 +7,12 @@ import 'package:pdf/widgets.dart' as pw;
 import '../models/documento.dart';
 import '../models/pacote.dart';
 import '../util/utils.dart';
-import '../util/work_native.dart' if (dart.library.html) '../util/work_web.dart'
-    as util;
 
 class GerarPdfPage {
   final Pacote pacote;
   final List<Documento> documentos;
   var ttf;
   var _logo;
-  //String? _bgShape;
 
   GerarPdfPage({required this.pacote, required this.documentos});
 
@@ -138,20 +135,13 @@ class GerarPdfPage {
     );
   }
 
-  Future<void> criarPaginas() async {
+  Future<Uint8List> criarPaginas(PdfPageFormat format) async {
     final pdf = pw.Document();
     final font = await rootBundle.load('assets/fonts/Baumans-Regular.ttf');
     ttf = pw.Font.ttf(font);
-    /* _logo = pw.MemoryImage(
-      (await rootBundle.load('assets/icons/ic_launcher.png'))
-          .buffer
-          .asUint8List(),
-    ); */
-    //_bgShape = await rootBundle.loadString('assets/invoice.svg');
-
     pdf.addPage(
       pw.MultiPage(
-        pageFormat: PdfPageFormat.a4,
+        pageFormat: format,
         margin: pw.EdgeInsets.symmetric(vertical: 25, horizontal: 40),
         header: _buildHeader,
         footer: _buildFooter,
@@ -167,9 +157,6 @@ class GerarPdfPage {
         ],
       ),
     );
-
-    String fileName = 'Pacote (${pacote.identificador}).pdf';
-    Uint8List pdfInBytes = await pdf.save();
-    util.abrirArquivo(fileName: fileName, pdfInBytes: pdfInBytes);
+    return await pdf.save();
   }
 }

@@ -1,5 +1,9 @@
 // ignore_for_file: avoid_web_libraries_in_flutter
 
+//Usar na classe:
+//import '../util/work_native.dart' if (dart.library.html) '../util/work_web.dart'
+//    as util;
+
 import 'dart:html';
 import 'dart:typed_data';
 
