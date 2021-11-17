@@ -28,7 +28,7 @@
   <link rel="shortcut icon" href="favicon.png" />
   <style>
     div *{
-      font-family:Arial, Helvetica, sans-serif;
+      font-family: "Maven Pro","Trebuchet MS",monospace;
     }
     .centered {
       position: fixed;
@@ -50,9 +50,12 @@
 <body>
   <!-- Interface de carregamento  -->
   <div class="centered">
-      <img src="icons/Icon-192.png" alt="Logo Acervo Físico" />
-      <h2>Acervo Físico ENCA.DT</h2>
-      <span id="mStatus">Carregando...</span>
+      <img src="icons/Icon-192.png" />
+      <span></br></span>
+      <span style="font-size: 13px;">Arquivo Técnico</br></span>
+      <span style="font-size: 32px; font-weight: bold;">Acervo Físico</br></span>
+      <span></br></span>
+      <span style="font-size: 13px; color: grey;" id="mStatus">Carregando...</span>
   </div>
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
@@ -75,13 +78,18 @@
     
     // Verifica se a internet esta disponivel
     // Impede a tela branca caso o script mainDartJs não seja baixado
-    fetch('https://www.back4app.com/', {mode: 'no-cors'})
+    fetch('https://static-global-s-msn-com.akamaized.net/hp-neu/sc/2b/a5ea21.ico?d='+Date.now())
       .then(function(response) {
         console.log('Conexão com a internet encontrada. Fetch =', response.ok);
+        if (response.status >= 200 && response.status < 300){
+          document.getElementById('mStatus').innerText = 'Conectado! Aguarde...';
+        } else {
+          document.getElementById('mStatus').innerText = 'Não é possível acessar o sistema!\nVerifique sua conexão com a Internet ou tente em outro navegador mais atualizado.';
+        }
       })
       .catch(function(error) {
         console.log('Conexão falhou', error)
-        status = 'Não é possível acessar o sistema!\n\nVerifique sua conexão com a Internet ou tente em outro navegador mais atualizado.';
+        status = 'Erro ao tentar conexão!\nFale com o administrador do sistema.';
         document.getElementById('mStatus').innerText = status;
       });
 

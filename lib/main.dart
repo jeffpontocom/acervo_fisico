@@ -136,6 +136,7 @@ class _MyAppState extends State<MyApp> {
       title: 'Acervo físico',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        fontFamily: 'MavenPro',
         buttonTheme: ButtonThemeData(
           textTheme: ButtonTextTheme.accent,
           height: 48,
@@ -153,7 +154,6 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
       home: MyHomePage(),
-      //initialRoute: '/',
       debugShowCheckedModeBanner: !kReleaseMode,
     ).modular();
   }
