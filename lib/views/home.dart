@@ -1,28 +1,21 @@
-import 'dart:async';
-
-import 'package:acervo_fisico/models/documento.dart';
-import 'package:acervo_fisico/models/pacote.dart';
-import 'package:acervo_fisico/styles/customs.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:intl/intl.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 import '../app_data.dart';
 import '../controllers/docs_query.dart';
 import '../controllers/pacote_query.dart';
 import '../controllers/pacote_add.dart';
-import '../main.dart';
+import '../models/documento.dart';
+import '../models/pacote.dart';
 import '../util/utils.dart';
 import 'login.dart';
-import 'pacote_page.dart';
 import 'perfil.dart';
 
-enum contexto { documentos, pacotes }
+enum ContextoBusca { documentos, pacotes }
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key}) : super(key: key);
@@ -33,62 +26,26 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   /* VARIAVEIS */
-  ValueNotifier totalDocs = ValueNotifier(0);
-  ValueNotifier totalPacotes = ValueNotifier(0);
 
   /// Contextuais
-  int _contextoAtual = contexto.documentos.index;
-  List<bool> _isSelected = [true, false]; //um boleano para cada botão
+  ContextoBusca _contextoAtual = ContextoBusca.documentos;
+  List<bool> _selecionado = [true, false]; //um boleano para cada botão
   final List<Color> _cores = [Colors.brown.shade600, Colors.blue.shade600];
   final TextEditingController _controleBusca = TextEditingController();
 
-  /// Conexão com a internet
-  /* late StreamSubscription<ConnectivityResult> _subscription;
-  SnackBar snackBar = new SnackBar(
-    content: Text('Seja bem vindo!'),
-  ); */
+  /// Contadores
+  ValueNotifier _totalDocs = ValueNotifier(0);
+  ValueNotifier _totalPacotes = ValueNotifier(0);
 
   /* METODOS */
 
-  /// Atualiza status de conexao
-  /* void _updateStatus(ConnectivityResult connectivityResult) async {
-    ScaffoldMessenger.of(context).clearSnackBars();
-    if (connectivityResult == ConnectivityResult.mobile) {
-      snackBar = SnackBar(
-        content: Text('Conexão mobile estabelecida!'),
-        backgroundColor: Colors.green.shade900,
-      );
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      snackBar = SnackBar(
-        content: Text('Conexão wifi estabelecida!'),
-        backgroundColor: Colors.green.shade900,
-      );
-    } else if (connectivityResult == ConnectivityResult.ethernet) {
-      snackBar = SnackBar(
-        content: Text('Conexão ethernet estabelecida!'),
-        backgroundColor: Colors.green.shade900,
-      );
-    } else {
-      snackBar = SnackBar(
-        content: Text('Sem conexão com a internet!'),
-        dismissDirection: DismissDirection.horizontal,
-        backgroundColor: Colors.red.shade900,
-        duration: Duration(days: 365),
-      );
-    }
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    _irParaLinkEntrada(); //// teste
-  } */
-
   /// Ir para a pagina de login ou logout dependendo do status da aplicacao
-  void _loginOrLogout() async {
+  void _acessarPerfil() async {
     final result;
     if (AppData.currentUser != null) {
       result = await Modular.to.pushNamed(UserPage.routeName);
-      //result = await Navigator.pushNamed(context, UserPage.routeName);
     } else {
       result = await Modular.to.pushNamed(LoginPage.routeName);
-      //result = await Navigator.pushNamed(context, LoginPage.routeName);
     }
     // caso tenha realizado login ou logout com sucesso, recarregar a pagina
     if (result == true) {
@@ -98,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   /// Localizar documentos ou pacotes dependendo do contexto selecionado
   void _localizar(String query) {
-    if (_contextoAtual == contexto.documentos.index) {
+    if (_contextoAtual == ContextoBusca.documentos) {
       LocalizarDocumento(context, query);
     } else {
       LocalizarPacote(context, query);
@@ -110,22 +67,32 @@ class _MyHomePageState extends State<MyHomePage> {
     NovoPacote(context);
   }
 
-  /// Ir para link de entrada
-  void _irParaLinkEntrada() {
-    if (incomingLink != null)
-      WidgetsBinding.instance!.addPostFrameCallback((_) {
-        final id = incomingLink?.queryParameters['id']!;
-        incomingLink = null;
-        print('Acessando por link de entrada - Pacote: $id');
-        Navigator.pushNamed(context, PacotePage.routeName + '?id=$id');
+  /// Conta o total de documentos registrados no sistema
+  _contarDocs() async {
+    QueryBuilder<Documento> queryBuilder = QueryBuilder<Documento>(Documento());
+    var apiResponse = await queryBuilder.count();
+    if (apiResponse.success && apiResponse.result != null) {
+      setState(() {
+        _totalDocs.value = apiResponse.count;
       });
+    }
+  }
+
+  /// Conta o total de pacotes registrados no sistema
+  _contarPacotes() async {
+    QueryBuilder<Pacote> queryBuilder = QueryBuilder<Pacote>(Pacote());
+    var apiResponse = await queryBuilder.count();
+    if (apiResponse.success && apiResponse.result != null) {
+      setState(() {
+        _totalPacotes.value = apiResponse.count;
+      });
+    }
   }
 
   /* WIDGETS */
 
-  Widget get logotipo {
+  Widget get _appInfo {
     return Column(
-      textBaseline: TextBaseline.alphabetic,
       children: [
         const Image(
           image: AssetImage('assets/icons/ic_launcher.png'),
@@ -149,12 +116,17 @@ class _MyHomePageState extends State<MyHomePage> {
           overflow: TextOverflow.ellipsis,
           softWrap: false,
         ),
-        MyGreyText('${AppData.version}'),
+        Text(
+          '${AppData.version}',
+          style: TextStyle(color: Colors.grey),
+          overflow: TextOverflow.ellipsis,
+          softWrap: false,
+        ),
       ],
     );
   }
 
-  Widget get boxPesquisa {
+  Widget get _boxPesquisa {
     return TextFormField(
       key: null,
       controller: _controleBusca,
@@ -166,10 +138,10 @@ class _MyHomePageState extends State<MyHomePage> {
         labelText: "Localizar",
         floatingLabelBehavior: FloatingLabelBehavior.never,
         hintText: "Informe o código",
-        labelStyle: TextStyle(color: _cores[_contextoAtual]),
+        labelStyle: TextStyle(color: _cores[_contextoAtual.index]),
         prefixIcon: Icon(
           Icons.search,
-          color: _cores[_contextoAtual],
+          color: _cores[_contextoAtual.index],
         ),
         filled: true,
         fillColor: Colors.grey.shade200,
@@ -177,7 +149,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ? IconButton(
                 icon: Icon(
                   Icons.clear,
-                  color: _cores[_contextoAtual],
+                  color: _cores[_contextoAtual.index],
                 ),
                 onPressed: () {
                   setState(() {
@@ -191,8 +163,7 @@ class _MyHomePageState extends State<MyHomePage> {
               Radius.circular(16.0),
             ),
             borderSide: BorderSide(
-              color: _cores[_contextoAtual],
-              //style: BorderStyle.none,
+              color: _cores[_contextoAtual.index],
             )),
         enabledBorder: const OutlineInputBorder(
           borderRadius: BorderRadius.all(
@@ -207,7 +178,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget get boxSelectContexto {
+  Widget get _boxSelecaoContexto {
     return LayoutBuilder(builder: (context, constraints) {
       return ToggleButtons(
         constraints: BoxConstraints(
@@ -249,15 +220,15 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
         ],
-        isSelected: _isSelected,
-        fillColor: _cores[_contextoAtual],
+        isSelected: _selecionado,
+        fillColor: _cores[_contextoAtual.index],
         selectedColor: Colors.white,
         borderRadius: BorderRadius.circular(16.0),
         onPressed: (int index) {
           setState(() {
-            _contextoAtual = index;
-            for (int i = 0; i < _isSelected.length; i++) {
-              _isSelected[i] = i == index;
+            _contextoAtual = ContextoBusca.values[index];
+            for (int i = 0; i < _selecionado.length; i++) {
+              _selecionado[i] = i == index;
             }
           });
         },
@@ -265,47 +236,24 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  _contarDocs() async {
-    QueryBuilder<Documento> queryBuilder = QueryBuilder<Documento>(Documento());
-    var apiResponse = await queryBuilder.count();
-    if (apiResponse.success && apiResponse.result != null) {
-      setState(() {
-        totalDocs.value = apiResponse.count;
-      });
-    }
-  }
-
-  _contarPacotes() async {
-    QueryBuilder<Pacote> queryBuilder = QueryBuilder<Pacote>(Pacote());
-    var apiResponse = await queryBuilder.count();
-    if (apiResponse.success && apiResponse.result != null) {
-      setState(() {
-        totalPacotes.value = apiResponse.count;
-      });
-    }
-  }
-
   /* METODOS DO SISTEMA */
 
   @override
   void initState() {
     initializeDateFormatting('pt_BR', null);
-    //_subscription = Connectivity().onConnectivityChanged.listen(_updateStatus);
-
     super.initState();
   }
 
   @override
-  void didChangeDependencies() async {
-    await _contarDocs();
-    await _contarPacotes();
+  void didChangeDependencies() {
+    _contarDocs();
+    _contarPacotes();
     super.didChangeDependencies();
   }
 
   @override
   void dispose() {
     _controleBusca.dispose();
-    //_subscription.cancel();
     super.dispose();
   }
 
@@ -325,22 +273,23 @@ class _MyHomePageState extends State<MyHomePage> {
               const Text(
                 'Olá,',
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 15,
                 ),
               ),
-              const SizedBox(height: 4),
               Text(
                 AppData.currentUser?.username ?? 'Consulte livremente',
                 style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 19,
                     fontWeight: FontWeight.bold,
                     color: Colors.black),
+                overflow: TextOverflow.ellipsis,
+                softWrap: false,
               ),
             ],
           ),
           actions: [
             IconButton(
-              onPressed: () => _loginOrLogout(),
+              onPressed: () => _acessarPerfil(),
               iconSize: 36,
               icon: Image(
                 image: AssetImage(AppData.currentUser == null
@@ -350,42 +299,49 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ],
         ),
-        body: Center(
-          child: Scrollbar(
-            isAlwaysShown: true,
-            showTrackOnHover: true,
-            hoverThickness: 18,
-            child: SingleChildScrollView(
-              child: Container(
-                padding: EdgeInsets.all(24),
-                alignment: Alignment.center,
-                child: Wrap(
-                  alignment: WrapAlignment.center,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  runAlignment: WrapAlignment.center,
-                  runSpacing: 32,
-                  spacing: 32,
-                  children: [
-                    logotipo,
-                    ConstrainedBox(
-                      constraints: BoxConstraints(minWidth: 200, maxWidth: 450),
-                      child: Column(
-                        children: [
-                          boxPesquisa,
-                          const SizedBox.square(dimension: 32),
-                          boxSelectContexto,
-                        ],
+        body: SafeArea(
+          child: Center(
+            child: Scrollbar(
+              isAlwaysShown: true,
+              showTrackOnHover: true,
+              hoverThickness: 18,
+              child: SingleChildScrollView(
+                child: Container(
+                  padding: EdgeInsets.all(24),
+                  alignment: Alignment.center,
+                  child: Wrap(
+                    alignment: WrapAlignment.center,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    runAlignment: WrapAlignment.center,
+                    runSpacing: 32,
+                    spacing: 32,
+                    children: [
+                      _appInfo,
+                      ConstrainedBox(
+                        constraints:
+                            BoxConstraints(minWidth: 200, maxWidth: 450),
+                        child: Column(
+                          children: [
+                            _boxPesquisa,
+                            const SizedBox.square(dimension: 32),
+                            _boxSelecaoContexto,
+                          ],
+                        ),
                       ),
-                    ),
-                    Text(
-                      _contextoAtual == contexto.documentos.index
-                          ? '${nformat.format(totalDocs.value)} documentos registrados'
-                          : '${nformat.format(totalPacotes.value)} pacotes arquivados',
-                      style: TextStyle(
-                        color: Colors.grey,
+                      Container(
+                        width: double.maxFinite,
+                        child: Text(
+                          _contextoAtual == ContextoBusca.documentos
+                              ? '${Util.mNumFormat.format(_totalDocs.value)} documentos arquivados'
+                              : '${Util.mNumFormat.format(_totalPacotes.value)} pacotes registrados',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.grey,
+                          ),
+                        ),
                       ),
-                    )
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -394,8 +350,13 @@ class _MyHomePageState extends State<MyHomePage> {
         floatingActionButton:
             (AppData.currentUser != null && !Util.tecladoVisivel(context))
                 ? FloatingActionButton.extended(
-                    label: Text('Novo pacote'),
-                    icon: Icon(Icons.add),
+                    label: const Text(
+                      'Novo pacote',
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: false,
+                    ),
+                    icon: const Icon(Icons.add),
+                    backgroundColor: Colors.blue.shade900,
                     onPressed: () {
                       _criarPacote();
                     },
@@ -403,6 +364,4 @@ class _MyHomePageState extends State<MyHomePage> {
                   )
                 : null);
   }
-
-  var nformat = NumberFormat.decimalPattern('pt_BR');
 }

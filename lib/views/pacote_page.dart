@@ -183,17 +183,20 @@ class _PacotePageState extends State<PacotePage> {
 
   void abrirPacote() {
     // abre mensagem alerta
-    Message.showAlerta(
+    Message.showExecutar(
         context: context,
-        message:
+        titulo: 'Atenção!',
+        mensagem:
             'Tem certeza que deseja ABRIR esse pacote?\n\nEssa ação implica em responsabilidade sobre os itens adicionados e/ou excluidos. Execute essa ação apenas se estiver com o pacote em mãos.',
         onPressed: (value) async {
           // fecha mensagem alerta
           Navigator.pop(context);
           if (value) {
             // abre progresso
-            Message.showProgressoComMessagem(
-                context: context, message: 'Abrindo pacote...');
+            Message.showAguarde(
+              context: context,
+              mensagem: 'Abrindo pacote...',
+            );
             // executa alteracoes
             mPacote.updatedAct = PacoteAction.ABRIR.index;
             mPacote.selado = false;
@@ -224,17 +227,20 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
 
   void selarPacote() {
     // abre mensagem alerta
-    Message.showAlerta(
+    Message.showExecutar(
         context: context,
-        message:
+        titulo: 'Atenção!',
+        mensagem:
             'Tem certeza que deseja SELAR esse pacote?\n\nEssa ação implica em responsabilidade sobre os itens adicionados e/ou excluidos. Execute essa ação apenas se estiver com o pacote em mãos.\n\nNão esqueça de assinar o selo!',
         onPressed: (value) async {
           // fecha mensagem alerta
           Navigator.pop(context);
           if (value) {
             // abre progresso
-            Message.showProgressoComMessagem(
-                context: context, message: 'Selando pacote...');
+            Message.showAguarde(
+              context: context,
+              mensagem: 'Selando pacote...',
+            );
             // executa alteracoes
             mPacote.updatedAct = PacoteAction.SELAR.index;
             mPacote.selado = true;

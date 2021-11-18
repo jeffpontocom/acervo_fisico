@@ -72,11 +72,11 @@ class Pacote extends ParseObject implements ParseCloneable {
 
   /// Retorna o tipo de pacote
   String get tipoToString {
-    return getTipoPacoteString(tipo);
+    return getTipoPacoteString(TipoPacote.values[tipo]);
   }
 
   /// Retorna a imagem referente ao tipo de pacote
   get tipoImagem {
-    return getTipoPacoteImagem(tipo);
+    return getTipoPacoteImagem(TipoPacote.values[tipo]);
   }
 }

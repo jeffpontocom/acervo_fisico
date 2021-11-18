@@ -23,9 +23,10 @@ class LocalizarDocumento {
 
     if (query.isEmpty) {
       // Apresenta erro
-      Message.showErro(
+      Message.showMensagem(
           context: context,
-          message: 'Nenhum valor para documento foi informado.');
+          titulo: 'Atenção!',
+          mensagem: 'Nenhum valor para documento foi informado.');
       return;
     }
 
@@ -188,8 +189,10 @@ class LocalizarDocumento {
     List<dynamic> resultados;
     QueryBuilder<Documento> query = QueryBuilder<Documento>(Documento());
 
-    Message.showProgressoComMessagem(
-        context: context, message: 'Localizando documento...');
+    Message.showAguarde(
+      context: context,
+      mensagem: 'Localizando documento(s)...',
+    );
 
     if (idioma == null && folha == null && revisao == null) {
       query = query
@@ -271,7 +274,6 @@ class LocalizarDocumento {
             subtitle: Text(documentos[index].pacote?.identificador != null
                 ? 'Pacote: ${documentos[index].pacote!.identificador}'
                 : 'ERRO: Sem pacote vinculado'),
-            //trailing: Icon(Icons.document_scanner_rounded),
             visualDensity: VisualDensity.compact,
             onTap: documentos[index].pacote != null
                 ? () {

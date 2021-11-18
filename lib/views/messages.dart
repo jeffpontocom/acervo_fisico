@@ -4,47 +4,29 @@ import 'package:flutter/services.dart';
 import 'package:share/share.dart';
 
 class Message {
-  /// Apresenta popup com o título "Sucesso!"
-  static void showSucesso(
+  /// Apresenta popup com uma mensagem simples
+  static void showMensagem(
       {required BuildContext context,
-      required String message,
+      required String titulo,
+      required String mensagem,
       VoidCallback? onPressed}) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Sucesso!"),
-          content: Text(message),
-          actions: <Widget>[
+          title: Text(titulo),
+          titleTextStyle: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey.shade800,
+          ),
+          content: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: 360),
+            child: Text(mensagem),
+          ),
+          actions: [
             MaterialButton(
-              child: Text("OK"),
-              onPressed: () {
-                Navigator.of(context).pop();
-                if (onPressed != null) {
-                  onPressed();
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  /// Apresenta popup com o título "Erro!"
-  static void showErro(
-      {required BuildContext context,
-      required String message,
-      VoidCallback? onPressed}) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Erro!"),
-          content: Text(message),
-          actions: <Widget>[
-            MaterialButton(
-              child: const Text("OK"),
+              child: Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
                 if (onPressed != null) {
@@ -60,30 +42,63 @@ class Message {
 
   /// Apresenta popup com informação de erro na conexão com a internet
   static void showSemConexao({required BuildContext context}) {
+    showMensagem(
+        context: context,
+        titulo: 'Sem conexão!',
+        mensagem:
+            'Impossível conectar ao banco de dados. Verifique sua internet!');
+  }
+
+  /// Apresenta popup com a informação "Não localizado"
+  static void showNotFound(
+      {required BuildContext context, VoidCallback? onPressed}) {
+    showMensagem(
+        context: context,
+        titulo: 'Item não localizado!',
+        mensagem: 'Verifique o código informado e tente novamente.',
+        onPressed: onPressed);
+  }
+
+  /// Apresenta popup com indicador de execução
+  static void showAguarde(
+      {required BuildContext context,
+      String? titulo,
+      required String mensagem}) {
     showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Sem conexão"),
-          content: Text(
-              'Impossível conectar ao banco de dados. Verifique sua internet!'),
-          actions: <Widget>[
-            MaterialButton(
-              child: const Text("OK"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return SimpleDialog(
+            contentPadding: EdgeInsets.all(24),
+            title: Text(titulo ?? 'Aguarde'),
+            titleTextStyle: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey.shade800,
             ),
-          ],
-        );
-      },
-    );
+            children: [
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: 360),
+                child: Wrap(
+                  spacing: 24,
+                  runSpacing: 24,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    Text(mensagem),
+                  ],
+                ),
+              ),
+            ],
+          );
+        });
   }
 
   /// Apresenta popup de alerta
-  static void showAlerta(
+  static void showExecutar(
       {required BuildContext context,
-      required String message,
+      required String titulo,
+      required String mensagem,
       Widget? extra,
       Function(bool)? onPressed}) {
     showDialog(
@@ -91,20 +106,28 @@ class Message {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Alerta!"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(message),
-              extra ?? SizedBox(),
-            ],
+          title: Text(titulo),
+          titleTextStyle: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey.shade800,
+          ),
+          content: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: 360),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(mensagem),
+                extra ?? SizedBox(),
+              ],
+            ),
           ),
           buttonPadding: EdgeInsets.all(0),
           actionsPadding: EdgeInsets.symmetric(horizontal: 8),
           actionsAlignment: MainAxisAlignment.spaceBetween,
           actions: <Widget>[
             MaterialButton(
-              child: const Text("CANCELAR"),
+              child: const Text('CANCELAR'),
               textColor: Colors.grey,
               onPressed: () {
                 if (onPressed != null) {
@@ -113,7 +136,7 @@ class Message {
               },
             ),
             MaterialButton(
-              child: const Text("OK"),
+              child: const Text('OK'),
               onPressed: () {
                 if (onPressed != null) {
                   onPressed(true);
@@ -124,149 +147,6 @@ class Message {
         );
       },
     );
-  }
-
-  /// Apresenta popup de alerta com 3 opções de ação
-  static void showAlerta3Opcoes(
-      {required BuildContext context,
-      required String message,
-      required Function(bool?) onPressed}) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Alerta!"),
-          content: Text(message),
-          buttonPadding: EdgeInsets.all(0),
-          actionsPadding: EdgeInsets.symmetric(horizontal: 8),
-          actionsAlignment: MainAxisAlignment.spaceBetween,
-          actions: <Widget>[
-            MaterialButton(
-              child: const Text("DESFAZER"),
-              textColor: Colors.red,
-              onPressed: () {
-                onPressed(false);
-              },
-            ),
-            SizedBox(
-              width: 16,
-            ),
-            MaterialButton(
-              child: const Text("CANCELAR"),
-              textColor: Colors.grey,
-              onPressed: () {
-                onPressed(null);
-              },
-            ),
-            MaterialButton(
-              child: const Text("OK"),
-              minWidth: 24,
-              onPressed: () {
-                onPressed(true);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  /// Apresenta popup com a informação "Não localizado"
-  static void showNotFound(
-      {required BuildContext context, VoidCallback? onPressed}) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Item não localizado!"),
-          content: Text('Verifique o código informado e tente novamente.'),
-          actions: <Widget>[
-            MaterialButton(
-              child: Text("OK"),
-              onPressed: () {
-                Navigator.of(context).pop();
-                if (onPressed != null) {
-                  onPressed();
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  /// Apresenta popup de relatório (com texto selecionável)
-  static void showRelatorio(
-      {required BuildContext context,
-      required String message,
-      VoidCallback? onPressed}) {
-    showModalBottomSheet(
-      context: context,
-      isDismissible: false,
-      isScrollControlled: true,
-      builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 48, horizontal: 24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Relatório',
-                      style: Theme.of(context).textTheme.headline6,
-                    ),
-                    CloseButton(),
-                  ],
-                ),
-                Flexible(
-                  flex: 1,
-                  fit: FlexFit.tight,
-                  child: Container(
-                    width: double.infinity,
-                    margin: EdgeInsets.symmetric(vertical: 12),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      color: Colors.white,
-                    ),
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.all(16),
-                      child: SelectableText(message),
-                    ),
-                  ),
-                ),
-                ElevatedButton.icon(
-                  label: Text(kIsWeb ? 'Copiar' : 'Compartilhar'),
-                  icon: Icon(kIsWeb ? Icons.copy_rounded : Icons.share_rounded),
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: Size(150, 50),
-                    maximumSize: Size(500, 50),
-                  ),
-                  onPressed: () {
-                    kIsWeb
-                        ? Clipboard.setData(new ClipboardData(text: message))
-                            .then((_) {
-                            Message.showSucesso(
-                                context: context,
-                                message:
-                                    'Relatório copiado para área de transferência');
-                          })
-                        : Share.share(message);
-                  },
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    ).then((value) {
-      if (onPressed != null) onPressed();
-    });
   }
 
   /// Apresenta popup no padrão bottom dialog
@@ -334,94 +214,43 @@ class Message {
     );
   }
 
-  /// Apresenta popup com indicador de execução
-  static void showProgressoComMessagem(
-      {required BuildContext context, required String message}) {
-    showDialog(
-        barrierLabel: 'Teste',
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          return SimpleDialog(
-            contentPadding: EdgeInsets.all(24),
-            children: [
-              Center(
-                child: Wrap(
-                  spacing: 32,
-                  runSpacing: 32,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    CircularProgressIndicator(),
-                    Text(message),
-                  ],
-                ),
-              ),
-            ],
-          );
-        });
-  }
-
-  /// Apresenta tela de progresso com medidor
-  static void showProgressoComMedidor(
-      {required BuildContext context,
-      required String message,
-      required LinearProgressIndicator progress}) {
-    showDialog(
-        barrierLabel: 'Teste',
-        barrierDismissible: false,
-        context: context,
-        builder: (BuildContext context) {
-          return SimpleDialog(
-            contentPadding: EdgeInsets.all(24),
-            children: [
-              Center(
-                child: Wrap(
-                  spacing: 32,
-                  runSpacing: 32,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    CircularProgressIndicator(),
-                    Text(message),
-                  ],
-                ),
-              ),
-            ],
-          );
-        });
-  }
-
   /// Apresenta popup no padrão bottom dialog
-  static void showBottomDialog(
-      {required BuildContext context,
-      required String titulo,
-      Widget? conteudo}) {
+  static void showBottomDialog({
+    required BuildContext context,
+    required String titulo,
+    required Widget conteudo,
+    VoidCallback? onPressed,
+  }) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useRootNavigator: true,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
       ),
       constraints: BoxConstraints(
           minHeight: MediaQuery.of(context).size.height * 0.3,
-          maxHeight: MediaQuery.of(context).size.height * 0.8),
+          maxHeight: MediaQuery.of(context).size.height * 0.9),
       builder: (context) {
+        var bordas = (MediaQuery.of(context).size.width - 640) / 2;
         return Padding(
           padding: EdgeInsets.only(
-            left: 12,
-            top: 12,
-            right: 12,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 12,
+            top: MediaQuery.of(context).viewInsets.top,
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            left: bordas > 0 ? bordas : 0,
+            right: bordas > 0 ? bordas : 0,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
+            children: [
               Container(
                 width: 64,
                 height: 4,
+                margin: EdgeInsets.only(top: 12),
                 decoration: const BoxDecoration(
                   shape: BoxShape.rectangle,
                   borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                  color: Colors.grey,
+                  color: Colors.black38,
                 ),
               ),
               Row(
@@ -432,7 +261,7 @@ class Message {
                       '$titulo',
                       textAlign: TextAlign.center,
                       style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(
@@ -445,13 +274,136 @@ class Message {
                   isAlwaysShown: true,
                   showTrackOnHover: true,
                   hoverThickness: 18,
-                  child: conteudo ?? Container(),
+                  child: SingleChildScrollView(
+                    child: conteudo,
+                  ),
                 ),
               ),
             ],
           ),
         );
       },
+    ).then((value) {
+      if (onPressed != null) onPressed();
+    });
+  }
+
+  /// Apresenta popup de relatório (com texto selecionável)
+  static void showRelatorio({
+    required BuildContext context,
+    required String message,
+    VoidCallback? onPressed,
+  }) {
+    Widget conteudo = Padding(
+      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            margin: EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              color: Colors.white,
+            ),
+            child: SingleChildScrollView(
+              padding: EdgeInsets.all(16),
+              child: SelectableText(message),
+            ),
+          ),
+          ElevatedButton.icon(
+            label: Text(kIsWeb ? 'Copiar' : 'Compartilhar'),
+            icon: Icon(kIsWeb ? Icons.copy_rounded : Icons.share_rounded),
+            style: ElevatedButton.styleFrom(
+              minimumSize: Size(150, 50),
+              maximumSize: Size(500, 50),
+            ),
+            onPressed: () {
+              kIsWeb
+                  ? Clipboard.setData(new ClipboardData(text: message))
+                      .then((_) {
+                      Message.showMensagem(
+                          context: context,
+                          titulo: 'Sucesso!',
+                          mensagem:
+                              'Relatório copiado para área de transferência.');
+                    })
+                  : Share.share(message);
+            },
+          ),
+        ],
+      ),
     );
+
+    showBottomDialog(
+        context: context,
+        titulo: 'Relatório',
+        conteudo: conteudo,
+        onPressed: onPressed);
+    /* showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      isScrollControlled: true,
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 48, horizontal: 24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Relatório',
+                      style: Theme.of(context).textTheme.headline6,
+                    ),
+                    CloseButton(),
+                  ],
+                ),
+                Flexible(
+                  flex: 1,
+                  fit: FlexFit.tight,
+                  child: Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      color: Colors.white,
+                    ),
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.all(16),
+                      child: SelectableText(message),
+                    ),
+                  ),
+                ),
+                ElevatedButton.icon(
+                  label: Text(kIsWeb ? 'Copiar' : 'Compartilhar'),
+                  icon: Icon(kIsWeb ? Icons.copy_rounded : Icons.share_rounded),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: Size(150, 50),
+                    maximumSize: Size(500, 50),
+                  ),
+                  onPressed: () {
+                    kIsWeb
+                        ? Clipboard.setData(new ClipboardData(text: message))
+                            .then((_) {
+                            Message.showMensagem(
+                                context: context,
+                                titulo: 'Sucesso!',
+                                mensagem:
+                                    'Relatório copiado para área de transferência.');
+                          })
+                        : Share.share(message);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    ).then((value) {
+      if (onPressed != null) onPressed();
+    }); */
   }
 }

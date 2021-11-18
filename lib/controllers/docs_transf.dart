@@ -24,9 +24,10 @@ class TransfDocumentos {
       callback}) {
     final _formKey = GlobalKey<FormState>();
     TextEditingController ctrPacoteRecebedor = TextEditingController();
-    Message.showAlerta(
+    Message.showExecutar(
       context: context,
-      message: '''
+      titulo: 'Ação necessária!',
+      mensagem: '''
 Informe o localizador do pacote para o qual deseja transferir os documentos.
 Apenas pacotes abertos podem receber transferências.
       ''',
@@ -188,8 +189,10 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
   }
 
   _buscarPacotes({required String termo, callback}) async {
-    Message.showProgressoComMessagem(
-        context: context, message: 'Localizando pacote...');
+    Message.showAguarde(
+      context: context,
+      mensagem: 'Localizando pacote(s)...',
+    );
     List<dynamic> resultados;
     String value = termo.trim().toUpperCase();
     //Busca exata

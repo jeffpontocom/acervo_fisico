@@ -28,7 +28,7 @@ class PacoteLocalizacao extends StatefulWidget {
 
 class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
   // Controladores para campos do formulario
-  int _controleTipo = mPacote.tipo;
+  TipoPacote _controleTipo = TipoPacote.values[mPacote.tipo];
   TextEditingController _controleId =
       TextEditingController(text: mPacote.identificador);
   TextEditingController _controlePredio =
@@ -87,7 +87,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
 
   Widget get tipo {
     return editMode.value
-        ? DropdownButtonFormField<int>(
+        ? DropdownButtonFormField<TipoPacote>(
             value: _controleTipo,
             iconDisabledColor: Colors.transparent,
             decoration: mTextField.copyWith(
@@ -99,10 +99,10 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
             items: TipoPacote.values
                 .map(
                   (value) => new DropdownMenuItem(
-                    value: value.index,
+                    value: value,
                     //enabled: editMode.value,
                     child: new Text(
-                      getTipoPacoteString(value.index),
+                      getTipoPacoteString(value),
                       style: TextStyle(
                         fontSize: 20,
                       ),
@@ -113,7 +113,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
                 .toList(),
             onChanged: (value) {
               setState(() {
-                _controleTipo = value!;
+                _controleTipo = value ?? TipoPacote.INDEFINIDO;
               });
             })
         : Container();
@@ -350,7 +350,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
   /// Carrega os dados originais no controladores de texto
   /// (desfaz alteracoes no pacote)
   void dadosOriginais() {
-    _controleTipo = mPacote.tipo;
+    _controleTipo = TipoPacote.values[mPacote.tipo];
     _controleId.text = mPacote.identificador;
     _controlePredio.text = mPacote.localPredio;
     _controleNivel1.text = mPacote.localNivel1;
@@ -362,36 +362,39 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
   /// Salva as alteracoes no pacote
   Future<void> salvarAlteracoes() async {
     // abre mensagem alerta
-    Message.showAlerta(
+    Message.showExecutar(
         context: context,
-        message:
+        titulo: 'Atenção!',
+        mensagem:
             'Tem certeza que deseja salvar as alterações nos dados básicos deste pacote?',
         onPressed: (value) async {
           // fecha mensagem alerta
           Navigator.pop(context);
           if (value == true) {
             // Abre progresso
-            Message.showProgressoComMessagem(
-                context: context, message: 'Salvando alterações...');
+            Message.showAguarde(
+              context: context,
+              mensagem: 'Salvando alterações...',
+            );
             // Relatorio
             String relatorio = '''
 *APP Acervo Físico*
 Relatório de EDIÇÃO do pacote: "${_controleId.text}"
 
 Dados anteriores a modificação:
-IDENTIFICADOR: ${mPacote.identificador != _controleId.text ? mPacote.identificador : "[sem alteração]"}
-TIPO: ${mPacote.tipo != _controleTipo ? mPacote.tipoToString : "[sem alteração]"}
-PRÉDIO: ${mPacote.localPredio != _controlePredio.text ? mPacote.localPredio : "[sem alteração]"}
-ESTANTE: ${mPacote.localNivel1 != _controleNivel1.text ? mPacote.localNivel1 : "[sem alteração]"}
-DIVISÃO: ${mPacote.localNivel2 != _controleNivel2.text ? mPacote.localNivel2 : "[sem alteração]"}
-ANDAR: ${mPacote.localNivel3 != _controleNivel3.text ? mPacote.localNivel3 : "[sem alteração]"}
-Observações: ${mPacote.observacao != _controleObs.text ? mPacote.observacao : "[sem alteração]"}
+• Identificador:  ${mPacote.identificador != _controleId.text ? mPacote.identificador : "[sem alteração]"}
+• Tipo:           ${TipoPacote.values[mPacote.tipo] != _controleTipo ? mPacote.tipoToString : "[sem alteração]"}
+• Prédio:         ${mPacote.localPredio != _controlePredio.text ? mPacote.localPredio : "[sem alteração]"}
+• Estante:        ${mPacote.localNivel1 != _controleNivel1.text ? mPacote.localNivel1 : "[sem alteração]"}
+• Divisão:        ${mPacote.localNivel2 != _controleNivel2.text ? mPacote.localNivel2 : "[sem alteração]"}
+• Andar:          ${mPacote.localNivel3 != _controleNivel3.text ? mPacote.localNivel3 : "[sem alteração]"}
+• Observações:    ${mPacote.observacao != _controleObs.text ? mPacote.observacao : "[sem alteração]"}
 
 Executado em ${DateFormat("dd/MM/yyyy - HH:mm", "pt_BR").format(DateTime.now())}
 Por ${AppData.currentUser?.username ?? "**administrador**"}
 ''';
             // executa alteracoes
-            mPacote.tipo = _controleTipo;
+            mPacote.tipo = _controleTipo.index;
             mPacote.identificador = _controleId.text;
             mPacote.localPredio = _controlePredio.text;
             mPacote.localNivel1 = _controleNivel1.text;
@@ -458,31 +461,37 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
   /// Elimina o pacote
   Future<void> eliminarPacote() async {
     // verifica se existem documentos vinculados
-    Message.showProgressoComMessagem(
-        context: context, message: 'Verificando vinculos...');
+    Message.showAguarde(
+      context: context,
+      mensagem: 'Verificando vinculos...',
+    );
     QueryBuilder<Documento> query = QueryBuilder<Documento>(Documento())
       ..whereEqualTo(Documento.keyPacote,
           (Pacote()..objectId = mPacote.objectId).toPointer());
     final ParseResponse apiResponse = await query.query();
     Navigator.pop(context);
     if (apiResponse.success && apiResponse.results != null) {
-      Message.showErro(
+      Message.showMensagem(
           context: context,
-          message:
+          titulo: 'Erro!',
+          mensagem:
               'Não é possível eliminar pacotes que possuem documentos vinculados');
     } else {
       // abre mensagem alerta
-      Message.showAlerta(
+      Message.showExecutar(
           context: context,
-          message:
+          titulo: 'Atenção!',
+          mensagem:
               'Tem certeza que deseja ELIMINAR o pacote "${mPacote.identificador}"?\n\nEssa ação não pode ser desfeita.',
           onPressed: (value) async {
             // fecha mensagem alerta
             Navigator.pop(context);
             if (value) {
               // abre progresso
-              Message.showProgressoComMessagem(
-                  context: context, message: 'Eliminando pacote...');
+              Message.showAguarde(
+                context: context,
+                mensagem: 'Eliminando pacote...',
+              );
               // Relatorio
               String relatorio = '''
 *APP Acervo Físico*

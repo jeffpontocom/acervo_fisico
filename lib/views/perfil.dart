@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 
 import '../app_data.dart';
 import 'messages.dart';
@@ -13,12 +14,22 @@ class UserPage extends StatelessWidget {
 
     /// Executa o logout do usuario
     void fazerLogout() async {
+      Message.showAguarde(
+        context: context,
+        mensagem: 'Efetuando logout...',
+      );
       var response = await AppData.currentUser!.logout();
+
+      Modular.to.pop();
       if (response.success) {
         AppData.currentUser = null;
-        Navigator.pop(context, true);
+        Modular.to.maybePop(true);
       } else {
-        Message.showErro(context: context, message: response.error!.message);
+        Message.showMensagem(
+            context: context,
+            titulo: 'Erro!',
+            mensagem:
+                response.error?.message ?? 'Não foi possível executar a ação.');
       }
     }
 

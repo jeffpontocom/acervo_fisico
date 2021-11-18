@@ -5,38 +5,44 @@ enum TipoPacote {
   TUBO,
   CAIXA_A4,
   PASTA_A3,
+  CAIXA_A3,
   GAVETA,
 }
 
-String getTipoPacoteString(int index) {
+String getTipoPacoteString(TipoPacote index) {
   switch (index) {
-    case 1:
+    case TipoPacote.TUBO:
       return 'Tubo';
-    case 2:
+    case TipoPacote.CAIXA_A4:
       return 'Caixa A4';
-    case 3:
+    case TipoPacote.PASTA_A3:
       return 'Pasta A3';
-    case 4:
+    case TipoPacote.CAIXA_A3:
+      return 'Caixa A3';
+    case TipoPacote.GAVETA:
       return 'Gaveta';
     default:
       return 'Pacote indefinido';
   }
 }
 
-AssetImage getTipoPacoteImagem(int index) {
+AssetImage getTipoPacoteImagem(TipoPacote tipo) {
   String assetName;
-  switch (index) {
-    case 1:
+  switch (tipo) {
+    case TipoPacote.TUBO:
       assetName = 'assets/images/tubo.png';
       break;
-    case 2:
+    case TipoPacote.CAIXA_A4:
       assetName = 'assets/images/caixaA4.png';
       break;
-    case 3:
+    case TipoPacote.PASTA_A3:
       assetName = 'assets/images/pastaA3.png';
       break;
-    case 4:
-      assetName = 'assets/images/gaveta.jpg';
+    case TipoPacote.CAIXA_A3:
+      assetName = 'assets/images/caixaA3.png';
+      break;
+    case TipoPacote.GAVETA:
+      assetName = 'assets/images/gaveta.png';
       break;
     default:
       assetName = 'assets/images/indefinido.png';

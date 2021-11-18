@@ -13,46 +13,41 @@ import 'relatorio_add.dart';
 class NovoPacote {
   final BuildContext context;
 
-  int _pacoteTipo = 2;
-  String _pacoteId = '';
+  TipoPacote _pacoteTipo = TipoPacote.CAIXA_A4;
+  String _pacoteIdentificador = '';
 
-  Widget get tipo {
+  /* WIDGETS */
+
+  /// Campo de seleção de tipo
+  Widget get _tipo {
     return StatefulBuilder(
         builder: (BuildContext context, StateSetter innerState) {
       return Wrap(
         alignment: WrapAlignment.center,
-        runSpacing: 24,
+        runSpacing: 0,
         spacing: 24,
         children: [
-          Hero(
-            tag: 'imgPacote',
-            child: Container(
-              width: 96,
-              height: 96,
-              decoration: new BoxDecoration(
-                shape: BoxShape.rectangle,
-                image: new DecorationImage(
-                  fit: BoxFit.cover,
-                  image: getTipoPacoteImagem(_pacoteTipo),
-                ),
-              ),
-            ),
+          Image(
+            image: getTipoPacoteImagem(_pacoteTipo),
+            height: 96,
+            width: 96,
+            fit: BoxFit.cover,
           ),
-          DropdownButtonFormField<int>(
+          DropdownButtonFormField<TipoPacote>(
               value: _pacoteTipo,
               iconDisabledColor: Colors.transparent,
               decoration: mTextField.copyWith(
                 labelText: 'Tipo',
-                constraints: BoxConstraints(maxWidth: 480),
+                constraints: BoxConstraints(maxWidth: 472),
               ),
               autofocus: false,
               isExpanded: true,
               items: TipoPacote.values
                   .map(
                     (value) => new DropdownMenuItem(
-                      value: value.index,
+                      value: value,
                       child: new Text(
-                        getTipoPacoteString(value.index),
+                        getTipoPacoteString(value),
                         style: TextStyle(
                           fontSize: 20,
                         ),
@@ -63,7 +58,7 @@ class NovoPacote {
                   .toList(),
               onChanged: (value) {
                 innerState(() {
-                  _pacoteTipo = value!;
+                  _pacoteTipo = value ?? TipoPacote.CAIXA_A4;
                 });
               }),
         ],
@@ -71,19 +66,20 @@ class NovoPacote {
     });
   }
 
-  Widget get identificador {
+  /// Campo de identificação
+  Widget get _identificador {
     return TextField(
       decoration: mTextField.copyWith(
         labelText: 'Identificador',
         hintText: 'Ex.: 20211231.1',
-        constraints: BoxConstraints(maxWidth: 600),
+        constraints: BoxConstraints(maxWidth: 592),
       ),
       onChanged: (value) {
-        _pacoteId = value;
+        _pacoteIdentificador = value;
       },
       autofocus: false,
       style: TextStyle(
-          fontSize: 32, fontWeight: FontWeight.bold, color: Colors.blue),
+          fontSize: 30, fontWeight: FontWeight.bold, color: Colors.blue),
     );
   }
 
@@ -91,27 +87,22 @@ class NovoPacote {
     Message.showBottomDialog(
       context: context,
       titulo: 'Novo pacote',
-      conteudo: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+      conteudo: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
         child: Column(
           children: [
-            tipo,
-            identificador,
-            SizedBox(
-              height: 48,
-            ),
+            _tipo,
+            _identificador,
+            const SizedBox(height: 48),
             ElevatedButton.icon(
               onPressed: () {
                 _criarPacote(
-                  _pacoteId,
-                  _pacoteTipo,
+                  _pacoteIdentificador,
+                  _pacoteTipo.index,
                 );
               },
               icon: Icon(Icons.new_label_rounded),
-              label: Text('Criar'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(150, 50),
-              ),
+              label: Text('CRIAR'),
             ),
           ],
         ),
@@ -123,13 +114,17 @@ class NovoPacote {
     codigo = codigo.toUpperCase().trim().replaceAll(' ', '');
     // Verifica a string
     if (codigo.isEmpty) {
-      Message.showErro(
-          context: context, message: 'Informe um código para o pacote.');
+      Message.showMensagem(
+          context: context,
+          titulo: 'Atenção!',
+          mensagem: 'Informe um código para o pacote.');
       return;
     }
     // Progresso
-    Message.showProgressoComMessagem(
-        context: context, message: 'Criando pacote...');
+    Message.showAguarde(
+      context: context,
+      mensagem: 'Criando pacote...',
+    );
     // Consulta Previa
     List<dynamic> consultaPrevia;
     QueryBuilder<Pacote> query = QueryBuilder<Pacote>(Pacote())
@@ -152,10 +147,11 @@ class NovoPacote {
       var pacote = await salvarRegistro(codigo, tipo);
       if (pacote == null) {
         Navigator.pop(context); // Fecha progresso
-        Message.showErro(
+        Message.showMensagem(
             context: context,
-            message:
-                "Não foi possível criar o pacote. Verifique sua conexão e/ou login e tente mais tarde novamente.");
+            titulo: 'Erro!',
+            mensagem:
+                'Não foi possível criar o pacote. Verifique sua conexão e/ou login e tente mais tarde novamente.');
       } else {
         // Relatorio
         String relatorio = '''
@@ -181,17 +177,20 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
           if (apiResponse.success && apiResponse.results != null) {
             irParaPacote(context, pacote);
           } else {
-            Message.showErro(
+            Message.showMensagem(
                 context: context,
-                message:
+                titulo: 'Erro!',
+                mensagem:
                     'Houve algum problema na criação. Consulte se o pacote foi criado corretamente e tente novamente!');
           }
         }
       }
     } else {
       Navigator.pop(context); // Fecha progresso
-      Message.showErro(
-          context: context, message: 'Já existe um pacote com esse nome.');
+      Message.showMensagem(
+          context: context,
+          titulo: 'Erro!',
+          mensagem: 'Já existe um pacote com esse nome.');
     }
   }
 

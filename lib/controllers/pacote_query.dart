@@ -13,14 +13,18 @@ class LocalizarPacote {
   LocalizarPacote(this.context, this.termo) {
     // Apresentar caso nenhum nome tenha sido informado
     if (termo == null || termo!.trim().isEmpty) {
-      Message.showErro(
-          context: context, message: 'Nenhum valor para pacote foi informado.');
+      Message.showMensagem(
+          context: context,
+          titulo: 'Atenção!',
+          mensagem: 'Nenhum valor para pacote foi informado.');
       return;
     }
     // Abre tela de progresso
     else {
-      Message.showProgressoComMessagem(
-          context: context, message: 'Localizando pacote...');
+      Message.showAguarde(
+        context: context,
+        mensagem: 'Localizando pacote(s)...',
+      );
       _executarBusca();
     }
   }

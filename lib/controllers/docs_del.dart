@@ -19,9 +19,10 @@ class DelDocumentos {
       required this.documentosEliminar,
       required this.provider,
       callback}) {
-    Message.showAlerta(
+    Message.showExecutar(
         context: context,
-        message:
+        titulo: 'Atenção!',
+        mensagem:
             'Os documentos excluidos não podem ser recuperados.\n\nEstá certo disso?',
         onPressed: (executar) {
           if (executar) {

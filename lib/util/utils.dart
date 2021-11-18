@@ -9,14 +9,12 @@ class Util {
     return MediaQuery.of(context).viewInsets.bottom != 0;
   }
 
-  /// Verifica se existe conexão a internet
-  /* static Future<bool> hasNetwork() async {
-    final ConnectionStatus status =
-        await UniversalInternetChecker.checkInternet();
-    return status == ConnectionStatus.online;
-  } */
-
-  /// Formato de data padrão "1 de janeiro de 2020 23:59:59."
+  /// Formato de data e hora padrão completo "1 de janeiro de 2020 23:59:59."
   static final DateFormat mDateFormat = DateFormat.yMMMMd('pt_BR').add_Hms();
+
+  /// Formato de data e hora padrão curto "01/01/2020 23:59:59"
   static final DateFormat mShortDateFormat = DateFormat.yMd('pt_BR').add_Hms();
+
+  /// Formato de numeros com separador de milhar
+  static final NumberFormat mNumFormat = NumberFormat.decimalPattern('pt_BR');
 }

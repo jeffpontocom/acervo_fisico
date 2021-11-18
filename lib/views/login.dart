@@ -29,12 +29,17 @@ class _LoginPageState extends State<LoginPage> {
     final password = controllerPassword.text.trim();
 
     if (username.isEmpty || password.isEmpty) {
-      Message.showErro(context: context, message: 'Informe usuário e senha');
+      Message.showMensagem(
+          context: context,
+          titulo: 'Atenção!',
+          mensagem: 'Informe usuário e senha');
       return;
     }
 
-    Message.showProgressoComMessagem(
-        context: context, message: 'Efetuando login...');
+    Message.showAguarde(
+      context: context,
+      mensagem: 'Efetuando login...',
+    );
     var response = await ParseUser(username, password, null).login();
 
     Modular.to.pop();
@@ -43,7 +48,11 @@ class _LoginPageState extends State<LoginPage> {
       //Navigator.pop(context, true);
       Modular.to.maybePop(true);
     } else {
-      Message.showErro(context: context, message: response.error!.message);
+      Message.showMensagem(
+          context: context,
+          titulo: 'Erro!',
+          mensagem:
+              response.error?.message ?? 'Não foi possível executar a ação.');
     }
   }
 
@@ -52,21 +61,16 @@ class _LoginPageState extends State<LoginPage> {
     Message.showBottomDialog(
       context: context,
       titulo: 'Redefinir senha',
-      conteudo: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 0),
+      conteudo: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             editUser,
-            const SizedBox(
-              height: 12,
-            ),
+            const SizedBox(height: 12),
             ElevatedButton.icon(
               icon: Icon(Icons.send_rounded),
               label: Text('SOLICITAR'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(150, 48),
-              ),
               onPressed: () => redefinirSenha(),
             ),
           ],
@@ -78,8 +82,10 @@ class _LoginPageState extends State<LoginPage> {
   /// Executa solicitacao de redefinicao de senha
   void redefinirSenha() async {
     // Abre a tela de progresso
-    Message.showProgressoComMessagem(
-        context: context, message: 'Verificando e-mail...');
+    Message.showAguarde(
+      context: context,
+      mensagem: 'Verificando e-mail...',
+    );
     QueryBuilder<ParseUser> queryUsers =
         QueryBuilder<ParseUser>(ParseUser.forQuery());
     queryUsers
@@ -93,22 +99,29 @@ class _LoginPageState extends State<LoginPage> {
         }
         await user.requestPasswordReset();
         Navigator.pop(context); // Fecha a tela de progresso
-        Message.showSucesso(
+        Message.showMensagem(
             context: context,
-            message:
-                'As instruções para redefinir a senha foram enviadas por e-mail!',
+            titulo: 'Sucesso!',
+            mensagem:
+                'As instruções para redefinir a senha foram enviadas por e-mail.',
             onPressed: () {
               Navigator.of(context).pop(); // Fecha a caixa de dialogo
             });
       } else {
         Navigator.pop(context); // Fecha a tela de progresso
-        Message.showErro(
+        Message.showMensagem(
             context: context,
-            message: 'Nenhum usuário encontrado com esse e-mail!');
+            titulo: 'Erro!',
+            mensagem: 'Nenhum usuário encontrado com esse e-mail.');
       }
     } else {
       Navigator.pop(context); // Fecha a tela de progresso
-      Message.showErro(context: context, message: parseResponse.error!.message);
+      Message.showMensagem(
+        context: context,
+        titulo: 'Erro!',
+        mensagem:
+            parseResponse.error?.message ?? 'Não foi possível executar a ação.',
+      );
     }
   }
 
