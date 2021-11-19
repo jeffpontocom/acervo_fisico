@@ -29,6 +29,7 @@ class TransfDocumentos {
       titulo: 'Ação necessária!',
       mensagem: '''
 Informe o localizador do pacote para o qual deseja transferir os documentos.
+
 Apenas pacotes abertos podem receber transferências.
       ''',
       extra: Form(
@@ -113,7 +114,7 @@ Apenas pacotes abertos podem receber transferências.
                         height: 12,
                       ),
                       Text(
-                        'Transferido $qtdExecutada de ${docsParaTransferir.length}',
+                        'Transferindo $qtdExecutada de ${docsParaTransferir.length}',
                       ),
                       qtdExecutada == docsParaTransferir.length
                           ? Text(

@@ -31,7 +31,6 @@ class Init {
 
   /// Registra todos os serviços necessários a execução do sistema
   static _registrarServicos() async {
-    print("Registro de serviços iniciado");
     // Iniciando Back4App/Parse
     final keyApplicationId = 'UJImpAAk0xdg1gB1OQtMf2bqEpe3aANxT6Sa2Vbp';
     final keyClientKey = 'ggHpKH2rUw3uwmchR4lj70gP84DWzFYnlrvJaSov';

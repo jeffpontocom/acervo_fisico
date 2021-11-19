@@ -50,21 +50,27 @@ class _PacotePageState extends State<PacotePage> {
         },
       ),
       titleSpacing: 0,
-      centerTitle: true,
+      centerTitle: false,
       title: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Título
           Text(
             mPacote.selado ? 'Pacote selado' : 'Pacote aberto',
-            style: TextStyle(color: Colors.white, fontSize: 20.0),
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.white54,
+            ),
           ),
-          // Subtítulo
           Text(
-            'ID: ${mPacote.identificador}',
-            style: TextStyle(color: Colors.blue.shade200, fontSize: 13.0),
-          )
+            '${mPacote.identificador}',
+            style: TextStyle(
+              fontSize: 19,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+            overflow: TextOverflow.ellipsis,
+            softWrap: false,
+          ),
         ],
       ),
       actions: pacoteActions,
@@ -75,9 +81,54 @@ class _PacotePageState extends State<PacotePage> {
   TabBar get tabBars {
     return TabBar(
       tabs: [
-        Tab(icon: Icon(Icons.place), text: "Localização"),
-        Tab(icon: Icon(Icons.list_rounded), text: "Documentos"),
-        Tab(icon: Icon(Icons.history_rounded), text: "Histórico"),
+        Tab(
+          height: 56,
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 16,
+            runSpacing: 4,
+            children: [
+              Icon(Icons.place),
+              Text(
+                'Localização',
+                softWrap: false,
+              )
+            ],
+          ),
+        ),
+        Tab(
+          height: 56,
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 16,
+            runSpacing: 4,
+            children: [
+              Icon(Icons.list_rounded),
+              Text(
+                'Documentos',
+                softWrap: false,
+              )
+            ],
+          ),
+        ),
+        Tab(
+          height: 56,
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 16,
+            runSpacing: 4,
+            children: [
+              Icon(Icons.history_rounded),
+              Text(
+                'Histórico',
+                softWrap: false,
+              )
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -139,7 +190,7 @@ class _PacotePageState extends State<PacotePage> {
                 spacing: 24,
                 children: [
                   CircularProgressIndicator(),
-                  MyGreyText('Carregando dados do pacote')
+                  MyGreyText('Carregando dados do pacote...')
                 ],
               ),
             ),

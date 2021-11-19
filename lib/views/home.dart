@@ -291,10 +291,13 @@ class _MyHomePageState extends State<MyHomePage> {
             IconButton(
               onPressed: () => _acessarPerfil(),
               iconSize: 36,
-              icon: Image(
-                image: AssetImage(AppData.currentUser == null
-                    ? 'assets/icons/private-key.png'
-                    : 'assets/icons/data-management.png'),
+              icon: Hero(
+                tag: 'perfil',
+                child: Image(
+                  image: AssetImage(AppData.currentUser == null
+                      ? 'assets/icons/private-key.png'
+                      : 'assets/icons/data-management.png'),
+                ),
               ),
             ),
           ],

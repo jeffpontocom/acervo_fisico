@@ -61,19 +61,21 @@ class _LoginPageState extends State<LoginPage> {
     Message.showBottomDialog(
       context: context,
       titulo: 'Redefinir senha',
-      conteudo: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            editUser,
-            const SizedBox(height: 12),
-            ElevatedButton.icon(
-              icon: Icon(Icons.send_rounded),
-              label: Text('SOLICITAR'),
-              onPressed: () => redefinirSenha(),
-            ),
-          ],
+      conteudo: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              editUser,
+              const SizedBox(height: 12),
+              ElevatedButton.icon(
+                icon: Icon(Icons.send_rounded),
+                label: Text('SOLICITAR'),
+                onPressed: () => redefinirSenha(),
+              ),
+            ],
+          ),
         ),
       ),
     );

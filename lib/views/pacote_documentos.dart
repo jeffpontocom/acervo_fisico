@@ -48,7 +48,7 @@ class _PacoteDocumentosState extends State<PacoteDocumentos>
                   maxHeight: 56,
                   child: Container(
                     color: Colors.blueGrey,
-                    padding: EdgeInsets.symmetric(horizontal: 24),
+                    padding: EdgeInsets.symmetric(horizontal: 16),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -72,7 +72,7 @@ class _PacoteDocumentosState extends State<PacoteDocumentos>
                                   });
                                 },
                           icon: Icon(checkbox),
-                          label: Text('Selecionar tudo'),
+                          label: Text('Seleção'),
                         ),
                         allSelected == false
                             ? TextButton.icon(

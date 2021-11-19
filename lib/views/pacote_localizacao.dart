@@ -66,22 +66,11 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
   }
 
   Widget get imagem {
-    return Hero(
-      tag: 'imgPacote',
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 12),
-        width: 128,
-        height: 128,
-        decoration: new BoxDecoration(
-          shape: BoxShape.rectangle,
-          //border: Border.all(color: Colors.lightBlue, width: 1),
-          //borderRadius: BorderRadius.all(Radius.circular(16.0)),
-          image: new DecorationImage(
-            fit: BoxFit.cover,
-            image: getTipoPacoteImagem(_controleTipo),
-          ),
-        ),
-      ),
+    return Image(
+      image: getTipoPacoteImagem(_controleTipo),
+      width: 128,
+      height: 128,
+      fit: BoxFit.contain,
     );
   }
 
@@ -89,18 +78,15 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
     return editMode.value
         ? DropdownButtonFormField<TipoPacote>(
             value: _controleTipo,
-            iconDisabledColor: Colors.transparent,
             decoration: mTextField.copyWith(
               labelText: 'Tipo',
               enabled: editMode.value,
-              constraints: BoxConstraints(maxWidth: 480),
             ),
             isExpanded: true,
             items: TipoPacote.values
                 .map(
                   (value) => new DropdownMenuItem(
                     value: value,
-                    //enabled: editMode.value,
                     child: new Text(
                       getTipoPacoteString(value),
                       style: TextStyle(
@@ -116,7 +102,15 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
                 _controleTipo = value ?? TipoPacote.INDEFINIDO;
               });
             })
-        : Container();
+        : Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: Text(
+              getTipoPacoteString(_controleTipo),
+              style: TextStyle(
+                fontSize: 18,
+              ),
+            ),
+          );
   }
 
   Widget get identificador {
@@ -197,7 +191,6 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
       decoration: mTextField.copyWith(
         labelText: 'Observações:',
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        constraints: BoxConstraints(maxWidth: 1200),
       ),
     );
   }
@@ -255,12 +248,11 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
   }
 
   Widget get eliminar {
-    return TextButton.icon(
-      label: Text('Eliminar pacote'),
+    return ElevatedButton.icon(
+      label: Text('ELIMINAR PACOTE'),
       icon: Icon(Icons.delete_forever_rounded),
       style: ElevatedButton.styleFrom(
         primary: Colors.red,
-        minimumSize: Size(150, 50),
       ),
       onPressed: () {
         eliminarPacote();
@@ -268,31 +260,43 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
     );
   }
 
-  bool _gerarPdfState = false;
+  var loading = false;
   Widget get gerarPdf {
+    Function(bool) callback = (value) {
+      setState(() {
+        loading = value;
+      });
+    };
     return ElevatedButton.icon(
-      label: Text('Resumo'),
-      icon: _gerarPdfState
-          ? CircularProgressIndicator()
+      label: const Text(
+        'FICHA',
+        softWrap: false,
+      ),
+      icon: loading
+          ? SizedBox(
+              height: 24,
+              width: 24,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.white,
+              ),
+            )
           : Icon(Icons.picture_as_pdf_sharp),
       style: ElevatedButton.styleFrom(
           fixedSize: Size(150, 36), alignment: Alignment.centerLeft),
-      onPressed: () async {
-        setState(() {
-          _gerarPdfState = true;
-        });
-        gerarPdfPacote();
-        setState(() {
-          _gerarPdfState = false;
-        });
+      onPressed: () {
+        gerarPdfPacote(callback);
       },
     );
   }
 
   Widget get gerarEtiqueta {
     return ElevatedButton.icon(
-      label: kIsWeb ? Text('Gerar Etiqueta') : Text('Etiqueta'),
-      icon: const Icon(Icons.pin_rounded),
+      label: const Text(
+        'ETIQUETA',
+        softWrap: false,
+      ),
+      icon: const Icon(Icons.qr_code_rounded),
       style: ElevatedButton.styleFrom(
           fixedSize: Size(150, 36), alignment: Alignment.centerLeft),
       onPressed: () {
@@ -423,12 +427,13 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
   }
 
   //// Gerar PDF com informações do pacote
-  void gerarPdfPacote() async {
+  void gerarPdfPacote(callback) async {
+    callback(true);
     var lista = await getDocumentos();
     List<Documento> documentos = lista.cast();
     Message.showPdf(
       context: context,
-      titulo: 'Resumo',
+      titulo: 'Ficha do Pacote',
       conteudo: PdfPreview(
         build: (format) {
           return GerarPdfPage(pacote: mPacote, documentos: documentos)
@@ -436,9 +441,9 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
         },
         canDebug: false,
         pdfFileName: 'Pacote_${mPacote.identificador}',
-        maxPageWidth: 600,
       ),
     );
+    callback(false);
   }
 
   //// Gerar Etiqueta do pacote
@@ -453,7 +458,6 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
         canDebug: false,
         pageFormats: {'A6': PdfPageFormat.a6},
         pdfFileName: 'Etiqueta_${mPacote.identificador}',
-        maxPageWidth: 600,
       ),
     );
   }
@@ -551,6 +555,15 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
     await eliminado.save();
   }
 
+  double _getHPadding() {
+    double minPad = 24;
+    var mesure = ((MediaQuery.of(context).size.width - 860) / 2) + minPad;
+    return mesure > minPad ? mesure : minPad;
+  }
+
+  // Controle de scroll para evitar erros na passagem entre tabs
+  ScrollController _scrollController = ScrollController();
+
   @override
   void dispose() {
     _controleId.dispose();
@@ -579,20 +592,25 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
                 isAlwaysShown: true,
                 showTrackOnHover: true,
                 hoverThickness: 18,
+                controller: _scrollController,
                 child: SingleChildScrollView(
+                  controller: _scrollController,
                   child: Padding(
-                    padding: EdgeInsets.all(24),
+                    padding: EdgeInsets.symmetric(
+                        vertical: 12, horizontal: _getHPadding()),
                     child: Column(
-                      mainAxisSize: MainAxisSize.min,
+                      mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        identificador,
                         Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.max,
                           children: [
-                            Flexible(
+                            Expanded(
                               flex: 2,
                               child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   imagem,
                                   tipo,
@@ -602,11 +620,10 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
                             SizedBox(
                               width: 24,
                             ),
-                            Flexible(
+                            Expanded(
                               flex: 3,
                               child: Column(
                                 children: [
-                                  identificador,
                                   locPredio,
                                   locNivel1,
                                   locNivel2,
@@ -639,16 +656,19 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
                     color: Colors.grey.shade200,
                     child: Padding(
                       padding:
-                          EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Expanded(
                             child: alteracoes,
-                            flex: 2,
+                            flex: 6,
+                          ),
+                          SizedBox.square(
+                            dimension: 8,
                           ),
                           Expanded(
-                            flex: 1,
+                            flex: 4,
                             child: Wrap(
                               alignment: WrapAlignment.end,
                               spacing: 8,

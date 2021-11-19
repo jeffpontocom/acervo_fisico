@@ -51,22 +51,24 @@ class AddDocumentos {
     Message.showBottomDialog(
       context: context,
       titulo: 'Adicionar documentos',
-      conteudo: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-        child: Column(
-          children: [
-            campoLista,
-            const SizedBox(height: 12),
-            ElevatedButton.icon(
-              icon: Icon(Icons.send_and_archive_rounded),
-              label: Text('Analisar e adicionar'),
-              onPressed: () {
-                _analistarLista(callbackLista: () {
-                  callback();
-                });
-              },
-            ),
-          ],
+      conteudo: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+          child: Column(
+            children: [
+              campoLista,
+              const SizedBox(height: 12),
+              ElevatedButton.icon(
+                icon: Icon(Icons.send_and_archive_rounded),
+                label: Text('Analisar e adicionar'),
+                onPressed: () {
+                  _analistarLista(callbackLista: () {
+                    callback();
+                  });
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

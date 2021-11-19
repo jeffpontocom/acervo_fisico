@@ -42,10 +42,21 @@ class UserPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            Hero(
+              tag: 'perfil',
+              child: Image(
+                height: 128,
+                width: 128,
+                fit: BoxFit.contain,
+                image: AssetImage(AppData.currentUser == null
+                    ? 'assets/icons/private-key.png'
+                    : 'assets/icons/data-management.png'),
+              ),
+            ),
+            /* Icon(
               Icons.person_pin,
               size: 128,
-            ),
+            ), */
             Text(
               '${AppData.currentUser!.username}',
               textAlign: TextAlign.center,

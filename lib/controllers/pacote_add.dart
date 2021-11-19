@@ -15,56 +15,9 @@ class NovoPacote {
 
   TipoPacote _pacoteTipo = TipoPacote.CAIXA_A4;
   String _pacoteIdentificador = '';
+  late Function(TipoPacote) callback;
 
   /* WIDGETS */
-
-  /// Campo de seleção de tipo
-  Widget get _tipo {
-    return StatefulBuilder(
-        builder: (BuildContext context, StateSetter innerState) {
-      return Wrap(
-        alignment: WrapAlignment.center,
-        runSpacing: 0,
-        spacing: 24,
-        children: [
-          Image(
-            image: getTipoPacoteImagem(_pacoteTipo),
-            height: 96,
-            width: 96,
-            fit: BoxFit.cover,
-          ),
-          DropdownButtonFormField<TipoPacote>(
-              value: _pacoteTipo,
-              iconDisabledColor: Colors.transparent,
-              decoration: mTextField.copyWith(
-                labelText: 'Tipo',
-                constraints: BoxConstraints(maxWidth: 472),
-              ),
-              autofocus: false,
-              isExpanded: true,
-              items: TipoPacote.values
-                  .map(
-                    (value) => new DropdownMenuItem(
-                      value: value,
-                      child: new Text(
-                        getTipoPacoteString(value),
-                        style: TextStyle(
-                          fontSize: 20,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  )
-                  .toList(),
-              onChanged: (value) {
-                innerState(() {
-                  _pacoteTipo = value ?? TipoPacote.CAIXA_A4;
-                });
-              }),
-        ],
-      );
-    });
-  }
 
   /// Campo de identificação
   Widget get _identificador {
@@ -72,7 +25,6 @@ class NovoPacote {
       decoration: mTextField.copyWith(
         labelText: 'Identificador',
         hintText: 'Ex.: 20211231.1',
-        constraints: BoxConstraints(maxWidth: 592),
       ),
       onChanged: (value) {
         _pacoteIdentificador = value;
@@ -83,28 +35,91 @@ class NovoPacote {
     );
   }
 
+  /// Imagem de tipo
+  Widget get _tipoImagem {
+    return Image(
+      image: getTipoPacoteImagem(_pacoteTipo),
+      height: 96,
+      width: 96,
+      fit: BoxFit.contain,
+    );
+  }
+
+  /// Campo de seleção de tipo
+  Widget get _tipo {
+    return DropdownButtonFormField<TipoPacote>(
+        value: _pacoteTipo,
+        decoration: mTextField.copyWith(
+          labelText: 'Tipo',
+        ),
+        autofocus: false,
+        isExpanded: true,
+        items: TipoPacote.values
+            .map(
+              (value) => new DropdownMenuItem(
+                value: value,
+                child: new Text(
+                  getTipoPacoteString(value),
+                  /* style: TextStyle(
+                    fontSize: 20,
+                  ), */
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            )
+            .toList(),
+        onChanged: (value) {
+          callback(value ?? TipoPacote.CAIXA_A4);
+        });
+  }
+
   NovoPacote(this.context) {
     Message.showBottomDialog(
       context: context,
       titulo: 'Novo pacote',
-      conteudo: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-        child: Column(
-          children: [
-            _tipo,
-            _identificador,
-            const SizedBox(height: 48),
-            ElevatedButton.icon(
-              onPressed: () {
-                _criarPacote(
-                  _pacoteIdentificador,
-                  _pacoteTipo.index,
+      conteudo: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+          child: Column(
+            children: [
+              StatefulBuilder(
+                  builder: (BuildContext context, StateSetter innerState) {
+                callback = (value) {
+                  innerState(() {
+                    _pacoteTipo = value;
+                    // execute change
+                  });
+                };
+                return Row(
+                  children: [
+                    _tipoImagem,
+                    SizedBox(
+                      width: 12,
+                    ),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          _identificador,
+                          _tipo,
+                        ],
+                      ),
+                    ),
+                  ],
                 );
-              },
-              icon: Icon(Icons.new_label_rounded),
-              label: Text('CRIAR'),
-            ),
-          ],
+              }),
+              const SizedBox(height: 48),
+              ElevatedButton.icon(
+                onPressed: () {
+                  _criarPacote(
+                    _pacoteIdentificador,
+                    _pacoteTipo.index,
+                  );
+                },
+                icon: Icon(Icons.new_label_rounded),
+                label: Text('CRIAR'),
+              ),
+            ],
+          ),
         ),
       ),
     );

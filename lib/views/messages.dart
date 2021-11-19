@@ -150,75 +150,11 @@ class Message {
   }
 
   /// Apresenta popup no padrão bottom dialog
-  static void showPdf(
-      {required BuildContext context,
-      required String titulo,
-      Widget? conteudo}) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.blue,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(15.0)),
-      ),
-      constraints: BoxConstraints(
-          minHeight: MediaQuery.of(context).size.height * 0.3,
-          maxHeight: MediaQuery.of(context).size.height * 0.8),
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            left: 0,
-            top: 12,
-            right: 0,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 0,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Container(
-                width: 64,
-                height: 4,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  borderRadius: BorderRadius.all(Radius.circular(16.0)),
-                  color: Colors.black26,
-                ),
-              ),
-              Row(
-                children: [
-                  const CloseButton(
-                    color: Colors.white,
-                  ),
-                  Expanded(
-                    child: Text(
-                      '$titulo',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 20, color: Colors.white),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 48,
-                  )
-                ],
-              ),
-              const SizedBox(
-                height: 8,
-              ),
-              Flexible(
-                child: conteudo ?? Container(),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  /// Apresenta popup no padrão bottom dialog
   static void showBottomDialog({
     required BuildContext context,
     required String titulo,
     required Widget conteudo,
+    ScrollController? scrollController,
     VoidCallback? onPressed,
   }) {
     showModalBottomSheet(
@@ -260,12 +196,14 @@ class Message {
                     child: Text(
                       '$titulo',
                       textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   const SizedBox(
-                    width: 48,
+                    width: kIsWeb ? 40 : 48,
                   )
                 ],
               ),
@@ -274,9 +212,8 @@ class Message {
                   isAlwaysShown: true,
                   showTrackOnHover: true,
                   hoverThickness: 18,
-                  child: SingleChildScrollView(
-                    child: conteudo,
-                  ),
+                  controller: scrollController,
+                  child: conteudo,
                 ),
               ),
             ],
@@ -294,116 +231,79 @@ class Message {
     required String message,
     VoidCallback? onPressed,
   }) {
-    Widget conteudo = Padding(
-      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-      child: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            margin: EdgeInsets.symmetric(vertical: 12),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              color: Colors.white,
+    ScrollController _scrollControler = ScrollController();
+    // Conteudo
+    Widget conteudo = SingleChildScrollView(
+      controller: _scrollControler,
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                color: Colors.white,
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: SelectableText(
+                  message,
+                  toolbarOptions: ToolbarOptions(copy: true, selectAll: true),
+                ),
+              ),
             ),
-            child: SingleChildScrollView(
-              padding: EdgeInsets.all(16),
-              child: SelectableText(message),
+            const SizedBox(
+              height: 16,
             ),
-          ),
-          ElevatedButton.icon(
-            label: Text(kIsWeb ? 'Copiar' : 'Compartilhar'),
-            icon: Icon(kIsWeb ? Icons.copy_rounded : Icons.share_rounded),
-            style: ElevatedButton.styleFrom(
-              minimumSize: Size(150, 50),
-              maximumSize: Size(500, 50),
-            ),
-            onPressed: () {
-              kIsWeb
-                  ? Clipboard.setData(new ClipboardData(text: message))
-                      .then((_) {
-                      Message.showMensagem(
+            ElevatedButton.icon(
+              label: Text(kIsWeb ? 'COPIAR' : 'COMPARTILHAR'),
+              icon: Icon(kIsWeb ? Icons.copy_rounded : Icons.share_rounded),
+              onPressed: () {
+                kIsWeb
+                    ? Clipboard.setData(new ClipboardData(text: message))
+                        .then((_) {
+                        Message.showMensagem(
                           context: context,
                           titulo: 'Sucesso!',
                           mensagem:
-                              'Relatório copiado para área de transferência.');
-                    })
-                  : Share.share(message);
-            },
-          ),
-        ],
+                              'Relatório copiado para área de transferência.',
+                        );
+                      })
+                    : Share.share(message);
+              },
+            ),
+          ],
+        ),
       ),
     );
-
+    // Bottom Dialog padrão
     showBottomDialog(
-        context: context,
-        titulo: 'Relatório',
-        conteudo: conteudo,
-        onPressed: onPressed);
-    /* showModalBottomSheet(
       context: context,
-      isDismissible: false,
-      isScrollControlled: true,
-      builder: (context) {
-        return SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 48, horizontal: 24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Relatório',
-                      style: Theme.of(context).textTheme.headline6,
-                    ),
-                    CloseButton(),
-                  ],
-                ),
-                Flexible(
-                  flex: 1,
-                  fit: FlexFit.tight,
-                  child: Container(
-                    width: double.infinity,
-                    margin: EdgeInsets.symmetric(vertical: 12),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      color: Colors.white,
-                    ),
-                    child: SingleChildScrollView(
-                      padding: EdgeInsets.all(16),
-                      child: SelectableText(message),
-                    ),
-                  ),
-                ),
-                ElevatedButton.icon(
-                  label: Text(kIsWeb ? 'Copiar' : 'Compartilhar'),
-                  icon: Icon(kIsWeb ? Icons.copy_rounded : Icons.share_rounded),
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: Size(150, 50),
-                    maximumSize: Size(500, 50),
-                  ),
-                  onPressed: () {
-                    kIsWeb
-                        ? Clipboard.setData(new ClipboardData(text: message))
-                            .then((_) {
-                            Message.showMensagem(
-                                context: context,
-                                titulo: 'Sucesso!',
-                                mensagem:
-                                    'Relatório copiado para área de transferência.');
-                          })
-                        : Share.share(message);
-                  },
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    ).then((value) {
-      if (onPressed != null) onPressed();
-    }); */
+      titulo: 'Relatório',
+      conteudo: conteudo,
+      scrollController: _scrollControler,
+      onPressed: onPressed,
+    );
+  }
+
+  /// Apresenta popup no padrão bottom dialog
+  static void showPdf(
+      {required BuildContext context,
+      required String titulo,
+      required Widget conteudo}) {
+    ScrollController _scrollControler = ScrollController();
+    showBottomDialog(
+      context: context,
+      titulo: titulo,
+      conteudo: SingleChildScrollView(
+        controller: _scrollControler,
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.75,
+          child: conteudo,
+        ),
+      ),
+      scrollController: _scrollControler,
+    );
   }
 }
