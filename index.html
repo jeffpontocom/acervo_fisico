@@ -11,6 +11,7 @@
     For more details:
     * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
   -->
+  <!--  <base href="/"> Para intranet-->
   <base href="/acervo_fisico/"> <!-- importante indicar nome da pasta raiz para github pages -->
 
   <meta charset="UTF-8">
@@ -28,7 +29,7 @@
   <link rel="shortcut icon" href="favicon.png" />
   <style>
     div *{
-      font-family:Arial, Helvetica, sans-serif;
+      font-family: "Maven Pro","Trebuchet MS",monospace;
     }
     .centered {
       position: fixed;
@@ -42,24 +43,54 @@
       color: black;
     }
     </style>
+
+    <!-- Recursos para o visualizador PDF  -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.8.335/pdf.min.js"></script>
     <script type="text/javascript">
         pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.8.335/pdf.worker.min.js";
     </script>
+
 </head>
 <body>
+
   <!-- Interface de carregamento  -->
   <div class="centered">
-      <img src="icons/Icon-192.png" alt="Logo Acervo Físico" />
-      <h2>Acervo Físico ENCA.DT</h2>
-      <span id="mStatus">Carregando...</span>
+      <img src="icons/Icon-192.png" />
+      <span></br></span>
+      <span style="font-size: 14px;">Arquivo Técnico</br></span>
+      <span style="font-size: 32px; font-weight: bold;">Acervo Físico</br></span>
+      <span></br></span>
+      <span style="font-size: 14px; color: grey;" id="mStatus">Carregando...</span>
   </div>
+
+  <!-- Verifica se a internet esta disponivel
+       Impede a tela branca caso o script mainDartJs não seja baixado -->
+  <script>    
+    console.log('Verificando conexão com a internet...');
+    fetch('https://static-global-s-msn-com.akamaized.net/hp-neu/sc/2b/a5ea21.ico?d='+Date.now())
+      .then(function(response) {
+        console.log('Status de conexão com a internet = %d %s', response.status, response.statusText);
+        if (response.status >= 200 && response.status < 300){
+          document.getElementById('mStatus').innerText = 'Conectado! Aguarde...';
+          document.getElementById('mStatus').style.color = 'blue';
+        } else {
+          document.getElementById('mStatus').innerText = 'Não é possível acessar o sistema!\nVerifique sua conexão com a Internet ou tente em outro navegador mais atualizado.';
+          document.getElementById('mStatus').style.color = 'red';
+        }
+      })
+      .catch(function(error) {
+        console.log('Conexão falhou', error)
+        status = 'Não é possível acessar o sistema!\nVerifique sua conexão com a Internet.';
+        document.getElementById('mStatus').innerText = status;
+        document.getElementById('mStatus').style.color = 'red';
+      });
+  </script>
+
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->
   <script>
-
-    var serviceWorkerVersion = '2099549431';
+    var serviceWorkerVersion = '2303654292';
     var scriptLoaded = false;
 
     function loadMainDartJs() {
@@ -71,21 +102,10 @@
       scriptTag.src = 'main.dart.js';
       scriptTag.type = 'application/javascript';
       document.body.append(scriptTag);
+      console.log('Script main.dart.js carregado no site');
     }
-    
-    // Verifica se a internet esta disponivel
-    // Impede a tela branca caso o script mainDartJs não seja baixado
-    fetch('https://www.back4app.com/', {mode: 'no-cors'})
-      .then(function(response) {
-        console.log('Conexão com a internet encontrada. Fetch =', response.ok);
-      })
-      .catch(function(error) {
-        console.log('Conexão falhou', error)
-        status = 'Não é possível acessar o sistema!\n\nVerifique sua conexão com a Internet ou tente em outro navegador mais atualizado.';
-        document.getElementById('mStatus').innerText = status;
-      });
 
-    // Verifica se instancia trabalha com Service Workers
+    // Verifica se o navegador trabalha com PWA - Site da Web como Aplicativo
     if ('serviceWorker' in navigator) {
       // Service workers are supported. Use them.
       window.addEventListener('load', function () {
@@ -98,7 +118,7 @@
             function waitForActivation(serviceWorker) {
               serviceWorker.addEventListener('statechange', () => {
                 if (serviceWorker.state == 'activated') {
-                  console.log('Installed new service worker.');
+                  console.log('Novo service worker instalado! Utilize esse site como aplicativo.');
                   loadMainDartJs();
                 }
               });
@@ -110,12 +130,12 @@
             } else if (!reg.active.scriptURL.endsWith(serviceWorkerVersion)) {
               // When the app updates the serviceWorkerVersion changes, so we
               // need to ask the service worker to update.
-              console.log('New service worker available.');
+              console.log('Novo service worker disponível.');
               reg.update();
               waitForActivation(reg.installing);
             } else {
               // Existing service worker is still good.
-              console.log('Loading app from service worker.');
+              console.log('Carregando app a partir do service worker.');
               loadMainDartJs();
             }
           });
@@ -125,7 +145,7 @@
         setTimeout(() => {
           if (!scriptLoaded) {
             console.warn(
-              'Failed to load app from service worker. Falling back to plain <script> tag.',
+              'Falha ao carregar app a partir do service worker. Voltando ao <script> tag padrão.',
             );
             loadMainDartJs();
           }
