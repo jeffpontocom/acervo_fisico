@@ -11,8 +11,8 @@ description: Ferramenta de localização e controle do acervo físico do Arquivo
 # 1) flutter build appbundle --split-debug-info
 #  
 # Para publicar no github pages executar:
-# 1) flutter pub global run peanut:peanut
-# 2) git push origin --set-upstream gh-pages
+# 1) flutter pub global run peanut --web-renderer canvaskit
+# 2) git push -f origin --set-upstream gh-pages (-f required because of the rebase)
 
 
 # Para gerar a versão para Android tipo appbundle
