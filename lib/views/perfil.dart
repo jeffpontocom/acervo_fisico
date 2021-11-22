@@ -39,48 +39,46 @@ class UserPage extends StatelessWidget {
         title: Text('Perfil'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Hero(
-              tag: 'perfil',
-              child: Image(
-                height: 128,
-                width: 128,
-                fit: BoxFit.contain,
-                image: AssetImage(AppData.currentUser == null
-                    ? 'assets/icons/private-key.png'
-                    : 'assets/icons/data-management.png'),
-              ),
+        child: Scrollbar(
+          isAlwaysShown: true,
+          showTrackOnHover: true,
+          hoverThickness: 18,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Hero(
+                  tag: 'perfil',
+                  child: Image(
+                    height: 128,
+                    width: 128,
+                    fit: BoxFit.contain,
+                    image: AssetImage('assets/icons/data-management.png'),
+                  ),
+                ),
+                Text(
+                  '${AppData.currentUser!.username}',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  '${AppData.currentUser!.emailAddress}',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey),
+                ),
+                const SizedBox(
+                  height: 64,
+                  width: double.infinity,
+                ),
+                ElevatedButton.icon(
+                  icon: Icon(Icons.logout_rounded),
+                  label: const Text('SAIR'),
+                  style: ElevatedButton.styleFrom(primary: Colors.red),
+                  onPressed: () => fazerLogout(),
+                ),
+              ],
             ),
-            /* Icon(
-              Icons.person_pin,
-              size: 128,
-            ), */
-            Text(
-              '${AppData.currentUser!.username}',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              '${AppData.currentUser!.emailAddress}',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
-            ),
-            SizedBox(
-              height: 128,
-            ),
-            Container(
-              //height: 50,
-              width: 200,
-              child: ElevatedButton.icon(
-                icon: Icon(Icons.logout_rounded),
-                label: const Text('SAIR'),
-                style: ElevatedButton.styleFrom(primary: Colors.red),
-                onPressed: () => fazerLogout(),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

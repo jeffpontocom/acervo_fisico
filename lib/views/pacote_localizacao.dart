@@ -3,6 +3,7 @@ import 'package:acervo_fisico/controllers/pacote_pdf.dart';
 import 'package:acervo_fisico/views/pacote_documentos.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 import 'package:pdf/pdf.dart';
@@ -75,42 +76,34 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
   }
 
   Widget get tipo {
-    return editMode.value
-        ? DropdownButtonFormField<TipoPacote>(
-            value: _controleTipo,
-            decoration: mTextField.copyWith(
-              labelText: 'Tipo',
-              enabled: editMode.value,
-            ),
-            isExpanded: true,
-            items: TipoPacote.values
-                .map(
-                  (value) => new DropdownMenuItem(
-                    value: value,
-                    child: new Text(
-                      getTipoPacoteString(value),
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                )
-                .toList(),
-            onChanged: (value) {
-              setState(() {
-                _controleTipo = value ?? TipoPacote.INDEFINIDO;
-              });
-            })
-        : Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: Text(
-              getTipoPacoteString(_controleTipo),
-              style: TextStyle(
-                fontSize: 18,
+    return DropdownButtonHideUnderline(
+      child: DropdownButton<TipoPacote>(
+        value: _controleTipo,
+        isExpanded: true,
+        focusNode: FocusNode(skipTraversal: true),
+        alignment: Alignment.center,
+        items: TipoPacote.values
+            .map(
+              (value) => new DropdownMenuItem(
+                value: value,
+                alignment: Alignment.center,
+                child: new Text(
+                  getTipoPacoteString(value),
+                  style: TextStyle(fontSize: 18),
+                ),
               ),
-            ),
-          );
+            )
+            .toList(),
+        hint: Text('Tipo'),
+        onChanged: editMode.value
+            ? (value) {
+                setState(() {
+                  _controleTipo = value ?? TipoPacote.INDEFINIDO;
+                });
+              }
+            : null,
+      ),
+    );
   }
 
   Widget get identificador {
@@ -118,12 +111,20 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
       controller: _controleId,
       enabled: editMode.value,
       textInputAction: TextInputAction.next,
+      textCapitalization: TextCapitalization.characters,
+      inputFormatters: [
+        UpperCaseTextFormatter(),
+        FilteringTextInputFormatter.deny(' ')
+      ],
       decoration: mTextField.copyWith(
         labelText: 'Identificador',
         hintText: 'Informe o código do pacote',
       ),
       style: TextStyle(
-          fontSize: 32, fontWeight: FontWeight.bold, color: Colors.blue),
+        fontSize: 30,
+        fontWeight: FontWeight.bold,
+        color: Colors.blue,
+      ),
     );
   }
 
@@ -188,7 +189,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
       minLines: 5,
       maxLines: 8,
       textAlignVertical: TextAlignVertical.top,
-      decoration: mTextField.copyWith(
+      decoration: mTextFieldOutlined.copyWith(
         labelText: 'Observações:',
         floatingLabelBehavior: FloatingLabelBehavior.always,
       ),
@@ -365,6 +366,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
 
   /// Salva as alteracoes no pacote
   Future<void> salvarAlteracoes() async {
+    ValueNotifier mMensagem = ValueNotifier('Iniciando processo...');
     // abre mensagem alerta
     Message.showExecutar(
         context: context,
@@ -378,23 +380,41 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
             // Abre progresso
             Message.showAguarde(
               context: context,
-              mensagem: 'Salvando alterações...',
+              notificacao: mMensagem,
             );
+            // Verificar duplicidade
+            if (mPacote.identificador != _controleId.text) {
+              mMensagem.value = 'Verificando duplicidade...';
+              QueryBuilder<Pacote> query = QueryBuilder<Pacote>(Pacote())
+                ..whereEqualTo(Pacote.keyId, _controleId.text);
+              final ParseResponse apiResponse = await query.query();
+              if (apiResponse.count > 0) {
+                Navigator.pop(context);
+                Message.showMensagem(
+                    context: context,
+                    titulo: 'Erro',
+                    mensagem: 'Já existe um pacote com esse nome.');
+                return;
+              }
+            }
+            mMensagem.value = 'Salvando alterações...';
             // Relatorio
             String relatorio = '''
 *APP Acervo Físico*
-Relatório de EDIÇÃO do pacote: "${_controleId.text}"
+Relatório de EDIÇÃO
+
+Pacote: "${_controleId.text}"
 
 Dados anteriores a modificação:
-• Identificador:  ${mPacote.identificador != _controleId.text ? mPacote.identificador : "[sem alteração]"}
-• Tipo:           ${TipoPacote.values[mPacote.tipo] != _controleTipo ? mPacote.tipoToString : "[sem alteração]"}
-• Prédio:         ${mPacote.localPredio != _controlePredio.text ? mPacote.localPredio : "[sem alteração]"}
-• Estante:        ${mPacote.localNivel1 != _controleNivel1.text ? mPacote.localNivel1 : "[sem alteração]"}
-• Divisão:        ${mPacote.localNivel2 != _controleNivel2.text ? mPacote.localNivel2 : "[sem alteração]"}
-• Andar:          ${mPacote.localNivel3 != _controleNivel3.text ? mPacote.localNivel3 : "[sem alteração]"}
-• Observações:    ${mPacote.observacao != _controleObs.text ? mPacote.observacao : "[sem alteração]"}
+• Identificador: ${mPacote.identificador != _controleId.text ? mPacote.identificador : "[sem alteração]"}
+• Tipo: ${TipoPacote.values[mPacote.tipo] != _controleTipo ? mPacote.tipoToString : "[sem alteração]"}
+• Prédio: ${mPacote.localPredio != _controlePredio.text ? mPacote.localPredio : "[sem alteração]"}
+• Estante: ${mPacote.localNivel1 != _controleNivel1.text ? mPacote.localNivel1 : "[sem alteração]"}
+• Divisão: ${mPacote.localNivel2 != _controleNivel2.text ? mPacote.localNivel2 : "[sem alteração]"}
+• Andar: ${mPacote.localNivel3 != _controleNivel3.text ? mPacote.localNivel3 : "[sem alteração]"}
+• Observações: ${mPacote.observacao != _controleObs.text ? mPacote.observacao : "[sem alteração]"}
 
-Executado em ${DateFormat("dd/MM/yyyy - HH:mm", "pt_BR").format(DateTime.now())}
+Executado em ${DateFormat("dd/MM/yyyy 'às' HH:mm", "pt_BR").format(DateTime.now())}
 Por ${AppData.currentUser?.username ?? "**administrador**"}
 ''';
             // executa alteracoes
@@ -499,20 +519,22 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
               // Relatorio
               String relatorio = '''
 *APP Acervo Físico*
-Relatório de ELIMINAÇÃO do pacote: "${mPacote.identificador}"
+Relatório de ELIMINAÇÃO 
+
+Pacote: "${mPacote.identificador}"
 
 Dados do pacote:
-IDENTIFICADOR: ${mPacote.identificador}
-TIPO: ${mPacote.tipoToString}
-PRÉDIO: ${mPacote.localPredio}
-ESTANTE: ${mPacote.localNivel1}
-DIVISÃO: ${mPacote.localNivel2}
-ANDAR: ${mPacote.localNivel3}
+• Identificador: ${mPacote.identificador}
+• Tipo: ${mPacote.tipoToString}
+• Prédio: ${mPacote.localPredio}
+• Estante: ${mPacote.localNivel1}
+• Divisão: ${mPacote.localNivel2}
+• Andar: ${mPacote.localNivel3}
 
-Observações (anteriores): ${mPacote.observacao}
-Observações (novas): ${_controleObs.text}
+• Observações (anteriores): ${mPacote.observacao}
+• Observações (novas): ${_controleObs.text}
 
-Executado em ${DateFormat("dd/MM/yyyy - HH:mm", "pt_BR").format(DateTime.now())}
+Executado em ${DateFormat("dd/MM/yyyy 'às' HH:mm", "pt_BR").format(DateTime.now())}
 Por ${AppData.currentUser?.username ?? "**administrador**"}
 ''';
               // NAO executar alteracoes
@@ -580,6 +602,8 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
     return InkWell(
         hoverColor: Colors.transparent,
         splashColor: Colors.transparent,
+        focusColor: Colors.transparent,
+        highlightColor: Colors.transparent,
         onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());
         },
@@ -601,6 +625,7 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
                     child: Column(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         identificador,
                         Row(
@@ -633,11 +658,14 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
                             ),
                           ],
                         ),
+                        const SizedBox(
+                          height: 16,
+                        ),
                         observacoes,
                         editMode.value
                             ? Container(
                                 alignment: Alignment.bottomLeft,
-                                padding: EdgeInsets.symmetric(vertical: 32),
+                                padding: EdgeInsets.symmetric(vertical: 16),
                                 child: (Util.tecladoVisivel(context)
                                     ? Container()
                                     : eliminar),

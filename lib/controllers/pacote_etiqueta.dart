@@ -9,6 +9,7 @@ import '../models/pacote.dart';
 
 class GerarEtiqueta {
   final Pacote pacote;
+  var _fonte;
 
   GerarEtiqueta({required this.pacote});
 
@@ -31,12 +32,18 @@ class GerarEtiqueta {
         // Espaço entre linhas
         pw.SizedBox(height: 16),
         // Identificador
-        pw.Text(
-          '${pacote.identificador}',
-          style: pw.TextStyle(
-            color: PdfColor.fromHex('1565C0'), // Azul escuro
-            fontSize: 20,
-            fontWeight: pw.FontWeight.bold,
+        pw.SizedBox(
+          width: 188,
+          child: pw.Text(
+            '${pacote.identificador}',
+            maxLines: 1,
+            textAlign: pw.TextAlign.center,
+            style: pw.TextStyle(
+              color: PdfColor.fromHex('1565C0'), // Azul escuro
+              font: _fonte,
+              fontSize: 20,
+              //fontWeight: pw.FontWeight.bold,
+            ),
           ),
         ),
         // Espaço inferior
@@ -48,6 +55,8 @@ class GerarEtiqueta {
   Future<Uint8List> criarEtiqueta() async {
     print('1. Criando etiqueta');
     final pdf = pw.Document();
+    final font = await rootBundle.load('assets/fonts/MavenPro-Bold.ttf');
+    _fonte = pw.Font.ttf(font);
     print('2. Carrengando fundo');
     final background = await rootBundle.loadString('assets/etiqueta.svg');
     print('3. Criando pagina');

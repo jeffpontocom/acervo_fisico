@@ -102,7 +102,10 @@ class DelDocumentos {
     // Relatorio
     String relatorio = '''
 *APP Acervo Físico*
-Relatório de EXCLUSÕES no pacote: "${mPacote.identificador}"
+Relatório de EXCLUSÕES 
+
+Pacote: "${mPacote.identificador}"
+
 ${documentosEliminar.length} itens selecionados
 
 
@@ -115,7 +118,7 @@ Falha de conexão (tentar novamente): ${falhas.length}
 ${falhas.toSet().toString().replaceAll('{}', '- sem registro de falhas!').replaceAll('{', '- ').replaceAll('}', '.').replaceAll(', ', ';\n- ')}
 
 
-Executado em ${DateFormat("dd/MM/yyyy - HH:mm", "pt_BR").format(DateTime.now())}
+Executado em ${DateFormat("dd/MM/yyyy 'às' HH:mm", "pt_BR").format(DateTime.now())}
 Por ${AppData.currentUser?.username ?? "**administrador**"}
 ''';
     // Salva relatorio

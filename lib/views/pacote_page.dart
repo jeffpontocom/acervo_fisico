@@ -258,9 +258,11 @@ class _PacotePageState extends State<PacotePage> {
             // Relatorio
             String relatorio = '''
 *APP Acervo Físico*
-Relatório de ABERTURA do pacote: "${mPacote.identificador}"
+Relatório de ABERTURA
 
-Executado em ${DateFormat("dd/MM/yyyy - HH:mm", "pt_BR").format(DateTime.now())}
+Pacote: "${mPacote.identificador}"
+
+Executado em ${DateFormat("dd/MM/yyyy 'às' HH:mm", "pt_BR").format(DateTime.now())}
 Por ${AppData.currentUser?.username ?? "**administrador**"}
 ''';
             await salvarRelatorio(
@@ -302,9 +304,11 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
             // Relatorio
             String relatorio = '''
 *APP Acervo Físico*
-Relatório de SELAMENTO do pacote: "${mPacote.identificador}"
+Relatório de SELAMENTO 
 
-Executado em ${DateFormat("dd/MM/yyyy - HH:mm", "pt_BR").format(DateTime.now())}
+Pacote: "${mPacote.identificador}"
+
+Executado em ${DateFormat("dd/MM/yyyy 'às' HH:mm", "pt_BR").format(DateTime.now())}
 Por ${AppData.currentUser!.username}
 ''';
             await salvarRelatorio(

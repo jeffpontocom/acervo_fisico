@@ -303,47 +303,56 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
         body: SafeArea(
-          child: Center(
-            child: Scrollbar(
-              isAlwaysShown: true,
-              showTrackOnHover: true,
-              hoverThickness: 18,
-              child: SingleChildScrollView(
-                child: Container(
-                  padding: EdgeInsets.all(24),
-                  alignment: Alignment.center,
-                  child: Wrap(
-                    alignment: WrapAlignment.center,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    runAlignment: WrapAlignment.center,
-                    runSpacing: 32,
-                    spacing: 32,
-                    children: [
-                      _appInfo,
-                      ConstrainedBox(
-                        constraints:
-                            BoxConstraints(minWidth: 200, maxWidth: 450),
-                        child: Column(
-                          children: [
-                            _boxPesquisa,
-                            const SizedBox.square(dimension: 32),
-                            _boxSelecaoContexto,
-                          ],
-                        ),
-                      ),
-                      Container(
-                        width: double.maxFinite,
-                        child: Text(
-                          _contextoAtual == ContextoBusca.documentos
-                              ? '${Util.mNumFormat.format(_totalDocs.value)} documentos arquivados'
-                              : '${Util.mNumFormat.format(_totalPacotes.value)} pacotes registrados',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.grey,
+          child: InkWell(
+            hoverColor: Colors.transparent,
+            splashColor: Colors.transparent,
+            focusColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            onTap: () {
+              FocusScope.of(context).requestFocus(FocusNode());
+            },
+            child: Center(
+              child: Scrollbar(
+                isAlwaysShown: true,
+                showTrackOnHover: true,
+                hoverThickness: 18,
+                child: SingleChildScrollView(
+                  child: Container(
+                    padding: EdgeInsets.all(24),
+                    alignment: Alignment.center,
+                    child: Wrap(
+                      alignment: WrapAlignment.center,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      runAlignment: WrapAlignment.center,
+                      runSpacing: 32,
+                      spacing: 32,
+                      children: [
+                        _appInfo,
+                        ConstrainedBox(
+                          constraints:
+                              BoxConstraints(minWidth: 200, maxWidth: 450),
+                          child: Column(
+                            children: [
+                              _boxPesquisa,
+                              const SizedBox.square(dimension: 32),
+                              _boxSelecaoContexto,
+                            ],
                           ),
                         ),
-                      ),
-                    ],
+                        Container(
+                          width: double.maxFinite,
+                          child: Text(
+                            _contextoAtual == ContextoBusca.documentos
+                                ? '${Util.mNumFormat.format(_totalDocs.value)} documentos arquivados'
+                                : '${Util.mNumFormat.format(_totalPacotes.value)} pacotes registrados',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

@@ -63,7 +63,8 @@ class Message {
   static void showAguarde(
       {required BuildContext context,
       String? titulo,
-      required String mensagem}) {
+      String? mensagem,
+      ValueNotifier? notificacao}) {
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -85,7 +86,7 @@ class Message {
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     CircularProgressIndicator(),
-                    Text(mensagem),
+                    Text(mensagem ?? notificacao?.value ?? 'Executando...'),
                   ],
                 ),
               ),

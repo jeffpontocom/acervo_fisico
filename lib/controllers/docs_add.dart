@@ -162,7 +162,10 @@ class AddDocumentos {
     String item = _itensParaAnalise.length <= 1 ? 'item' : 'itens';
     String relatorio = '''
 *APP Acervo Físico*
-Relatório de INCLUSÕES no pacote: "${mPacote.identificador}"
+Relatório de INCLUSÕES 
+
+Pacote: "${mPacote.identificador}"
+
 ${_itensParaAnalise.length} $item identificado$s
 
 
@@ -182,7 +185,7 @@ Falha de conexão (tentar novamente): ${_falhas.length}
 ${_falhas.toSet().toString().replaceAll('{}', '- sem registro de falhas!').replaceAll('{', '- ').replaceAll('}', '.').replaceAll(', ', ';\n- ')}
 
 
-Executado em ${DateFormat("dd/MM/yyyy - HH:mm", "pt_BR").format(DateTime.now())}
+Executado em ${DateFormat("dd/MM/yyyy 'às' HH:mm", "pt_BR").format(DateTime.now())}
 Por ${AppData.currentUser?.username ?? "**administrador**"}
 ''';
 

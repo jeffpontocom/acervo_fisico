@@ -11,7 +11,7 @@ import '../util/utils.dart';
 class GerarPdfPage {
   final Pacote pacote;
   final List<Documento> documentos;
-  var ttf;
+  var _fonte;
   var _logo;
 
   GerarPdfPage({required this.pacote, required this.documentos});
@@ -73,7 +73,7 @@ class GerarPdfPage {
                 pw.Text(
                   'Acervo físico',
                   style: pw.TextStyle(
-                    font: ttf,
+                    font: _fonte,
                     color: PdfColors.blueGrey,
                     fontWeight: pw.FontWeight.bold,
                     fontSize: 24,
@@ -138,7 +138,7 @@ class GerarPdfPage {
   Future<Uint8List> criarPaginas(PdfPageFormat format) async {
     final pdf = pw.Document();
     final font = await rootBundle.load('assets/fonts/Baumans-Regular.ttf');
-    ttf = pw.Font.ttf(font);
+    _fonte = pw.Font.ttf(font);
     pdf.addPage(
       pw.MultiPage(
         pageFormat: format,
