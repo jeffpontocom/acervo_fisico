@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:developer' as dev;
 import 'package:acervo_fisico/app_data.dart';
 import 'package:acervo_fisico/views/home.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 import 'package:uni_links/uni_links.dart';
@@ -26,15 +28,19 @@ void main() async {
 
 class Init {
   static Future initialize() async {
+    await dotenv.load();
+    dev.log('Arquivo de chaves carregado: ${dotenv.isInitialized}',
+        name: 'MAIN');
     await _registrarServicos();
+    dev.log("Registro de serviços finalizado", name: 'MAIN');
   }
 
   /// Registra todos os serviços necessários a execução do sistema
   static _registrarServicos() async {
     // Iniciando Back4App/Parse
-    final keyApplicationId = 'UJImpAAk0xdg1gB1OQtMf2bqEpe3aANxT6Sa2Vbp';
-    final keyClientKey = 'ggHpKH2rUw3uwmchR4lj70gP84DWzFYnlrvJaSov';
-    final keyParseServerUrl = 'https://parseapi.back4app.com';
+    final keyApplicationId = dotenv.env['Application_ID'] ?? '';
+    final keyClientKey = dotenv.env['Client_ID'] ?? '';
+    final keyParseServerUrl = dotenv.env['API_URL'] ?? '';
     await Parse().initialize(
       keyApplicationId,
       keyParseServerUrl,
@@ -48,8 +54,6 @@ class Init {
       },
     );
     await AppData().init();
-    //currentUser = await ParseUser.currentUser() as ParseUser?;
-    print("Registro de serviços finalizado");
   }
 }
 
