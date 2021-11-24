@@ -9,7 +9,7 @@ import '../app_data.dart';
 import '../models/documento.dart';
 import '../models/enums.dart';
 import '../models/pacote.dart';
-import '../views/messages.dart';
+import '../views/mensagens.dart';
 import '../views/pacote_page.dart';
 
 class AddDocumentos {
@@ -48,7 +48,7 @@ class AddDocumentos {
       required this.pacoteId,
       required this.provider,
       callback}) {
-    Message.showBottomDialog(
+    Mensagem.bottomDialog(
       context: context,
       titulo: 'Adicionar documentos',
       conteudo: SingleChildScrollView(
@@ -200,7 +200,7 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
     // Fecha dialogo de inclusao
     Navigator.pop(context);
     // Apresenta relatorio
-    Message.showRelatorio(
+    Mensagem.showRelatorio(
         context: context,
         message: relatorio,
         onPressed: () {

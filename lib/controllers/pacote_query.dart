@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 import '../models/pacote.dart';
-import '../views/messages.dart';
+import '../views/mensagens.dart';
 import '../views/pacote_page.dart';
 
 class LocalizarPacote {
@@ -13,7 +13,7 @@ class LocalizarPacote {
   LocalizarPacote(this.context, this.termo) {
     // Apresentar caso nenhum nome tenha sido informado
     if (termo == null || termo!.trim().isEmpty) {
-      Message.showMensagem(
+      Mensagem.simples(
           context: context,
           titulo: 'Atenção!',
           mensagem: 'Nenhum valor para pacote foi informado.');
@@ -21,7 +21,7 @@ class LocalizarPacote {
     }
     // Abre tela de progresso
     else {
-      Message.showAguarde(
+      Mensagem.aguardar(
         context: context,
         mensagem: 'Localizando pacote(s)...',
       );
@@ -47,7 +47,7 @@ class LocalizarPacote {
     // Finaliza indicador de progresso.
     Navigator.pop(context);
     if (apiResponse.statusCode == -1) {
-      Message.showSemConexao(context: context);
+      Mensagem.semConexao(context: context);
       return;
     }
     if (apiResponse.success && apiResponse.results != null) {
@@ -62,7 +62,7 @@ class LocalizarPacote {
   void _apresentarResultados(List<Pacote> pacotes) {
     // Se não encontrar, mostrar dialogo de alerta
     if (pacotes.length <= 0) {
-      Message.showNotFound(context: context);
+      Mensagem.naoEncontrado(context: context);
     }
     // Se encontrar termo exato, ir para Widget VerPacote()
     else if (pacotes.length == 1) {
@@ -90,7 +90,7 @@ class LocalizarPacote {
         },
       );
       // Apresenta o dialog
-      Message.showBottomDialog(
+      Mensagem.bottomDialog(
         context: context,
         titulo: 'Selecione o pacote',
         conteudo: listaPacotes,

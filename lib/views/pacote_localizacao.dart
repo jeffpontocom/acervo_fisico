@@ -16,7 +16,7 @@ import '../models/enums.dart';
 import '../models/pacote.dart';
 import '../util/utils.dart';
 import '../styles/app_styles.dart';
-import '../views/messages.dart';
+import 'mensagens.dart';
 import 'pacote_page.dart';
 
 class PacoteLocalizacao extends StatefulWidget {
@@ -368,7 +368,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
   Future<void> salvarAlteracoes() async {
     ValueNotifier mMensagem = ValueNotifier('Iniciando processo...');
     // abre mensagem alerta
-    Message.showExecutar(
+    Mensagem.showExecutar(
         context: context,
         titulo: 'Atenção!',
         mensagem:
@@ -378,7 +378,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
           Navigator.pop(context);
           if (value == true) {
             // Abre progresso
-            Message.showAguarde(
+            Mensagem.aguardar(
               context: context,
               notificacao: mMensagem,
             );
@@ -390,7 +390,7 @@ class _PacoteLocalizacaoState extends State<PacoteLocalizacao> {
               final ParseResponse apiResponse = await query.query();
               if (apiResponse.count > 0) {
                 Navigator.pop(context);
-                Message.showMensagem(
+                Mensagem.simples(
                     context: context,
                     titulo: 'Erro',
                     mensagem: 'Já existe um pacote com esse nome.');
@@ -451,7 +451,7 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
     callback(true);
     var lista = await getDocumentos();
     List<Documento> documentos = lista.cast();
-    Message.showPdf(
+    Mensagem.showPdf(
       context: context,
       titulo: 'Ficha do Pacote',
       conteudo: PdfPreview(
@@ -468,7 +468,7 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
 
   //// Gerar Etiqueta do pacote
   void gerarEtiquetaPacote() async {
-    Message.showPdf(
+    Mensagem.showPdf(
       context: context,
       titulo: 'Etiqueta',
       conteudo: PdfPreview(
@@ -485,7 +485,7 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
   /// Elimina o pacote
   Future<void> eliminarPacote() async {
     // verifica se existem documentos vinculados
-    Message.showAguarde(
+    Mensagem.aguardar(
       context: context,
       mensagem: 'Verificando vinculos...',
     );
@@ -495,14 +495,14 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
     final ParseResponse apiResponse = await query.query();
     Navigator.pop(context);
     if (apiResponse.success && apiResponse.results != null) {
-      Message.showMensagem(
+      Mensagem.simples(
           context: context,
           titulo: 'Erro!',
           mensagem:
               'Não é possível eliminar pacotes que possuem documentos vinculados');
     } else {
       // abre mensagem alerta
-      Message.showExecutar(
+      Mensagem.showExecutar(
           context: context,
           titulo: 'Atenção!',
           mensagem:
@@ -512,7 +512,7 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
             Navigator.pop(context);
             if (value) {
               // abre progresso
-              Message.showAguarde(
+              Mensagem.aguardar(
                 context: context,
                 mensagem: 'Eliminando pacote...',
               );

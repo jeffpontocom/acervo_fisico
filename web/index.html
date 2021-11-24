@@ -25,7 +25,9 @@
 
   <title>Acervo Físico ENCA.DT</title>
   <link rel="manifest" href="manifest.json">
+  <!-- FavIcon -->
   <link rel="shortcut icon" href="favicon.png" />
+  <!-- Para carregar imagem e textos centralizados na inicialização -->
   <style>
     div *{
       font-family: "Maven Pro","Trebuchet MS",monospace;
@@ -41,13 +43,12 @@
       text-align: center;
       color: black;
     }
-    </style>
-
-    <!-- Recursos para o visualizador PDF  -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.8.335/pdf.min.js"></script>
-    <script type="text/javascript">
-        pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.8.335/pdf.worker.min.js";
-    </script>
+  </style>
+  <!-- Recursos para o visualizador PDF  -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.8.335/pdf.min.js"></script>
+  <script type="text/javascript">
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.8.335/pdf.worker.min.js";
+  </script>
 
 </head>
 <body>
@@ -59,7 +60,7 @@
       <span style="font-size: 14px;">Arquivo Técnico</br></span>
       <span style="font-size: 32px; font-weight: bold;">Acervo Físico</br></span>
       <span></br></span>
-      <span style="font-size: 14px; color: grey;" id="mStatus">Carregando...</span>
+      <span style="font-size: 14px; color: grey;" id="mStatus">Verificando acesso a internet...</span>
   </div>
 
   <!-- Verifica se a internet esta disponivel
@@ -70,8 +71,8 @@
       .then(function(response) {
         console.log('Status de conexão com a internet = %d %s', response.status, response.statusText);
         if (response.status >= 200 && response.status < 300){
-          document.getElementById('mStatus').innerText = 'Conectado! Aguarde...';
-          document.getElementById('mStatus').style.color = 'blue';
+          document.getElementById('mStatus').innerText = 'Conectado! Carregando app...';
+          document.getElementById('mStatus').style.color = '#1e90ff'; /* Color: dodgerblue */
         } else {
           document.getElementById('mStatus').innerText = 'Não é possível acessar o sistema!\nVerifique sua conexão com a Internet ou tente em outro navegador mais atualizado.';
           document.getElementById('mStatus').style.color = 'red';

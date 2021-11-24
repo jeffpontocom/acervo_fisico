@@ -5,7 +5,7 @@ import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 import '../models/pacote.dart';
 import '../models/relatorio.dart';
 import '../util/utils.dart';
-import '../views/messages.dart';
+import 'mensagens.dart';
 import 'pacote_page.dart';
 
 class PacoteRelatorios extends StatefulWidget {
@@ -75,7 +75,7 @@ class _PacoteRelatoriosState extends State<PacoteRelatorios> {
                       trailing: Text('${lista.length - index}',
                           style: TextStyle(color: Colors.grey)),
                       onTap: () {
-                        Message.showRelatorio(
+                        Mensagem.showRelatorio(
                             context: context, message: lista[index].mensagem);
                       },
                     );

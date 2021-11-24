@@ -11,7 +11,7 @@ import '../controllers/relatorio_add.dart';
 import '../models/enums.dart';
 import '../models/pacote.dart';
 import '../views/pacote_relatorios.dart';
-import 'messages.dart';
+import 'mensagens.dart';
 import 'pacote_documentos.dart';
 import 'pacote_localizacao.dart';
 
@@ -234,7 +234,7 @@ class _PacotePageState extends State<PacotePage> {
 
   void abrirPacote() {
     // abre mensagem alerta
-    Message.showExecutar(
+    Mensagem.showExecutar(
         context: context,
         titulo: 'Atenção!',
         mensagem:
@@ -244,7 +244,7 @@ class _PacotePageState extends State<PacotePage> {
           Navigator.pop(context);
           if (value) {
             // abre progresso
-            Message.showAguarde(
+            Mensagem.aguardar(
               context: context,
               mensagem: 'Abrindo pacote...',
             );
@@ -280,7 +280,7 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
 
   void selarPacote() {
     // abre mensagem alerta
-    Message.showExecutar(
+    Mensagem.showExecutar(
         context: context,
         titulo: 'Atenção!',
         mensagem:
@@ -290,7 +290,7 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
           Navigator.pop(context);
           if (value) {
             // abre progresso
-            Message.showAguarde(
+            Mensagem.aguardar(
               context: context,
               mensagem: 'Selando pacote...',
             );

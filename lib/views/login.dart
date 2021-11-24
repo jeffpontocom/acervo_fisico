@@ -3,7 +3,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 import '../app_data.dart';
-import 'messages.dart';
+import 'mensagens.dart';
 
 GlobalKey<FormState> _formPass = GlobalKey<FormState>();
 
@@ -29,14 +29,14 @@ class _LoginPageState extends State<LoginPage> {
     final password = controllerPassword.text.trim();
 
     if (username.isEmpty || password.isEmpty) {
-      Message.showMensagem(
+      Mensagem.simples(
           context: context,
           titulo: 'Atenção!',
           mensagem: 'Informe usuário e senha');
       return;
     }
 
-    Message.showAguarde(
+    Mensagem.aguardar(
       context: context,
       mensagem: 'Efetuando login...',
     );
@@ -48,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
       //Navigator.pop(context, true);
       Modular.to.maybePop(true);
     } else {
-      Message.showMensagem(
+      Mensagem.simples(
           context: context,
           titulo: 'Erro!',
           mensagem:
@@ -58,7 +58,7 @@ class _LoginPageState extends State<LoginPage> {
 
   /// Abre dialogo para confirmar e-mail e solicitar redefinicao de senha
   void redefinirSenhaDialog() {
-    Message.showBottomDialog(
+    Mensagem.bottomDialog(
       context: context,
       titulo: 'Redefinir senha',
       conteudo: SingleChildScrollView(
@@ -84,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
   /// Executa solicitacao de redefinicao de senha
   void redefinirSenha() async {
     // Abre a tela de progresso
-    Message.showAguarde(
+    Mensagem.aguardar(
       context: context,
       mensagem: 'Verificando e-mail...',
     );
@@ -101,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
         }
         await user.requestPasswordReset();
         Navigator.pop(context); // Fecha a tela de progresso
-        Message.showMensagem(
+        Mensagem.simples(
             context: context,
             titulo: 'Sucesso!',
             mensagem:
@@ -111,14 +111,14 @@ class _LoginPageState extends State<LoginPage> {
             });
       } else {
         Navigator.pop(context); // Fecha a tela de progresso
-        Message.showMensagem(
+        Mensagem.simples(
             context: context,
             titulo: 'Erro!',
             mensagem: 'Nenhum usuário encontrado com esse e-mail.');
       }
     } else {
       Navigator.pop(context); // Fecha a tela de progresso
-      Message.showMensagem(
+      Mensagem.simples(
         context: context,
         titulo: 'Erro!',
         mensagem:

@@ -8,7 +8,7 @@ import 'relatorio_add.dart';
 import '../app_data.dart';
 import '../models/documento.dart';
 import '../models/enums.dart';
-import '../views/messages.dart';
+import '../views/mensagens.dart';
 import '../views/pacote_page.dart';
 
 class TransfDocumentos {
@@ -24,7 +24,7 @@ class TransfDocumentos {
       callback}) {
     final _formKey = GlobalKey<FormState>();
     TextEditingController ctrPacoteRecebedor = TextEditingController();
-    Message.showExecutar(
+    Mensagem.showExecutar(
       context: context,
       titulo: 'Ação necessária!',
       mensagem: '''
@@ -175,7 +175,7 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
     // Fecha indicador de progresso
     Navigator.pop(context);
     // Apresenta relatorio
-    Message.showRelatorio(
+    Mensagem.showRelatorio(
         context: context,
         message: relatorio,
         onPressed: () {
@@ -192,7 +192,7 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
   }
 
   _buscarPacotes({required String termo, callback}) async {
-    Message.showAguarde(
+    Mensagem.aguardar(
       context: context,
       mensagem: 'Localizando pacote(s)...',
     );
@@ -215,7 +215,7 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
     // Finaliza indicador de progresso.
     Navigator.pop(context);
     if (apiResponse.statusCode == -1) {
-      Message.showSemConexao(context: context);
+      Mensagem.semConexao(context: context);
       callback(null);
       return;
     }
@@ -257,7 +257,7 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
         },
       );
       // Apresenta o dialog
-      Message.showBottomDialog(
+      Mensagem.bottomDialog(
         context: context,
         titulo: 'Selecione o pacote',
         conteudo: listaPacotes,

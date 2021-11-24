@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../app_data.dart';
-import 'messages.dart';
+import 'mensagens.dart';
 
 class UserPage extends StatelessWidget {
   static const routeName = '/perfil';
@@ -14,7 +14,7 @@ class UserPage extends StatelessWidget {
 
     /// Executa o logout do usuario
     void fazerLogout() async {
-      Message.showAguarde(
+      Mensagem.aguardar(
         context: context,
         mensagem: 'Efetuando logout...',
       );
@@ -25,7 +25,7 @@ class UserPage extends StatelessWidget {
         AppData.currentUser = null;
         Modular.to.maybePop(true);
       } else {
-        Message.showMensagem(
+        Mensagem.simples(
             context: context,
             titulo: 'Erro!',
             mensagem:

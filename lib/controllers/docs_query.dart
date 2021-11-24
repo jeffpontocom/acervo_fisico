@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk.dart';
 
 import '../models/documento.dart';
-import '../views/messages.dart';
+import '../views/mensagens.dart';
 import 'pacote_query.dart';
 
 class LocalizarDocumento {
@@ -23,7 +23,7 @@ class LocalizarDocumento {
 
     if (query.isEmpty) {
       // Apresenta erro
-      Message.showMensagem(
+      Mensagem.simples(
           context: context,
           titulo: 'Atenção!',
           mensagem: 'Nenhum valor para documento foi informado.');
@@ -33,7 +33,7 @@ class LocalizarDocumento {
     // Verificar quantidade de caracteres minima (6000DC15200)
     if (query.length < 11) {
       print('Query tem menos de 11 caracteres');
-      Message.showNotFound(context: context);
+      Mensagem.naoEncontrado(context: context);
       return;
     }
 
@@ -158,7 +158,7 @@ class LocalizarDocumento {
     // Sem folha e sem revisão: ANALISAR POSSIBILIDADE DE ERROS
     else {
       print('Avaliar query');
-      Message.showNotFound(context: context);
+      Mensagem.naoEncontrado(context: context);
     }
     _printValores(assuntoBase, tipo, sequencial, idioma, folha, revisao);
   }
@@ -189,7 +189,7 @@ class LocalizarDocumento {
     List<dynamic> resultados;
     QueryBuilder<Documento> query = QueryBuilder<Documento>(Documento());
 
-    Message.showAguarde(
+    Mensagem.aguardar(
       context: context,
       mensagem: 'Localizando documento(s)...',
     );
@@ -238,7 +238,7 @@ class LocalizarDocumento {
     final ParseResponse apiResponse = await query.query();
     Navigator.pop(context); // Finaliza indicador de progresso.
     if (apiResponse.statusCode == -1) {
-      Message.showSemConexao(context: context);
+      Mensagem.semConexao(context: context);
       return;
     }
     if (apiResponse.success && apiResponse.results != null) {
@@ -253,7 +253,7 @@ class LocalizarDocumento {
   void _apresentarResultados(List<Documento> documentos) {
     // Se nenhum documento localizado
     if (documentos.length == 0) {
-      Message.showNotFound(context: context);
+      Mensagem.naoEncontrado(context: context);
     }
     // Se apenas um documento localizado, vai direto ao pacote
     else if (documentos.length == 1) {
@@ -284,7 +284,7 @@ class LocalizarDocumento {
         },
       );
       // Apresenta o dialog
-      Message.showBottomDialog(
+      Mensagem.bottomDialog(
           context: context,
           titulo: 'Selecione o documento',
           conteudo: listaDocumentos);

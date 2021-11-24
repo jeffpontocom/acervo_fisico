@@ -6,7 +6,7 @@ import 'relatorio_add.dart';
 import '../app_data.dart';
 import '../models/documento.dart';
 import '../models/enums.dart';
-import '../views/messages.dart';
+import '../views/mensagens.dart';
 import '../views/pacote_page.dart';
 
 class DelDocumentos {
@@ -19,7 +19,7 @@ class DelDocumentos {
       required this.documentosEliminar,
       required this.provider,
       callback}) {
-    Message.showExecutar(
+    Mensagem.showExecutar(
         context: context,
         titulo: 'Atenção!',
         mensagem:
@@ -130,7 +130,7 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
     // Fecha indicador de progresso
     Navigator.pop(context);
     // Apresenta relatorio
-    Message.showRelatorio(
+    Mensagem.showRelatorio(
         context: context,
         message: relatorio,
         onPressed: () {

@@ -8,7 +8,7 @@ import '../app_data.dart';
 import '../models/enums.dart';
 import '../models/pacote.dart';
 import '../styles/app_styles.dart';
-import '../views/messages.dart';
+import '../views/mensagens.dart';
 import 'pacote_query.dart';
 import 'relatorio_add.dart';
 
@@ -80,7 +80,7 @@ class NovoPacote {
   }
 
   NovoPacote(this.context) {
-    Message.showBottomDialog(
+    Mensagem.bottomDialog(
       context: context,
       titulo: 'Novo pacote',
       conteudo: SingleChildScrollView(
@@ -133,14 +133,14 @@ class NovoPacote {
     codigo = codigo.toUpperCase().trim().replaceAll(' ', '');
     // Verifica a string
     if (codigo.isEmpty) {
-      Message.showMensagem(
+      Mensagem.simples(
           context: context,
           titulo: 'Atenção!',
           mensagem: 'Informe um código para o pacote.');
       return;
     }
     // Progresso
-    Message.showAguarde(
+    Mensagem.aguardar(
       context: context,
       mensagem: 'Criando pacote...',
     );
@@ -152,7 +152,7 @@ class NovoPacote {
     // Se nao houver conexao
     if (apiResponse.statusCode == -1) {
       Navigator.pop(context); // Fecha progresso
-      Message.showSemConexao(context: context);
+      Mensagem.semConexao(context: context);
       return;
     }
     // Capturar resposta
@@ -166,7 +166,7 @@ class NovoPacote {
       var pacote = await salvarRegistro(codigo, tipo);
       if (pacote == null) {
         Navigator.pop(context); // Fecha progresso
-        Message.showMensagem(
+        Mensagem.simples(
             context: context,
             titulo: 'Erro!',
             mensagem:
@@ -192,13 +192,13 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
         // Fecha bottom dialog
         Navigator.pop(context);
         if (apiResponse.statusCode == -1) {
-          Message.showSemConexao(context: context);
+          Mensagem.semConexao(context: context);
         } else {
           // Abre ficha do pacote
           if (apiResponse.success && apiResponse.results != null) {
             irParaPacote(context, pacote);
           } else {
-            Message.showMensagem(
+            Mensagem.simples(
                 context: context,
                 titulo: 'Erro!',
                 mensagem:
@@ -208,7 +208,7 @@ Por ${AppData.currentUser?.username ?? "**administrador**"}
       }
     } else {
       Navigator.pop(context); // Fecha progresso
-      Message.showMensagem(
+      Mensagem.simples(
           context: context,
           titulo: 'Erro!',
           mensagem: 'Já existe um pacote com esse nome.');

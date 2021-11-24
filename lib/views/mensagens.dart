@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share/share.dart';
 
-class Message {
+class Mensagem {
   /// Apresenta popup com uma mensagem simples
-  static void showMensagem(
+  static void simples(
       {required BuildContext context,
       required String titulo,
       required String mensagem,
@@ -41,8 +41,8 @@ class Message {
   }
 
   /// Apresenta popup com informação de erro na conexão com a internet
-  static void showSemConexao({required BuildContext context}) {
-    showMensagem(
+  static void semConexao({required BuildContext context}) {
+    simples(
         context: context,
         titulo: 'Sem conexão!',
         mensagem:
@@ -50,9 +50,9 @@ class Message {
   }
 
   /// Apresenta popup com a informação "Não localizado"
-  static void showNotFound(
+  static void naoEncontrado(
       {required BuildContext context, VoidCallback? onPressed}) {
-    showMensagem(
+    simples(
         context: context,
         titulo: 'Item não localizado!',
         mensagem: 'Verifique o código informado e tente novamente.',
@@ -60,7 +60,7 @@ class Message {
   }
 
   /// Apresenta popup com indicador de execução
-  static void showAguarde(
+  static void aguardar(
       {required BuildContext context,
       String? titulo,
       String? mensagem,
@@ -151,7 +151,7 @@ class Message {
   }
 
   /// Apresenta popup no padrão bottom dialog
-  static void showBottomDialog({
+  static void bottomDialog({
     required BuildContext context,
     required String titulo,
     required Widget conteudo,
@@ -264,7 +264,7 @@ class Message {
                 kIsWeb
                     ? Clipboard.setData(new ClipboardData(text: message))
                         .then((_) {
-                        Message.showMensagem(
+                        Mensagem.simples(
                           context: context,
                           titulo: 'Sucesso!',
                           mensagem:
@@ -279,7 +279,7 @@ class Message {
       ),
     );
     // Bottom Dialog padrão
-    showBottomDialog(
+    bottomDialog(
       context: context,
       titulo: 'Relatório',
       conteudo: conteudo,
@@ -294,7 +294,7 @@ class Message {
       required String titulo,
       required Widget conteudo}) {
     ScrollController _scrollControler = ScrollController();
-    showBottomDialog(
+    bottomDialog(
       context: context,
       titulo: titulo,
       conteudo: SingleChildScrollView(
